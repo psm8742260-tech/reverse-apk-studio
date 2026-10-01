@@ -3717,6 +3717,7 @@ app.post('/api/app/build-zip-to-apk', uploadHandler, async (req, res) => {
   const { exec } = await import('node:child_process');
   const util = await import('node:util');
   const execPromise = util.promisify(exec);
+  const JSZip = (await import('jszip')).default;
 
   const buildLogs: string[] = [];
   const log = (msg: string) => {
@@ -4080,7 +4081,6 @@ android {
 
     // 📋 ZIP Packaging Protocol
     sendLog('Packaging', '📦 గూగుల్ ప్లే జిప్ ప్యాకేజీ (APK + AAB) సిద్ధం చేయబడుతోంది...', 98);
-    const JSZip = (await import('jszip')).default;
     const playZip = new JSZip();
     
     const apkBuffer = await fs.readFile(apkPath);
