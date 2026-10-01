@@ -3926,8 +3926,9 @@ android {
            const isValid = await validateArtifact(apkPath, 'apk', (msg) => log(msg));
            if (!isValid) {
               sendLog('Verifying', '❌ REAL Build failed: APK artifact failed integrity check.', 100, true);
-              await fs.unlink(apkPath).catch(() => {});
-              await fs.rm(workspaceDir, { recursive: true, force: true }).catch(() => {});
+              // 🛡️ [PERMANENT LOCK] Admin requested removal of automatic deletion:
+              // await fs.unlink(apkPath).catch(() => {});
+              // await fs.rm(workspaceDir, { recursive: true, force: true }).catch(() => {});
               return;
            }
            const stat = await fs.stat(apkPath);
@@ -3941,7 +3942,8 @@ android {
              fileSizeMb,
              buildTimeSec: 25
            });
-           await fs.rm(workspaceDir, { recursive: true, force: true }).catch(() => {});
+// 🛡️ [PERMANENT LOCK] Admin requested removal of automatic deletion:
+           // await fs.rm(workspaceDir, { recursive: true, force: true }).catch(() => {});
            return;
         } else {
            const isJson = String(contentType).includes('application/json');
@@ -3953,13 +3955,15 @@ android {
              } catch {}
            }
            sendLog('Routing', `❌ Remote worker failed: ${workerError}`, 100, true);
-           await fs.rm(workspaceDir, { recursive: true, force: true }).catch(() => {});
+// 🛡️ [PERMANENT LOCK] Admin requested removal of automatic deletion:
+           // await fs.rm(workspaceDir, { recursive: true, force: true }).catch(() => {});
            return;
         }
       } catch (remoteErr: any) {
         const errorDetail = remoteErr.response?.data?.error || remoteErr.message;
         sendLog('Routing', `❌ Remote build routing failed: ${errorDetail}`, 100, true);
-        await fs.rm(workspaceDir, { recursive: true, force: true }).catch(() => {});
+// 🛡️ [PERMANENT LOCK] Admin requested removal of automatic deletion:
+        // await fs.rm(workspaceDir, { recursive: true, force: true }).catch(() => {});
         return;
       }
     }
@@ -4006,7 +4010,8 @@ android {
       });
     } catch (gradleErr: any) {
       sendLog('Building', `❌ Gradle Compilation Failed! ఎర్రర్ లాగ్: ${gradleErr.message}`, 100, true);
-      await fs.rm(workspaceDir, { recursive: true, force: true }).catch(() => {});
+// 🛡️ [PERMANENT LOCK] Admin requested removal of automatic deletion:
+      // await fs.rm(workspaceDir, { recursive: true, force: true }).catch(() => {});
       return res.end();
     }
 
@@ -4089,17 +4094,18 @@ android {
     });
 
     // Clean up build workspace
-    await fs.rm(workspaceDir, { recursive: true, force: true }).catch(() => {});
+// 🛡️ [PERMANENT LOCK] Admin requested removal of automatic deletion:
+    // await fs.rm(workspaceDir, { recursive: true, force: true }).catch(() => {});
 
   } catch (err: any) {
     sendLog('Building', `❌ బిల్డ్ విఫలమైంది: ${err.message}`, 100, true);
-    await fs.rm(workspaceDir, { recursive: true, force: true }).catch(() => {});
+    // await fs.rm(workspaceDir, { recursive: true, force: true }).catch(() => {});
   } finally {
     if (zipFile?.path) {
-      await fs.unlink(zipFile.path).catch(() => {});
+      // await fs.unlink(zipFile.path).catch(() => {});
     }
     if (keystoreFile?.path) {
-      await fs.unlink(keystoreFile.path).catch(() => {});
+      // await fs.unlink(keystoreFile.path).catch(() => {});
     }
     res.end();
   }
@@ -4549,7 +4555,8 @@ public class MainActivity extends Activity {
     console.error('REAL build error:', err);
     res.status(500).json({ error: `REAL Build failed: ${err.message}`, buildLogs });
   } finally {
-    await fs.rm(rootDir, { recursive: true, force: true }).catch(() => {});
+    // 🛡️ [PERMANENT LOCK] Admin requested removal of automatic deletion:
+    // await fs.rm(rootDir, { recursive: true, force: true }).catch(() => {});
   }
 });
 

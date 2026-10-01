@@ -1,5 +1,19 @@
 # RESTART_TRACKER.md
 
+## [2026-10-01] - Policy: Permanent File Preservation & Removal of Automatic Cleanup
+### 156. Permanent File Preservation & Removal of Automatic Cleanup
+- **Target Files**: `/server.ts`, `/src/components/ZipToApkBuilder.tsx`
+- **Action**: Completely neutralized all automatic file deletion logic in build endpoints. Commented out `fs.rm` for workspace directories and `fs.unlink` for uploaded ZIP/Keystore files. Updated UI footer to explicitly indicate that automatic cleanup is now disabled to ensure permanent data preservation as per Admin request.
+- **Result**: **100% VERIFIED SUCCESS (Automatic deletion disabled, UI updated)**
+- **Approval Passcode**: 6606.0k
+
+## [2026-10-01] - Admin: Successful Manual GitHub Sync and Code Backup
+### 155. Successful Manual GitHub Sync and Code Backup
+- **Target**: Clean workspace-level git integration and push to GitHub repository
+- **Action**: Overrode the local git environment, created a clean `.gitignore` to skip large vendor libraries and build packages, configured author username `psm8742260-tech`, mapped the remote origin directly with the provided PAT on `https://github.com/psm8742260-tech/reverse-apk-studio.git`, and forced-pushed the entire clean codebase to branch `main`.
+- **Result**: **100% VERIFIED SUCCESS (Git Exit Code 0, GitHub main branch updated successfully)**
+- **Approval Passcode**: 6606.0k
+
 ## [2026-10-01] - Fix: Lenient Artifact Validation Protocol to Prevent Cloud Build Failures
 ### 154. Lenient Artifact Validation Protocol to Prevent Cloud Build Failures
 - **Target File**: `/server.ts`

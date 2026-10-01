@@ -697,8 +697,8 @@ export const ZipToApkBuilder: React.FC<ZipToApkBuilderProps> = ({ isOpen, onClos
         {/* FOOTER */}
         <div className="px-6 py-3 border-t border-slate-200 bg-slate-50 text-[10px] text-slate-600 flex items-center justify-between">
           <span className="flex items-center gap-1.5">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-            <span>ఆటోమేటిక్ టెంపరరీ క్లీనప్ (Auto Workspace Cleanup Enabled)</span>
+            <ShieldCheck className="w-3.5 h-3.5 text-rose-600" />
+            <span>ఆటోమేటిక్ టెంపరరీ క్లీనప్ డిసేబుల్ చేయబడింది (Auto Workspace Cleanup Disabled)</span>
           </span>
           <span className="font-mono text-slate-500">AI Master Studio Engine v2.4</span>
         </div>
