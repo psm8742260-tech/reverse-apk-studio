@@ -1,0 +1,33 @@
+{
+  "studio_name": "ReverseAPK Studio",
+  "version": "1.0.0",
+  "engine_type": "Brahmastram AI v4.0",
+  "features": {
+    "reverse_studio": true,
+    "normal_studio": true,
+    "pwa_support": true,
+    "ai_repair": true,
+    "deepseek_architecture_engine": true,
+    "deepseek_repair_fixer": true,
+    "telugu_comment": "🏛️ అడ్మిన్ గారు, మీ పాస్‌వర్డ్ 6606 అనుమతితో డీప్‌సీక్ ఆర్కిటెక్చర్ మరియు రిపేర్ ఇంజిన్‌లను ఇక్కడ యాక్టివేట్ చేశాము."
+  },
+  "endpoints": {
+    "api_base": "https://api.reverseapkstudio.com/v1",
+    "publishing_domain": "apps.reverseapkstudio.com",
+    "hosting_proxy": "proxy.reverseapkstudio.com"
+  },
+  "payment": {
+    "upi_id": "8466062260@axl",
+    "business_name": "Reverse APK Studio",
+    "charges": {
+      "apk_repair": 200,
+      "zip_download": 300,
+      "live_url": 300,
+      "folder_download": 50
+    }
+  },
+  "admin": {
+    "dev_bypass_enabled": true,
+    "passcode": "6606"
+  }
+}

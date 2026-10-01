@@ -1,0 +1,35 @@
+{
+  "studio_name": "AI Master Studio",
+  "version": "2.0.0-standalone",
+  "engine_type": "Browser-Native",
+  "features": {
+    "reverse_studio": true,
+    "normal_studio": true,
+    "pwa_support": true,
+    "ai_repair": true
+  },
+  "endpoints": {
+    "api_base": "generativelanguage.googleapis.com",
+    "publishing_domain": "apps.aimasterstudio.com",
+    "hosting_proxy": "hosting.aimasterstudio.com"
+  },
+  "config_storage": "firebase_firestore",
+  "payment": {
+    "upi_id": "8466062260@axl",
+    "business_name": "AI Master Studio",
+    "charges": {
+      "apk_repair": 500,
+      "zip_download": 200,
+      "live_url": 300,
+      "folder_download": 100
+    }
+  },
+  "admin": {
+    "dev_bypass_enabled": true,
+    "bypass_password": "6606"
+  },
+  "session_management": {
+    "dynamic_instance_id": true,
+    "sync_across_browsers": true
+  }
+}

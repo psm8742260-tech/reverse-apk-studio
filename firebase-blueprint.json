@@ -1,0 +1,123 @@
+{
+  "entities": {
+    "AdminAPIKeysConfig": {
+      "title": "Admin API Keys Configuration",
+      "description": "Central configuration for LLM providers, failover slots, and global budget.",
+      "type": "object",
+      "properties": {
+        "slots": {
+          "type": "array",
+          "description": "API key slots for rotation",
+          "items": {
+            "type": "object",
+            "properties": {
+              "slotId": { "type": "integer" },
+              "provider": { "type": "string", "enum": ["deepseek", "gemini", "openai", "claude", "groq"] },
+              "apiKey": { "type": "string" },
+              "isActive": { "type": "boolean" },
+              "lastErrorStatus": { "type": "string" }
+            }
+          }
+        },
+        "dailyBudgetCapINR": { "type": "number", "description": "Global daily spend limit in INR" },
+        "currentDailySpendINR": { "type": "number", "description": "Current total spend for the day" },
+        "lastResetTimestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["slots", "dailyBudgetCapINR", "currentDailySpendINR", "lastResetTimestamp"]
+    },
+    "UserWallet": {
+      "title": "User Wallet",
+      "description": "Stores user's credit balance and recharge status.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "balanceINR": { "type": "number" },
+        "activePasscode": { "type": "string" },
+        "isRechargeActive": { "type": "boolean" },
+        "expiryDate": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "balanceINR", "isRechargeActive"]
+    },
+    "Project": {
+      "title": "Studio Project",
+      "description": "A project managed in the Normal App Studio or shifted from Reverse APK Studio.",
+      "type": "object",
+      "properties": {
+        "projectId": { "type": "string" },
+        "appName": { "type": "string" },
+        "status": { "type": "string", "enum": ["DRAFT", "LIVE_ACTIVE", "ARCHIVED"] },
+        "sourceType": { "type": "string", "enum": ["REVERSE_APK_SHIFTED", "NATIVE_BUILD"] },
+        "decompiledPath": { "type": "string" },
+        "fileTree": { "type": "object" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["projectId", "appName", "status", "sourceType", "fileTree", "createdAt", "updatedAt"]
+    },
+    "SavedShiftVault": {
+      "title": "Saved Shift Vault",
+      "description": "Stored components, snippets, and assets saved from Reverse APK or Navbar modules.",
+      "type": "object",
+      "properties": {
+        "shiftId": { "type": "string" },
+        "projectId": { "type": "string" },
+        "shiftSource": { "type": "string", "enum": ["REVERSE_APK", "NAVBAR_MODULE"] },
+        "itemType": { "type": "string", "enum": ["SMALI_CODE", "XML_LAYOUT", "3D_ICON_ASSET", "LIVE_URL_CONTEXT"] },
+        "title": { "type": "string" },
+        "contentData": { "type": "string" },
+        "targetFilePath": { "type": "string" },
+        "savedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["shiftId", "projectId", "shiftSource", "itemType", "title", "contentData", "savedAt"]
+    },
+    "StaffMember": {
+      "title": "Staff Member Access",
+      "description": "Authorized staff members (Managers/Supervisors) with limited access.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["MANAGER"] },
+        "addedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "role", "addedAt"]
+    }
+  },
+  "firestore": {
+    "/config/global": {
+      "schema": "AdminAPIKeysConfig",
+      "description": "Global system configuration"
+    },
+    "/passcodes/{passcodeId}": {
+      "schema": "SavedShiftVault",
+      "description": "Payment passcodes for feature unlocking"
+    },
+    "/projects/{projectId}": {
+      "schema": "Project",
+      "description": "Global projects collection (fallback sync)"
+    },
+    "/users/{userId}/wallets/balance": {
+      "schema": "UserWallet",
+      "description": "User specific wallet and balance info"
+    },
+    "/users/{userId}/my_apps/{projectId}": {
+      "schema": "Project",
+      "description": "User specific projects (per blueprint)"
+    },
+    "/repair_logs/{logId}": {
+      "schema": "Project",
+      "description": "Logs for APK repair operations"
+    },
+    "/staff/{email}": {
+      "schema": "StaffMember",
+      "description": "Authorized staff members"
+    },
+    "/server_config/api_failover": {
+      "schema": "AdminAPIKeysConfig",
+      "description": "AI provider failover configuration"
+    },
+    "/published_apps/{slug}": {
+      "schema": "Project",
+      "description": "Publicly published applications"
+    }
+  }
+}

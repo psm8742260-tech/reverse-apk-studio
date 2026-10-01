@@ -1,0 +1,42 @@
+{
+  "slots": [
+    {
+      "slotId": 1,
+      "provider": "deepseek",
+      "apiKey": "sk-9853d7fb03f84358b15842772093f61e",
+      "isActive": "ON",
+      "label": "DeepSeek Master Engine (Active)"
+    },
+    {
+      "slotId": 2,
+      "provider": "deepseek",
+      "apiKey": "sk-9853d7fb03f84358b15842772093f61e",
+      "isActive": "ON",
+      "label": "DeepSeek Backup Engine (Active)"
+    },
+    {
+      "slotId": 3,
+      "provider": "openai",
+      "apiKey": "",
+      "isActive": false,
+      "label": "Logic Master (GPT-4o)"
+    },
+    {
+      "slotId": 4,
+      "provider": "claude",
+      "apiKey": "",
+      "isActive": false,
+      "label": "UI Architect (Claude)"
+    },
+    {
+      "slotId": 5,
+      "provider": "groq",
+      "apiKey": "",
+      "isActive": false,
+      "label": "Turbo Engine (LPU)"
+    }
+  ],
+  "dailyBudgetCapINR": 500,
+  "currentDailySpendINR": 0,
+  "lastResetTimestamp": "2026-08-13T13:01:55.884Z"
+}

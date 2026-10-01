@@ -1,0 +1,14 @@
+node_modules/
+dist/
+tmp/
+builds/
+published_backup/
+tools/
+*.apk
+*.zip
+*.aab
+*.log
+.env
+.dev.pid
+.dev.env.json
+.git/

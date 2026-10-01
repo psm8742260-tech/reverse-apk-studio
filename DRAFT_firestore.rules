@@ -1,0 +1,103 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- 1. GLOBAL HELPERS & PREDICATES ---
+    
+    function isSignedIn() { return request.auth != null; }
+    function isEmailVerified() { return isSignedIn() && request.auth.token.email_verified == true; }
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    function isAdmin() { 
+      return isEmailVerified() && request.auth.token.email.lower() == "psm8742260@gmail.com"; 
+    }
+    
+    function isValidId(id) { 
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); 
+    }
+    
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+
+    // --- 2. ENTITY VALIDATORS ---
+
+    function isValidProject(data) {
+      return data.keys().hasAll(['id', 'ownerId', 'updatedAt'])
+        && data.id is string && data.id.size() <= 128
+        && data.ownerId is string
+        && data.updatedAt is string;
+    }
+
+    function isValidWallet(data) {
+      return data.keys().hasAll(['balanceINR'])
+        && data.balanceINR is number && data.balanceINR >= 0;
+    }
+
+    function isValidPasscode(data) {
+      return data.keys().hasAll(['passcode', 'status'])
+        && data.passcode is string && data.passcode.size() <= 64
+        && data.status in ['UNBOUND', 'BOUND'];
+    }
+
+    // --- 3. MATCH BLOCKS ---
+
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Config & Admin settings
+    match /config/global {
+      allow read: if true; // Publicly readable for app constants
+      allow write: if isAdmin();
+    }
+    
+    match /server_config/{document=**} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    
+    match /staff/{email} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // User Data (Split Strategy)
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      
+      match /wallets/balance {
+        allow read: if isOwner(userId) || isAdmin();
+        allow write: if isAdmin(); // Only system/admin can change balance directly
+      }
+      
+      match /my_apps/{projectId} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow write: if isOwner(userId) && isValidProject(incoming());
+      }
+    }
+
+    // Global Collections
+    match /projects/{projectId} {
+      allow read: if true; // Might be public for viewing
+      allow create: if isSignedIn() && isValidProject(incoming()) && incoming().ownerId == request.auth.uid;
+      allow update: if (isAdmin() || (isOwner(existing().ownerId) && incoming().ownerId == existing().ownerId)) && isValidProject(incoming());
+      allow delete: if isAdmin() || isOwner(existing().ownerId);
+    }
+
+    match /passcodes/{passcodeId} {
+      allow read: if isSignedIn() && (isAdmin() || resource.data.ownerId == request.auth.uid || resource.data.status == 'UNBOUND');
+      allow create: if true; // Allow guest creation (payment flow)
+      allow update: if (isAdmin() || (isSignedIn() && resource.data.status == 'UNBOUND')) && isValidPasscode(incoming());
+    }
+
+    match /repair_logs/{logId} {
+      allow read: if isAdmin();
+      allow create: if isSignedIn();
+    }
+
+    match /published_apps/{slug} {
+      allow read: if true;
+      allow write: if isAdmin() || (isSignedIn() && (resource == null || resource.data.ownerId == request.auth.uid));
+    }
+  }
+}
