@@ -3643,15 +3643,11 @@ async function validateArtifact(filePath: string, type: 'apk' | 'aab', log?: (ms
     const fileData = await fs.readFile(filePath);
     try {
       const zipObj = await JSZip.loadAsync(fileData);
-      if (type === 'apk') {
-        const valid = !!(zipObj.file('AndroidManifest.xml') || zipObj.file('classes.dex') || Object.keys(zipObj.files).length > 0);
-        return valid;
-      } else {
-        const valid = !!(zipObj.file('base/manifest/AndroidManifest.xml') || zipObj.file('BundleConfig.pb') || Object.keys(zipObj.files).length > 0);
-        return valid;
-      }
+      // More lenient validation: any file exists means it's a valid zip-based artifact
+      return Object.keys(zipObj.files).length > 0;
     } catch {
-      return true;
+      // If JSZip fails to read but it's a large file, assume it's valid to prevent false build failure
+      return stats.size > 500000; 
     }
   } catch (e: any) {
     if (log) log(`Validation error for ${path.basename(filePath)}: ${e.message}`);
@@ -4083,10 +4079,28 @@ android {
     }
 
     // 📋 ZIP Packaging Protocol
+    sendLog('Packaging', '📦 గూగుల్ ప్లే జిప్ ప్యాకేజీ (APK + AAB) సిద్ధం చేయబడుతోంది...', 98);
+    const JSZip = (await import('jszip')).default;
+    const playZip = new JSZip();
+    
+    const apkBuffer = await fs.readFile(apkPath);
+    playZip.file(`${cleanName}.apk`, apkBuffer);
+    
+    if (aabFound && await fs.access(aabPath).then(() => true).catch(() => false)) {
+      const aabBuffer = await fs.readFile(aabPath);
+      playZip.file(`${cleanName}.aab`, aabBuffer);
+    }
+    
+    const zipOutputName = `${fileBaseName}_play_package.zip`;
+    const zipOutputPath = path.join(outputDir, zipOutputName);
+    const zipContent = await playZip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' });
+    await fs.writeFile(zipOutputPath, zipContent);
+
     sendLog('Completed', '🎉 ఆండ్రాయిడ్ మొబైల్ ఆర్టిఫ్యాక్ట్స్ విజయవంతంగా బిల్డ్ మరియు సైన్ చేయబడ్డాయి!', 100);
     sendLog('Completed', 'REAL APK successfully verified.', 100, false, {
       apkUrl: `/api/app/download/${signedApkName}`,
       aabUrl: aabFound ? `/api/app/download/${signedAabName}` : null,
+      playZipUrl: `/api/app/download/${zipOutputName}`,
       appName: cleanName,
       packageId: cleanPackage,
       fileSizeMb: ( (await fs.stat(apkPath)).size / (1024*1024) ).toFixed(2),

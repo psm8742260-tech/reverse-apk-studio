@@ -1,6 +1,6 @@
 {
   "name": "AI Master Studio",
-  "description": "Developer-grade client-side AI studio, live web app previewer, source ZIP extractor, and 6-Section Secure Admin Panel with embedded Brahmastram AI Studio.",
+  "description": "Developer-grade client-side AI studio, live web app previewer, source ZIP extractor, and 6-Section Secure Admin Panel with embedded Brahmastram AI Studio. ",
   "requestFramePermissions": ["camera"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

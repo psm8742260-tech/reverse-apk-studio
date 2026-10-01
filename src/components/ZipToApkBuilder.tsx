@@ -274,12 +274,14 @@ export const ZipToApkBuilder: React.FC<ZipToApkBuilderProps> = ({ isOpen, onClos
 
             if (parsed.result) {
               setBuildResult(parsed.result);
-              // 🚀 Admin requirement: 100% reached -> Trigger automatic download of real generated APK
-              if (parsed.result.apkUrl) {
+              // 🚀 Admin requirement: 100% reached -> Trigger automatic download of Google Play ZIP package
+              const downloadUrl = parsed.result.playZipUrl || parsed.result.apkUrl;
+              if (downloadUrl) {
                 try {
                   const autoLink = document.createElement('a');
-                  autoLink.href = parsed.result.apkUrl;
-                  autoLink.download = `${parsed.result.appName || 'app'}.apk`;
+                  autoLink.href = downloadUrl;
+                  const fileName = downloadUrl.split('/').pop() || (parsed.result.appName || 'app') + '.zip';
+                  autoLink.download = fileName;
                   document.body.appendChild(autoLink);
                   autoLink.click();
                   document.body.removeChild(autoLink);
