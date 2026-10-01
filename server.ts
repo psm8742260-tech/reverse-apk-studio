@@ -3635,7 +3635,7 @@ async function validateArtifact(filePath: string, type: 'apk' | 'aab', log?: (ms
   
   try {
     const stats = await fs.stat(filePath);
-    if (stats.size < 1000) {
+    if (stats.size < 10000) { // Real APKs are rarely < 10KB
       if (log) log(`Validation failed: ${path.basename(filePath)} is too small (${stats.size} bytes).`);
       return false;
     }
@@ -3643,11 +3643,26 @@ async function validateArtifact(filePath: string, type: 'apk' | 'aab', log?: (ms
     const fileData = await fs.readFile(filePath);
     try {
       const zipObj = await JSZip.loadAsync(fileData);
-      // More lenient validation: any file exists means it's a valid zip-based artifact
-      return Object.keys(zipObj.files).length > 0;
-    } catch {
-      // If JSZip fails to read but it's a large file, assume it's valid to prevent false build failure
-      return stats.size > 500000; 
+      if (type === 'apk') {
+        // A valid APK must have AndroidManifest.xml and classes.dex
+        const hasManifest = !!zipObj.file('AndroidManifest.xml');
+        const hasDex = Object.keys(zipObj.files).some(f => f.endsWith('.dex'));
+        if (!hasManifest || !hasDex) {
+          if (log) log(`Validation failed: ${path.basename(filePath)} is missing core APK components (Manifest: ${hasManifest}, Dex: ${hasDex}).`);
+          return false;
+        }
+      } else {
+        // AAB validation
+        const hasBundleConfig = !!zipObj.file('BundleConfig.pb');
+        if (!hasBundleConfig) {
+          if (log) log(`Validation failed: ${path.basename(filePath)} is not a valid Android App Bundle.`);
+          return false;
+        }
+      }
+      return true;
+    } catch (e: any) {
+      if (log) log(`Validation failed: ${path.basename(filePath)} is not a valid ZIP/APK structure: ${e.message}`);
+      return false;
     }
   } catch (e: any) {
     if (log) log(`Validation error for ${path.basename(filePath)}: ${e.message}`);
@@ -3876,6 +3891,9 @@ android {
     
     const buildEnv = await getBuildEnvironment((msg) => sendLog('Checking Environment', msg, 42));
 
+    let apkPathFound = '';
+    let aabPathFound = '';
+
     if (!buildEnv.isWorker) {
       sendLog('Routing', '⚡ Dedicated build tools missing locally. Routing build job to central PHRS Android Build Worker (https://phrscrowd.online)...', 45);
       
@@ -3911,37 +3929,36 @@ android {
                       (remoteRes.data && remoteRes.data.length > 100000);
         
         if (remoteRes.status === 200 && isApk) {
-           sendLog('Building', '📦 రిమోట్ వర్కర్ నుండి నిజమైన APK బైనరీ విజయవంతంగా స్వీకరించబడింది!', 75);
-           sendLog('Signing', '🔑 బిల్డ్ అయిన ఆర్టిఫ్యాక్ట్స్ కి క్రిప్టోగ్రాఫిక్ డిజిటల్ సిగ్నేచర్ వేస్తున్నాము...', 88);
-
-           const signedApkName = `${fileBaseName}.apk`;
-           const apkPath = path.join(outputDir, signedApkName);
-           await fs.mkdir(outputDir, { recursive: true });
-           await fs.writeFile(apkPath, Buffer.from(remoteRes.data));
-
-           sendLog('Verifying', '🛡️ ఆర్టిఫ్యాక్ట్ సమగ్రత మరియు సైనింగ్ ధృవీకరించబడుతోంది...', 95);
-           const isValid = await validateArtifact(apkPath, 'apk', (msg) => log(msg));
+           sendLog('Building', '📦 రిమోట్ వర్కర్ నుండి బైనరీ ఆర్టిఫ్యాక్ట్స్ స్వీకరించబడ్డాయి!', 75);
+           apkPathFound = path.join(workspaceDir, 'remote-output.apk');
+           await fs.mkdir(workspaceDir, { recursive: true });
+           await fs.writeFile(apkPathFound, Buffer.from(remoteRes.data));
+           
+           const isValid = await validateArtifact(apkPathFound, 'apk', (msg) => log(msg));
            if (!isValid) {
-              sendLog('Verifying', '❌ REAL Build failed: APK artifact failed integrity check.', 100, true);
-              // 🛡️ [PERMANENT LOCK] Admin requested removal of automatic deletion:
-              // await fs.unlink(apkPath).catch(() => {});
-              // await fs.rm(workspaceDir, { recursive: true, force: true }).catch(() => {});
-              return;
+              // Check if it's actually a ZIP containing the APK
+              try {
+                const zipObj = await JSZip.loadAsync(Buffer.from(remoteRes.data));
+                const innerApk = Object.keys(zipObj.files).find(f => f.endsWith('.apk'));
+                if (innerApk) {
+                  sendLog('Extracting', `📦 Extracting ${innerApk} from worker bundle...`, 78);
+                  const apkContent = await zipObj.file(innerApk)?.async('nodebuffer');
+                  if (apkContent) {
+                    await fs.writeFile(apkPathFound, apkContent);
+                    if (await validateArtifact(apkPathFound, 'apk')) {
+                      sendLog('Building', '✅ APK successfully extracted and verified.', 80);
+                    } else {
+                      throw new Error('Extracted APK failed validation.');
+                    }
+                  }
+                } else {
+                  throw new Error('Remote response is not a valid APK or worker bundle.');
+                }
+              } catch (e: any) {
+                sendLog('Verifying', `❌ Remote artifact invalid: ${e.message}`, 100, true);
+                return res.end();
+              }
            }
-           const stat = await fs.stat(apkPath);
-           const fileSizeMb = (stat.size / (1024 * 1024)).toFixed(2);
-
-           sendLog('Completed', '🎉 ఆండ్రాయిడ్ మొబైల్ ఆర్టిఫ్యాక్ట్స్ విజయవంతంగా బిల్డ్ మరియు సైన్ చేయబడ్డాయి!', 100, false, {
-             apkUrl: `/api/app/download/${signedApkName}`,
-             aabUrl: null,
-             appName: cleanName,
-             packageId: cleanPackage,
-             fileSizeMb,
-             buildTimeSec: 25
-           });
-// 🛡️ [PERMANENT LOCK] Admin requested removal of automatic deletion:
-           // await fs.rm(workspaceDir, { recursive: true, force: true }).catch(() => {});
-           return;
         } else {
            const isJson = String(contentType).includes('application/json');
            let workerError = `HTTP ${remoteRes.status} (Non-JSON)`;
@@ -3952,78 +3969,70 @@ android {
              } catch {}
            }
            sendLog('Routing', `❌ Remote worker failed: ${workerError}`, 100, true);
-// 🛡️ [PERMANENT LOCK] Admin requested removal of automatic deletion:
-           // await fs.rm(workspaceDir, { recursive: true, force: true }).catch(() => {});
-           return;
+           return res.end();
         }
       } catch (remoteErr: any) {
         const errorDetail = remoteErr.response?.data?.error || remoteErr.message;
         sendLog('Routing', `❌ Remote build routing failed: ${errorDetail}`, 100, true);
-// 🛡️ [PERMANENT LOCK] Admin requested removal of automatic deletion:
-        // await fs.rm(workspaceDir, { recursive: true, force: true }).catch(() => {});
-        return;
+        return res.end();
       }
-    }
+    } else {
+      // 3. Metadata Replacement (App Name, Package ID, custom changes)
+      sendLog('Preparing Android project', '⚙️ ఆండ్రాయిడ్ ప్రాజెక్ట్ ప్యాకేజీలు మరియు మెటాడేటా అప్‌డేట్ అవుతోంది...', 50);
 
-    // 3. Metadata Replacement (App Name, Package ID, custom changes)
-    sendLog('Preparing Android project', '⚙️ ఆండ్రాయిడ్ ప్రాజెక్ట్ ప్యాకేజీలు మరియు మెటాడేటా అప్‌డేట్ అవుతోంది...', 50);
+      // Look for gradle wrapper or fallback gradle
+      const gradlewPath = path.join(workspaceDir, 'gradlew');
+      let hasGradlew = false;
+      try {
+        await fs.access(gradlewPath);
+        hasGradlew = true;
+        await fs.chmod(gradlewPath, 0o755); // make executable
+      } catch {
+        hasGradlew = false;
+      }
 
-    // Look for gradle wrapper or fallback gradle
-    const gradlewPath = path.join(workspaceDir, 'gradlew');
-    let hasGradlew = false;
-    try {
-      await fs.access(gradlewPath);
-      hasGradlew = true;
-      await fs.chmod(gradlewPath, 0o755); // make executable
-    } catch {
-      hasGradlew = false;
-    }
+      // 4. Executing gradle build
+      sendLog('Building', '🛠️ రియల్ టైమ్ కంపైలేషన్ ప్రారంభమైంది (Gradle assemble)...', 60);
 
-    // 4. Executing gradle build
-    sendLog('Building', '🛠️ రియల్ టైమ్ కంపైలేషన్ ప్రారంభమైంది (Gradle assemble)...', 60);
+      const cmd = hasGradlew ? `./gradlew assembleRelease --stacktrace` : `${buildEnv.gradle || 'gradle'} assembleRelease --stacktrace`;
+      sendLog('Building', `Executing build command: ${cmd}`, 65);
 
-    const cmd = hasGradlew ? `./gradlew assembleRelease --stacktrace` : `${buildEnv.gradle || 'gradle'} assembleRelease --stacktrace`;
-    sendLog('Building', `Executing build command: ${cmd}`, 65);
-
-    try {
-      const buildProc = exec(cmd, {
-        cwd: workspaceDir,
-        env: buildEnv.env
-      });
-
-      buildProc.stdout?.on('data', (data) => {
-        sendLog('Building', `[LOG] ${data.toString().trim()}`, 70);
-      });
-
-      buildProc.stderr?.on('data', (data) => {
-        sendLog('Building', `[WARNING] ${data.toString().trim()}`, 70);
-      });
-
-      await new Promise((resolve, reject) => {
-        buildProc.on('close', (code) => {
-          if (code === 0) resolve(true);
-          else reject(new Error(`Gradle compiler exited with non-zero exit code: ${code}`));
+      try {
+        const buildProc = exec(cmd, {
+          cwd: workspaceDir,
+          env: buildEnv.env
         });
-      });
-    } catch (gradleErr: any) {
-      sendLog('Building', `❌ Gradle Compilation Failed! ఎర్రర్ లాగ్: ${gradleErr.message}`, 100, true);
-// 🛡️ [PERMANENT LOCK] Admin requested removal of automatic deletion:
-      // await fs.rm(workspaceDir, { recursive: true, force: true }).catch(() => {});
-      return res.end();
+
+        buildProc.stdout?.on('data', (data) => {
+          sendLog('Building', `[LOG] ${data.toString().trim()}`, 70);
+        });
+
+        buildProc.stderr?.on('data', (data) => {
+          sendLog('Building', `[WARNING] ${data.toString().trim()}`, 70);
+        });
+
+        await new Promise((resolve, reject) => {
+          buildProc.on('close', (code) => {
+            if (code === 0) resolve(true);
+            else reject(new Error(`Gradle compiler exited with non-zero exit code: ${code}`));
+          });
+        });
+      } catch (gradleErr: any) {
+        sendLog('Building', `❌ Gradle Compilation Failed! ఎర్రర్ లాగ్: ${gradleErr.message}`, 100, true);
+        return res.end();
+      }
+
+      // 4. Locate Artifacts Dynamically
+      sendLog('Searching', '🔍 Searching for generated artifacts dynamically...', 86);
+      const foundApks = await findFilesRecursive(workspaceDir, 'apk');
+      const foundAabs = await findFilesRecursive(workspaceDir, 'aab');
+      apkPathFound = foundApks[0] || '';
+      aabPathFound = foundAabs[0] || '';
     }
 
-    // 4. Locate Artifacts Dynamically
-    sendLog('Searching', '🔍 Searching for generated artifacts dynamically...', 86);
-
-    const foundApks = await findFilesRecursive(workspaceDir, 'apk');
-    const foundAabs = await findFilesRecursive(workspaceDir, 'aab');
-
-    if (foundApks.length === 0) {
-        throw new Error(`Build failed: Real production APK artifact not found. Gradle Output snippet: ${buildLogs.slice(-10).join('\n')}`);
+    if (!apkPathFound) {
+        throw new Error(`Build failed: Real production APK artifact not found.`);
     }
-
-    const apkPathFound = foundApks[0];
-    const aabPathFound = foundAabs[0] || '';
     
     log(`Actual APK path: ${apkPathFound}`);
     log(`Actual APK size: ${(await fs.stat(apkPathFound)).size} bytes`);
