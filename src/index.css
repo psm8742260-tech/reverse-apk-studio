@@ -1,6 +1,14 @@
 @import "tailwindcss";
 
 @layer base {
+  body {
+    background-color: #030712;
+    color: #f8fafc;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   * {
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none !important;
