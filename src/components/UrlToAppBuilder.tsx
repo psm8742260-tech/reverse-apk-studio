@@ -159,126 +159,47 @@ export const UrlToAppBuilder: React.FC<UrlToAppBuilderProps> = ({ isOpen, onClos
       const finalName = data.manifest?.name || data.siteName || deriveNameFromUrl(targetUrl);
       setAppName(finalName);
       setPackageId(derivePackageId(finalName));
-    } catch (err) {
-      const isHttps = targetUrl.startsWith('https://');
-      const actionItemsFallback: ActionItem[] = [
-        {
-          category: 'Security',
-          type: 'feature',
-          title: 'Secure Context (HTTPS)',
-          message: 'Endpoint is secured with TLS encryption, fulfilling native store security.',
-          action: 'Secure connection active.',
-        },
-        {
-          category: 'Manifest',
-          type: 'feature',
-          title: 'App Name Provided',
-          message: 'The manifest defines a valid full name for the application.',
-          action: 'Manifest is configured with a valid "name".',
-        },
-        {
-          category: 'Manifest',
-          type: 'feature',
-          title: 'Short Name Configured',
-          message: 'A concise short name is configured for home screen tiles.',
-          action: 'Manifest is configured with a valid "short_name".',
-        },
-        {
-          category: 'Manifest',
-          type: 'feature',
-          title: 'Start URL Defined',
-          message: 'The app entry path start_url is successfully declared.',
-          action: 'Manifest is configured with a valid "start_url".',
-        },
-        {
-          category: 'Manifest',
-          type: 'feature',
-          title: 'Display Standalone Declared',
-          message: 'Determines standalone window launch behavior.',
-          action: 'Manifest defines "display": "standalone".',
-        },
-        {
-          category: 'Manifest',
-          type: 'feature',
-          title: 'Icon (192px) Detected',
-          message: 'High resolution icon for launcher display is active.',
-          action: 'Manifest contains 192x192 icon.',
-        },
-        {
-          category: 'Manifest',
-          type: 'feature',
-          title: 'Icon (512px) Detected',
-          message: 'High resolution icon for splash screen display is active.',
-          action: 'Manifest contains 512x512 icon.',
-        },
-        {
-          category: 'Manifest',
-          type: 'feature',
-          title: 'Maskable Icon Provided',
-          message: 'Responsive icon optimized for safe area cropping on mobile.',
-          action: 'Manifest contains valid maskable icon.',
-        },
-        {
-          category: 'Manifest',
-          type: 'feature',
-          title: 'Theme Color Configured',
-          message: 'Brands the OS status bar and browser frame.',
-          action: 'Manifest defines theme_color.',
-        },
-        {
-          category: 'Service Worker',
-          type: 'warning',
-          title: 'Service Worker Detection Warning',
-          message: 'Active service worker could not be detected automatically during run.',
-          action: 'Register sw.js via navigator.serviceWorker.register().',
-        },
-        {
-          category: 'Manifest',
-          type: 'warning',
-          title: 'Specify prefer_related_applications',
-          message: 'Improve cross-platform store discovery by declaring related apps.',
-          action: 'Specify prefer_related_applications: true or false in manifest.json',
-        },
-        {
-          category: 'Manifest',
-          type: 'info',
-          title: 'Specify Native App ID',
-          message: 'Specify your native app ID by adding related_applications.',
-          action: 'Add related_applications array to manifest.json',
-        }
-      ];
-
+    } catch (err: any) {
       setReport({
-        url: targetUrl.startsWith('http') ? targetUrl : 'https://' + targetUrl,
-        hostname: targetUrl.replace(/https?:\/\//, '').split('/')[0],
-        isSsl: true,
-        hasServiceWorker: true,
-        manifestFound: true,
-        manifest: {
-          name: appName || 'All In One Library',
-          short_name: 'Library',
-          description: 'A comprehensive mobile-first library app featuring an AI book assistant, multilingual reading, and smart analytics.',
-          theme_color: '#4f46e5',
-          background_color: '#f8fafc'
-        },
-        appIconUrl: targetUrl ? `https://www.google.com/s2/favicons?sz=256&domain=${targetUrl.replace(/https?:\/\//, '').split('/')[0]}` : `https://ui-avatars.com/api/?name=${encodeURIComponent(appName || 'App')}&background=4f46e5&color=fff&size=512`,
+        url: targetUrl,
+        hostname: (() => {
+          try {
+            return new URL(
+              targetUrl.startsWith('http')
+                ? targetUrl
+                : `https://${targetUrl}`
+            ).hostname;
+          } catch {
+            return '';
+          }
+        })(),
+        isSsl: targetUrl.startsWith('https://'),
+        hasServiceWorker: false,
+        manifestFound: false,
+        manifest: null,
+        appIconUrl: null,
         counts: {
-          errors: 0,
-          warnings: 2,
-          info: 1,
-          features: 9,
+          errors: 1,
+          warnings: 0,
+          info: 0,
+          features: 0
         },
         iconCheck: {
-          has192: true,
-          has512: true,
-          hasMaskable: true,
-          validTypes: true,
-          details: ['Loaded manifest icons successfully.'],
+          has192: false,
+          has512: false,
+          hasMaskable: false,
+          validTypes: false,
+          details: ['Analysis unavailable. No icon detection was performed.']
         },
-        actionItems: actionItemsFallback,
-        score: 80,
-        maxScore: 100,
+        actionItems: [],
+        score: 0,
+        maxScore: 100
       });
+
+      setBuildLogs((prev) => [
+        ...prev,
+        `[error] PWA analysis failed: ${err.message}`
+      ]);
     } finally {
       setIsAnalyzing(false);
     }
@@ -292,11 +213,22 @@ export const UrlToAppBuilder: React.FC<UrlToAppBuilderProps> = ({ isOpen, onClos
     setTimeout(() => setCopiedShare(false), 2000);
   };
 
-  const handleBuild = async (buildType: 'apk' | 'aab' | 'testing', customData?: { appName: string; packageId: string; shortName: string }) => {
+  const handleBuild = async (
+    buildType: 'apk' | 'aab' | 'testing',
+    customData?: {
+      appName: string;
+      packageId: string;
+      shortName: string;
+      appIconUrl?: string;
+    }
+  ) => {
     setActiveBuildType(buildType);
-    
-    // If we're coming from the card, open the options modal first (unless it's testing)
-    if (buildType !== 'testing' && !customData && !isAndroidOptionsOpen) {
+
+    if (
+      buildType !== 'testing' &&
+      !customData &&
+      !isAndroidOptionsOpen
+    ) {
       setIsAndroidOptionsOpen(true);
       return;
     }
@@ -308,79 +240,135 @@ export const UrlToAppBuilder: React.FC<UrlToAppBuilderProps> = ({ isOpen, onClos
     }
 
     setIsBuilding(true);
+    setBuildProgress(5);
+
     const getTimestamp = () => new Date().toISOString();
-    
-    setBuildLogs([`${getTimestamp()} [info]: Querying for job...`]);
-    if (buildType === 'apk') {
-      setBuildLogs((prev) => [...prev, `${getTimestamp()} [info]: Preparing Real APK Package for direct installation...`]);
-    } else {
-      setBuildLogs((prev) => [...prev, `${getTimestamp()} [info]: Preparing Google Play App Bundle (AAB)...`]);
-    }
-    setBuildProgress(10);
 
-    const steps = [
-      'Authenticating store credentials...',
-      'Generating signing keystore...',
-      'Bundling Android Manifest...',
-      'Optimizing DEX bytecode...',
-      'Aligning zip structures...',
-      'Finalizing Android package...'
-    ];
-
-    for (let i = 0; i < steps.length; i++) {
-      await new Promise((r) => setTimeout(r, 100));
-      setBuildProgress(Math.floor(((i + 1) / steps.length) * 85) + 10);
-      setBuildLogs((prev) => [...prev, `${getTimestamp()} [info]: ${steps[i]}`]);
-    }
+    setBuildLogs([
+      `${getTimestamp()} [info]: Starting REAL PHRS Android build...`
+    ]);
 
     try {
-      setBuildLogs((prev) => [...prev, `${getTimestamp()} [info]: Building ${buildType.toUpperCase()} Package...`]);
-      // 🏛️ PHRS Crowd Proxy Handshake
+      const payload = {
+        url: targetUrl,
+        appName: customData?.appName || appName,
+        packageId: customData?.packageId || packageId,
+        appIconUrl:
+          report?.appIconUrl ||
+          customData?.appIconUrl,
+        buildType
+      };
+
+      setBuildProgress(10);
+
       const res = await fetch('/api/app/build', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          url: targetUrl,
-          appName: customData?.appName || appName,
-          packageId: customData?.packageId || packageId,
-          appIconUrl: report?.appIconUrl || (customData as any)?.appIconUrl,
-          buildType,
-          admin_bypass: '6606'
-        })
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload)
       });
 
+      setBuildProgress(25);
+
+      const contentType =
+        res.headers.get('content-type') || '';
+
+      const rawBody = await res.text();
+
+      console.log(
+        '[TWA BUILD RESPONSE]',
+        res.status,
+        contentType,
+        rawBody.slice(0, 1000)
+      );
+
+      let data: any = null;
+
+      if (rawBody.trim()) {
+        const looksJson =
+          contentType.includes('application/json') ||
+          rawBody.trim().startsWith('{') ||
+          rawBody.trim().startsWith('[');
+
+        if (looksJson) {
+          try {
+            data = JSON.parse(rawBody);
+          } catch (parseError: any) {
+            throw new Error(
+              `Build server returned invalid JSON: ${parseError.message}`
+            );
+          }
+        }
+      }
+
       if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.error || 'PHRS Build Engine Offline');
+        throw new Error(
+          data?.error ||
+          data?.message ||
+          rawBody.slice(0, 500) ||
+          `Build failed with HTTP ${res.status}`
+        );
       }
 
-      const data = await res.json();
-      
+      if (!data || data.success !== true) {
+        throw new Error(
+          data?.error ||
+          'Server did not confirm a REAL successful build.'
+        );
+      }
+
+      if (
+        !data.diagnostics ||
+        data.diagnostics.validation !== 'REAL_VERIFIED' ||
+        !data.diagnostics.apkVerified ||
+        !data.diagnostics.aabVerified ||
+        !data.diagnostics.zipVerified
+      ) {
+        throw new Error(
+          'Server build completed but REAL artifact verification failed.'
+        );
+      }
+
+      setBuildProgress(90);
+
       if (data.buildLogs) {
-        setBuildLogs((prev) => [...prev, ...data.buildLogs.map((l: string) => `${getTimestamp()} [server]: ${l}`)]);
+        setBuildLogs((prev) => [
+          ...prev,
+          ...data.buildLogs.map(
+            (l: string) =>
+              `${getTimestamp()} [server]: ${l}`
+          )
+        ]);
       }
 
-      // Update state for Success Screen
       setBuildProgress(100);
+
       setBuildLogs((prev) => [
         ...prev,
-        `${getTimestamp()} [info]: ${buildType.toUpperCase()} package generated successfully.`,
-        `${getTimestamp()} [info]: Successfully created Android package.`,
+        `${getTimestamp()} [info]: REAL package verification passed.`,
         `${getTimestamp()} [info]: Build Completed Successfully.`
       ]);
+
       setDownloadSuccess(data.fileName);
 
-      // 🚀 అడ్మిన్ గారు! సర్వర్ నుండి వచ్చిన రియల్ డౌన్‌లోడ్ యుఆర్ఎల్ కి రీడైరెక్ట్ చేస్తున్నాను.
       if (data.downloadUrl) {
         window.location.href = data.downloadUrl;
       }
 
     } catch (err: any) {
-      setBuildLogs((prev) => [...prev, `${getTimestamp()} [error]: ❌ Build failed: ${err.message}`]);
       setBuildProgress(0);
-    } finally {
-      // అడ్మిన్ గారు! బిల్డ్ పూర్తయిన తర్వాత ఆటోమేటిక్ గా క్లోజ్ అవ్వకుండా ఈ టైమర్ ని తీసేసాను.
-      // మీరు మాన్యువల్ గా 'Close' బటన్ నొక్కినప్పుడు మాత్రమే ఇది మాయం అవుతుంది.
+
+      setBuildLogs((prev) => [
+        ...prev,
+        `${getTimestamp()} [error]: ❌ Build failed: ${err.message}`
+      ]);
+
+      console.error(
+        '[TWA BUILD FAILED]',
+        err
+      );
     }
   };
 
@@ -927,7 +915,7 @@ export const UrlToAppBuilder: React.FC<UrlToAppBuilderProps> = ({ isOpen, onClos
                       {report?.hasServiceWorker ? (
                         <span className="text-emerald-600 font-extrabold">Active (Service Worker Found)</span>
                       ) : (
-                        <span className="text-amber-600 font-extrabold">Not Detected (Default Fallback Generated)</span>
+                        <span className="text-amber-600 font-extrabold">Not Detected</span>
                       )}
                     </div>
 

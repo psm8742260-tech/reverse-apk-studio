@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Lock, Cpu, Play, LogOut, Phone, Rocket, Smartphone, ArrowLeft, Settings, Globe, Coins } from 'lucide-react';
 import { FLUENT_EMOJIS } from '../utils/fluentEmojis';
 import { LanguageCode, LANGUAGE_NAMES, translate } from '../utils/translations';
-import { LogoIcon } from './LogoIcon';
 import { NORMAL_STUDIO_AGENTS } from '../config/agentsConfig';
 import { isAdminUser } from '../config/adminAccess';
 
@@ -105,8 +104,8 @@ export const Header: React.FC<Props> = ({
           title={isAuthorizedAdmin && isAdmin ? "AI Master Studio (Long-press or click 5 times to open Admin Gateway)" : "AI Master Studio"}
         >
           <div className="w-8 h-8 sm:w-9 sm:h-9 bg-slate-950 rounded-xl text-white shadow-md shadow-sky-500/10 group-hover:scale-105 transition flex items-center justify-center overflow-hidden shrink-0 border border-slate-200/50">
-            {/* 🏛️ అడ్మిన్ గారి నిబంధనల ప్రకారం సెట్టింగ్స్ ఐకాన్ స్థానంలో అదే సైజులో మన సరికొత్త బ్రాండ్ "LogoIcon" లోగోను అమర్చాము. */}
-            <LogoIcon className="w-full h-full" />
+            {/* 🏛️ అడ్మిన్ గారు! "నీ మొఖం" (face) కనిపించకుండా ఉండాలని కోరినందున LogoIcon ని తొలగించి Cpu ఐకాన్ ని అమర్చాము. */}
+            <Cpu className="w-5 h-5 text-sky-400" />
           </div>
           <div>
             <div className="flex items-center gap-1.5 sm:gap-2">

@@ -702,7 +702,7 @@ export const ZipToApkBuilder: React.FC<ZipToApkBuilderProps> = ({ isOpen, onClos
             <ShieldCheck className="w-3.5 h-3.5 text-rose-600" />
             <span>ఆటోమేటిక్ టెంపరరీ క్లీనప్ డిసేబుల్ చేయబడింది (Auto Workspace Cleanup Disabled)</span>
           </span>
-          <span className="font-mono text-slate-500">AI Master Studio Engine v2.4</span>
+          <span className="font-mono text-slate-500">AI Master Studio HYBRID ENGINE</span>
         </div>
 
       </div>

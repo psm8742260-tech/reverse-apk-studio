@@ -433,12 +433,8 @@ export const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
           {/* Profile Card (Exact Screenshot) */}
           <div onClick={() => { pushNavView('user_profile'); setIsSidebarOpen(false); }} className="p-3 bg-white border border-slate-100 rounded-2xl flex items-center justify-between gap-3 shadow-sm hover:border-slate-200 transition cursor-pointer">
             <div className="flex items-center gap-3 overflow-hidden">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-sky-400 to-indigo-500 p-0.5 shrink-0 overflow-hidden">
-                <img 
-                  src={user?.photoURL || "https://lh3.googleusercontent.com/a/ACg8ocL_FmR_6O_K1z6Y_R0_V1_W_V_G_R_R_R_R_R=s96-c"} 
-                  alt="User profile" 
-                  className="w-full h-full rounded-full border-2 border-white object-cover"
-                />
+              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-sky-400 to-indigo-500 p-0.5 shrink-0 overflow-hidden flex items-center justify-center text-white font-black text-sm border-2 border-white shadow-sm">
+                {(user?.email || userEmail || 'A')[0].toUpperCase()}
               </div>
               <div className="overflow-hidden">
                 <div className="text-xs font-bold text-slate-900 truncate">{user?.email || userEmail}</div>

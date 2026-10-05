@@ -40,7 +40,8 @@ import {
   Download,
   Globe,
   ArrowDown,
-  Database
+  Database,
+  Terminal,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { GlobalShiftModal } from './GlobalShiftModal';
@@ -1292,7 +1293,7 @@ MASTER SAFETY RULE:
                           >
                             <div className="flex items-center space-x-3 overflow-hidden">
                               <div className={`p-1.5 rounded-lg ${currentChatId === session.id ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-500'}`}>
-                                <Bot className="w-3 h-3" />
+                                <Terminal className="w-3 h-3" />
                               </div>
                               <div className="overflow-hidden">
                                 <p className="text-[11px] font-black text-slate-900 truncate">{session.title || 'Untitled Session'}</p>
@@ -1539,7 +1540,7 @@ MASTER SAFETY RULE:
 
               <div className="flex items-center gap-2 mb-3">
                 <div className="p-1.5 bg-indigo-50 rounded-lg text-indigo-600">
-                  <Bot className="w-4 h-4" />
+                  <Terminal className="w-4 h-4" />
                 </div>
                 <h3 className="text-xs font-black text-slate-900 tracking-tight uppercase">Select Agent (ఎనిమిది మంది ఏజెంట్లు)</h3>
               </div>

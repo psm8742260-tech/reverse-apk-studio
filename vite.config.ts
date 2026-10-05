@@ -11,24 +11,6 @@ export default defineConfig({
   build: {
     target: 'esnext',
     minify: 'esbuild',
-    sourcemap: false,
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom')) {
-              return 'vendor-react';
-            }
-            if (id.includes('firebase')) {
-              return 'vendor-firebase';
-            }
-            if (id.includes('lucide-react') || id.includes('jszip')) {
-              return 'vendor-libs';
-            }
-            return 'vendor';
-          }
-        }
-      }
-    }
+    sourcemap: false
   }
 });

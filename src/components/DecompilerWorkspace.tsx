@@ -30,6 +30,38 @@ import {
 import { LiveVisualBuilderView } from './LiveVisualBuilderView';
 import { REVERSE_STUDIO_TRAINING_RULES as VOICE_REPAIR_DECOMPILER_RULES } from '../config/training/reverseStudioTraining';
 import { translate, LanguageCode } from '../utils/translations';
+import { executeSystemSync, SyncProgress } from '../utils/systemSyncEngine';
+
+// 💡 అడ్మిన్ గారు! సిస్టమ్ సింక్ అవుతున్నప్పుడు తిరిగే బంగారు సుదర్శన చక్రం ఐకాన్.
+const SudarshanaChakraIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={`${props.className || ''} text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.7)] animate-spin`}
+    style={{ ...props.style, color: '#f59e0b', animationDuration: '3s' }}
+  >
+    <circle cx="12" cy="12" r="8" className="stroke-amber-400/80" strokeDasharray="2 2" />
+    <path d="M12 2l1.2 2L12 5.5 10.8 4z" fill="currentColor" className="text-amber-500" />
+    <path d="M12 22l-1.2-2 1.2-1.5 1.2 2z" fill="currentColor" className="text-amber-500" />
+    <path d="M2 12l2 1.2 1.5-1.2-1.5-1.2z" fill="currentColor" className="text-amber-500" />
+    <path d="M22 12l-2-1.2-1.5 1.2 1.5 1.2z" fill="currentColor" className="text-amber-500" />
+    <path d="M4.93 4.93l1.8.4 0.5-1.8z" fill="currentColor" className="text-amber-500" />
+    <path d="M19.07 19.07l-1.8-.4-0.5 1.8z" fill="currentColor" className="text-amber-500" />
+    <path d="M19.07 4.93l-.4 1.8 1.8 0.5z" fill="currentColor" className="text-amber-500" />
+    <path d="M4.93 19.07l.4-1.8-1.8-0.5z" fill="currentColor" className="text-amber-500" />
+    <line x1="12" y1="4" x2="12" y2="20" className="stroke-amber-400" />
+    <line x1="4" y1="12" x2="20" y2="12" className="stroke-amber-400" />
+    <line x1="6.34" y1="6.34" x2="17.66" y2="17.66" className="stroke-amber-400" />
+    <line x1="6.34" y1="17.66" x2="17.66" y2="6.34" className="stroke-amber-400" />
+    <circle cx="12" cy="12" r="3" fill="currentColor" className="text-amber-500" />
+    <circle cx="12" cy="12" r="1.2" fill="currentColor" className="text-amber-300 animate-pulse" />
+  </svg>
+);
+
 
 
 
@@ -93,8 +125,10 @@ export const DecompilerWorkspace: React.FC<Props> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'code' | 'preview'>('code');
   const [isFileListVisible, setIsFileListVisible] = useState(true);
+  const [isWorkspaceBoardVisible, setIsWorkspaceBoardVisible] = useState(true);
   const [fileCategoryFilter, setFileCategoryFilter] = useState<'all' | 'html' | 'js' | 'css' | 'image' | 'xml' | 'json' | 'other'>('all');
   const [isToolsMenuOpen, setIsToolsMenuOpen] = useState(false);
+  const [syncProgress, setSyncProgress] = useState<SyncProgress | null>(null);
   const [isBackupManagerOpen, setIsBackupManagerOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -523,6 +557,29 @@ export const DecompilerWorkspace: React.FC<Props> = ({
 
   return (
     <div className="space-y-6">
+      {/* 🔄 System Sync Overlay - అడ్మిన్ గారు! సింక్ జరుగుతున్నప్పుడు కనిపించే విజువల్ బోర్డు */}
+      {syncProgress && (
+        <div className="fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
+          <div className="bg-white border-2 border-indigo-200 rounded-3xl p-8 max-w-sm w-full shadow-2xl text-center space-y-6 animate-in zoom-in-95 duration-300">
+            <div className="relative w-24 h-24 mx-auto">
+              <SudarshanaChakraIcon className="w-24 h-24 absolute inset-0" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <RefreshCw className="w-8 h-8 text-indigo-600 animate-spin" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-xl font-black text-slate-800 tracking-tight">System Syncing...</h2>
+              <p className="text-sm font-bold text-indigo-600 animate-pulse">{syncProgress.message}</p>
+            </div>
+            <div className="pt-2">
+              <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                <div className="bg-indigo-600 h-full animate-[progress_2s_ease-in-out_infinite]" style={{ width: '40%' }}></div>
+              </div>
+            </div>
+            <p className="text-[10px] text-slate-400 font-medium">Please do not close the browser while the engine reboots.</p>
+          </div>
+        </div>
+      )}
       {paymentAction && (
         <PaymentModal
           isOpen={true}
@@ -539,7 +596,7 @@ export const DecompilerWorkspace: React.FC<Props> = ({
           }}
         />
       )}
-      {/* File Upload / Input Bar */}
+      {/* File Upload / Input Bar - 🔒 PERMANENTLY LOCKED & DIRECTLY RENDERED */}
       <div 
         onContextMenu={(e) => {
           if (flags?.enableVisualBuilder) {
@@ -547,31 +604,20 @@ export const DecompilerWorkspace: React.FC<Props> = ({
             setIsVisualBuilderOpen(true);
           }
         }}
-        className="bg-white border border-slate-200 rounded-xl p-1.5 sm:p-2 shadow-sm space-y-1.5 transition-all active:scale-[0.99] cursor-pointer"
+        className={`bg-white border border-slate-200 rounded-xl p-1.5 sm:p-2 shadow-sm space-y-1.5 transition-all active:scale-[0.99] cursor-pointer ${isWorkspaceBoardVisible ? 'block' : 'hidden'}`}
       >
-        <div className="flex items-center justify-between pointer-events-none">
+        <div className="flex items-center justify-between pointer-events-auto">
           <div className="flex items-center gap-1.5">
-            <Zap className="w-5 h-5 text-indigo-500 fill-indigo-100 animate-pulse" />
+            <Zap className="w-4 h-4 text-indigo-600 fill-indigo-100" />
             <h2 className="text-sm font-bold text-slate-900">APK Decompiler & Web Unpacker Engine</h2>
           </div>
-          <div className="flex items-center gap-4">
-            <div 
-              className="px-2 py-1 bg-indigo-100 text-indigo-600 rounded-lg text-[10px] font-black uppercase cursor-pointer select-none"
-              onDoubleClick={() => {
-                const pass = prompt('Enter Admin Password (6606):');
-                if (pass === '6606') {
-                  setUnlockedFeatures(new Set(['decompile_apk', 'apk_repair', 'zip_download', 'live_url', 'folder_download']));
-                  alert('✅ Admin Bypass Activated! All features unlocked.');
-                }
-              }}
-            >
-              Engine v2.0
-            </div>
+          <div className="flex items-center gap-2">
+            <span className="bg-sky-50 text-sky-600 border border-sky-100 px-2 py-0.5 rounded text-[9px] font-bold">HYBRID ENGINE</span>
           </div>
         </div>
 
-        {/* Enhanced Upload Zone */}
-        {/* 💡 తెలుగు వివరణ: అడ్మిన్ గారు! అప్‌లోడ్ బోర్డు చుక్కల బోర్డర్ బాక్స్ (Dashed Box) వెడల్పును కూడా 150px బటన్ల సైజుకు సరిపోయే విధంగా 'w-full max-w-[170px] mx-auto' క్లాస్ ద్వారా కుదించాము. */}
+        {/* Enhanced Upload Zone & Controls */}
+        <div className="space-y-1.5 animate-in fade-in duration-200">
         <div
           onDragOver={(e) => {
             e.preventDefault();
@@ -725,6 +771,7 @@ export const DecompilerWorkspace: React.FC<Props> = ({
             ))}
           </div>
         </div>
+          </div>
       </div>
 
       {/* Processing / Progress Banner */}
@@ -759,8 +806,7 @@ export const DecompilerWorkspace: React.FC<Props> = ({
         <div className="flex flex-col md:grid md:grid-cols-12 gap-4 md:h-[720px]">
           
           {/* 1. WHITE FILE MANAGER BOARD */}
-          {isFileListVisible && (
-            <div className="col-span-12 md:col-span-4 bg-white border border-slate-200 rounded-xl p-3 flex flex-col overflow-hidden shadow-sm h-[280px] sm:h-[320px] md:h-full animate-in slide-in-from-left duration-300">
+          <div className={`${isFileListVisible ? 'col-span-12 md:col-span-4' : 'hidden'} bg-white border border-slate-200 rounded-xl p-3 flex flex-col overflow-hidden shadow-sm h-[280px] sm:h-[320px] md:h-full animate-in slide-in-from-left duration-300`}>
               <div className="space-y-2 mb-3">
               <div className="relative">
                 <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
@@ -853,7 +899,6 @@ export const DecompilerWorkspace: React.FC<Props> = ({
               )}
             </div>
           </div>
-          )}
 
           {/* 2. WHITE CODE EDITOR BOARD */}
           <div className={`col-span-12 ${isFileListVisible ? 'md:col-span-8' : 'md:col-span-12'} bg-white border border-slate-200 rounded-xl flex flex-col overflow-hidden shadow-sm min-h-[500px] md:min-h-0 transition-all duration-300 animate-in slide-in-from-left duration-300`}>
@@ -922,6 +967,27 @@ export const DecompilerWorkspace: React.FC<Props> = ({
                       <button
                         onClick={async () => {
                           setIsToolsMenuOpen(false);
+                          if (window.confirm('సిస్టమ్ సింక్ (Force System Sync) చేయాలా? ఇది పాత క్యాష్‌ను క్లియర్ చేసి యాప్‌ను తాజా వర్షన్‌తో రీలోడ్ చేస్తుంది.')) {
+                            try {
+                              await executeSystemSync((progress) => {
+                                setSyncProgress(progress);
+                                setRepairAgentStatus(progress.message);
+                                if (progress.status === 'reloading') {
+                                  speakText('సిస్టమ్ సింక్ పూర్తయింది. రీలోడ్ అవుతోంది.');
+                                }
+                              });
+                            } catch (err) {
+                              setSyncProgress(null);
+                            }
+                          }
+                        }}
+                        className="w-full text-left bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1.5 rounded-md text-[10px] font-bold transition flex items-center gap-1.5 shadow-md border border-indigo-500 mb-1"
+                      >
+                        <span className="text-xs">🔄</span> Force System Sync
+                      </button>
+                      <button
+                        onClick={async () => {
+                          setIsToolsMenuOpen(false);
                           if (!selectedFile) return alert('Please select a file to save.');
                           const confirmSave = window.confirm('ఈ కోడ్ భాగాన్ని "షిఫ్ట్ వాల్ట్" లో సేవ్ చేయాలనుకుంటున్నారా?');
                           if (confirmSave) {
@@ -963,6 +1029,12 @@ export const DecompilerWorkspace: React.FC<Props> = ({
                         className={`w-full text-left ${isFileListVisible ? 'bg-emerald-600' : 'bg-slate-500'} hover:opacity-95 text-white px-2 py-1 rounded-md text-[10px] font-bold transition flex items-center gap-1.5 shadow-xs`}
                       >
                         <Folder className="w-3 h-3" /> File Explorer
+                      </button>
+                      <button
+                        onClick={() => { setIsToolsMenuOpen(false); setIsWorkspaceBoardVisible(!isWorkspaceBoardVisible); }}
+                        className={`w-full text-left ${isWorkspaceBoardVisible ? 'bg-emerald-600' : 'bg-slate-500'} hover:opacity-95 text-white px-2 py-1 rounded-md text-[10px] font-bold transition flex items-center gap-1.5 shadow-xs`}
+                      >
+                        <Code2 className="w-3 h-3" /> Workspace Board
                       </button>
                       <button
                         onClick={() => {

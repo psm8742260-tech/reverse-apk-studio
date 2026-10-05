@@ -1,6 +1,6 @@
 // 💡 English Code / ఇంగ్లీష్ కోడ్
-const CACHE_NAME = 'aimaster-v8';
-// 💡 తెలుగు అనువాదం: యాప్ యొక్క లోకల్ క్యాష్ పేరును 'aimaster-v4' గా డిఫైన్ చేసాము.
+const CACHE_NAME = 'aimaster-v17';
+// 💡 తెలుగు అనువాదం: యాప్ యొక్క లోకల్ క్యాష్ పేరును 'aimaster-v10' గా డిఫైన్ చేసాము.
 
 // 💡 English Code / ఇంగ్లీష్ కోడ్
 const ASSETS_TO_CACHE = [
