@@ -31,6 +31,8 @@ import { ULTRA_PERMANENT_CONFIG } from './server/ultra-permanent-lock.ts';
 import PDFDocument from 'pdfkit';
 import multer from 'multer';
 import JSZip from 'jszip';
+import { setupDevServer } from './server/dev-server-manager.ts';
+import { registerPhrsCloudRoutes } from './server/phrsCloudConnector.ts';
 
 // 💡 తెలుగు వివరణ: బ్రహ్మాస్త్రం ఏజెంట్ కోడ్ మొత్తాన్ని ఒకే PDF గా మార్చి డౌన్‌లోడ్ చేయడానికి 'pdfkit' ని ఇంపోర్ట్ చేసుకుంటున్నాము.
 
@@ -325,6 +327,10 @@ app.get('/all_console_code.pdf', async (req, res) => {
           file.name === 'package-lock.json' ||
           file.name === '.env' ||
           file.name === 'tmp' ||
+          file.name === 'tools' ||
+          file.name === 'persistent_workspace' ||
+          file.name === 'published_backup' ||
+          file.name === 'backups' ||
           file.name === 'studio_complete_code.pdf' ||
           file.name === 'brahmastra_agent_code.pdf' ||
           file.name === 'all_console_code.pdf'
@@ -553,6 +559,9 @@ app.use('/api/exposing', (req, res, next) => {
   }
   next();
 }, exposingService);
+
+// 💡 PHRS Cloud Server Connection Registration - పి హెచ్ ఆర్ ఎస్ క్రౌడ్ సర్వర్ కనెక్షన్ రౌట్స్ రిజిస్ట్రేషన్.
+registerPhrsCloudRoutes(app);
 
 // Default System Instruction Auto-Inject Directive
 const DEFAULT_SYSTEM_INSTRUCTION = `You are "Studio AI", the world-class Master AI Architect & Reverse Engineering Specialist powered by Gemini inside ReverseAPK Studio.
@@ -2827,11 +2836,29 @@ app.get('/api/fs/tree', async (req, res) => {
         const entries = await fs.readdir(fullPath, { withFileTypes: true });
         for (const entry of entries) {
           const relPath = relativeDir ? `${relativeDir}/${entry.name}` : entry.name;
+          
+          // 🛡️ [FAIL-SAFE] Skip excluded paths unconditionally (including subfiles, dirs, and symlinks)
+          if (
+            relPath === 'tools' || relPath.startsWith('tools/') ||
+            relPath === 'persistent_workspace' || relPath.startsWith('persistent_workspace/') ||
+            relPath === 'tmp' || relPath.startsWith('tmp/') ||
+            relPath === 'backups' || relPath.startsWith('backups/') ||
+            relPath === 'node_modules' || relPath.startsWith('node_modules/') ||
+            relPath === '.git' || relPath.startsWith('.git/') ||
+            relPath === 'dist' || relPath.startsWith('dist/') ||
+            relPath === 'build' || relPath.startsWith('build/') ||
+            relPath === '.vite' || relPath.startsWith('.vite/') ||
+            relPath === '.next' || relPath.startsWith('.next/') ||
+            relPath === 'published_backup' || relPath.startsWith('published_backup/') ||
+            relPath === 'published_backup_safe_snapshot' || relPath.startsWith('published_backup_safe_snapshot/')
+          ) {
+            continue;
+          }
+
           if (entry.isDirectory()) {
-            if (['node_modules', '.git', 'dist', 'build', '.vite', '.next', 'published_backup_safe_snapshot'].includes(entry.name)) continue;
             await scanDir(relPath);
           } else if (entry.isFile()) {
-            if (/\.(tsx?|jsx?|json|html|css|md|txt|smali|xml|js|cjs|mjs)$/i.test(entry.name)) {
+            if (/\.(tsx?|jsx?|json|html|css|md|txt|smali|xml|js|cjs|mjs)$/i.test(entry.name) || entry.name === '.gitignore') {
               allFiles.push(relPath);
             }
           }
@@ -3584,10 +3611,10 @@ async function getBuildEnvironment(log: (msg: string) => void) {
 
   // Android SDK
   const sdkPaths = [
-    path.join(process.cwd(), 'tools/android-sdk'),
+    '/opt/android-sdk',
     process.env.ANDROID_HOME,
     process.env.ANDROID_SDK_ROOT,
-    '/opt/android-sdk',
+    path.join(process.cwd(), 'tools/android-sdk'),
     '/usr/lib/android-sdk'
   ].filter(Boolean) as string[];
 
@@ -4589,42 +4616,7 @@ app.get('/api/download-build/:fileName', async (req, res) => {
   }
 });
 
-if (process.env.NODE_ENV !== 'production') {
-    const { createServer: createViteServer } = await import('vite');
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: 'custom',
-    });
-
-    app.use(vite.middlewares);
-
-    app.use('*', async (req, res, next) => {
-      const url = req.originalUrl;
-      try {
-        const rawIndex = await fs.readFile(path.join(process.cwd(), 'index.html'), 'utf8');
-        let template = await vite.transformIndexHtml(url, rawIndex);
-        res.status(200).set({ 'Content-Type': 'text/html' }).end(template);
-      } catch (e: any) {
-        vite.ssrFixStacktrace(e);
-        next(e);
-      }
-    });
-  } else {
-    app.use(express.static(path.resolve(__dirname, 'dist')));
-    app.get('*', (req, res) => {
-      res.sendFile(path.resolve(__dirname, 'dist', 'index.html'));
-    });
-  }
-
-  // SPA Fallback for production to prevent white screens on refresh
-  app.get('*', (req, res) => {
-    try {
-      const distPath = path.resolve(__dirname, 'dist');
-      res.sendFile(path.join(distPath, 'index.html'));
-    } catch (err) {
-      res.status(500).send('System Maintenance');
-    }
-  });
+  await setupDevServer(app);
 
   async function syncPublishedBackupFromFirestore() {
     if (!db) return;

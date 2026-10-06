@@ -4,6 +4,9 @@ tmp/
 builds/
 published_backup/
 tools/
+tools/android-sdk/
+persistent_workspace/
+*.keystore
 *.apk
 *.zip
 *.aab

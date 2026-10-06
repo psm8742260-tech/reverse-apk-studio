@@ -1,0 +1,88 @@
+{
+  "id": "proj_1790784173536",
+  "name": "కొత్త యాప్ 2",
+  "updatedAt": "6:10:38 PM 10/1/2026",
+  "files": [
+    {
+      "type": "html",
+      "name": "index.html",
+      "content": "<!DOCTYPE html>\n<html lang=\"te\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>New Project</title>\n  <script src=\"https://cdn.tailwindcss.com\"></script>\n</head>\n<body class=\"bg-slate-50 text-slate-900 min-h-screen flex items-center justify-center p-4\">\n  <div class=\"text-center space-y-4\">\n    <div class=\"w-16 h-16 bg-indigo-600 text-white rounded-2xl mx-auto flex items-center justify-center shadow-lg\">\n      <svg class=\"w-8 h-8\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 4v16m8-8H4\"/></svg>\n    </div>\n    <h1 class=\"text-2xl font-black text-slate-800\">కొత్త ప్రాజెక్ట్ ప్రారంభించండి</h1>\n    <p class=\"text-sm text-slate-500 max-w-sm\">\n      కింద ఉన్న చాట్ బాక్స్ లో మీకు కావాల్సిన యాప్ పేరు లేదా డిజైన్ గురించి టైప్ చేయండి. AI ఆటోమేటిక్ గా యాప్ తయారు చేస్తుంది!\n    </p>\n  </div>\n</body>\n</html>"
+    },
+    {
+      "name": "style.css",
+      "content": "/* Custom Light & Dark Theme Support */\nbody {\n  color-scheme: light dark;\n}",
+      "type": "css"
+    },
+    {
+      "name": "app.js",
+      "content": "// Application Core Script\nconsole.log('App initialized');",
+      "type": "js"
+    },
+    {
+      "name": "package.json",
+      "type": "json",
+      "content": "{\n  \"name\": \"studio-project\",\n  \"version\": \"1.0.0\",\n  \"private\": true,\n  \"scripts\": {\n    \"dev\": \"vite\",\n    \"build\": \"vite build\"\n  }\n}"
+    }
+  ],
+  "sourceFiles": [
+    {
+      "type": "html",
+      "name": "index.html",
+      "content": "<!DOCTYPE html>\n<html lang=\"te\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>New Project</title>\n  <script src=\"https://cdn.tailwindcss.com\"></script>\n</head>\n<body class=\"bg-slate-50 text-slate-900 min-h-screen flex items-center justify-center p-4\">\n  <div class=\"text-center space-y-4\">\n    <div class=\"w-16 h-16 bg-indigo-600 text-white rounded-2xl mx-auto flex items-center justify-center shadow-lg\">\n      <svg class=\"w-8 h-8\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 4v16m8-8H4\"/></svg>\n    </div>\n    <h1 class=\"text-2xl font-black text-slate-800\">కొత్త ప్రాజెక్ట్ ప్రారంభించండి</h1>\n    <p class=\"text-sm text-slate-500 max-w-sm\">\n      కింద ఉన్న చాట్ బాక్స్ లో మీకు కావాల్సిన యాప్ పేరు లేదా డిజైన్ గురించి టైప్ చేయండి. AI ఆటోమేటిక్ గా యాప్ తయారు చేస్తుంది!\n    </p>\n  </div>\n</body>\n</html>"
+    },
+    {
+      "name": "style.css",
+      "content": "/* Custom Light & Dark Theme Support */\nbody {\n  color-scheme: light dark;\n}",
+      "type": "css"
+    },
+    {
+      "name": "app.js",
+      "content": "// Application Core Script\nconsole.log('App initialized');",
+      "type": "js"
+    },
+    {
+      "name": "package.json",
+      "type": "json",
+      "content": "{\n  \"name\": \"studio-project\",\n  \"version\": \"1.0.0\",\n  \"private\": true,\n  \"scripts\": {\n    \"dev\": \"vite\",\n    \"build\": \"vite build\"\n  }\n}"
+    }
+  ],
+  "activeFile": "index.html",
+  "messages": [],
+  "selectedAgent": "64.Kalachakrastra Pro",
+  "versionHistory": [
+    {
+      "time": "Sep 30, 9:32 PM",
+      "files": [
+        {
+          "name": "index.html",
+          "content": "<!DOCTYPE html>\n<html lang=\"te\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>New Project</title>\n  <script src=\"https://cdn.tailwindcss.com\"></script>\n</head>\n<body class=\"bg-slate-50 text-slate-900 min-h-screen flex items-center justify-center p-4\">\n  <div class=\"text-center space-y-4\">\n    <div class=\"w-16 h-16 bg-indigo-600 text-white rounded-2xl mx-auto flex items-center justify-center shadow-lg\">\n      <svg class=\"w-8 h-8\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 4v16m8-8H4\"/></svg>\n    </div>\n    <h1 class=\"text-2xl font-black text-slate-800\">కొత్త ప్రాజెక్ట్ ప్రారంభించండి</h1>\n    <p class=\"text-sm text-slate-500 max-w-sm\">\n      కింద ఉన్న చాట్ బాక్స్ లో మీకు కావాల్సిన యాప్ పేరు లేదా డిజైన్ గురించి టైప్ చేయండి. AI ఆటోమేటిక్ గా యాప్ తయారు చేస్తుంది!\n    </p>\n  </div>\n</body>\n</html>",
+          "type": "html"
+        },
+        {
+          "name": "style.css",
+          "content": "/* Custom Light & Dark Theme Support */\nbody {\n  color-scheme: light dark;\n}",
+          "type": "css"
+        },
+        {
+          "content": "// Application Core Script\nconsole.log('App initialized');",
+          "name": "app.js",
+          "type": "js"
+        },
+        {
+          "name": "package.json",
+          "content": "{\n  \"name\": \"studio-project\",\n  \"version\": \"1.0.0\",\n  \"private\": true,\n  \"scripts\": {\n    \"dev\": \"vite\",\n    \"build\": \"vite build\"\n  }\n}",
+          "type": "json"
+        }
+      ],
+      "id": "v_1790784173536",
+      "desc": "కొత్త యాప్ 2 - ప్రారంభ వర్షన్ (Initial Snapshot)"
+    }
+  ],
+  "githubConfig": {
+    "repoName": "ai-master-studio-app",
+    "subRepoName": "",
+    "branch": "main",
+    "pat": ""
+  },
+  "lastUpdated": "2026-10-01T12:40:38.530Z"
+}
