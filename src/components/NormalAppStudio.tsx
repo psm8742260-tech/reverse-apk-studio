@@ -4464,7 +4464,7 @@ export const NormalAppStudio: React.FC<Props> = ({
           setPaymentAction(null);
         }}
         initialServiceId={paymentAction?.id}
-        onSuccess={async (serviceId, metadata) => {
+        onSuccess={async (serviceId: any, metadata: any) => {
           if (serviceId === 'normal_studio_activation' && metadata?.passcode) {
              setChatMessages(prev => [
                ...prev,
@@ -6633,7 +6633,7 @@ export const NormalAppStudio: React.FC<Props> = ({
       <UrlToAppBuilder
         isOpen={isUrlAppBuilderOpen || activeModal === 'url_app_builder'}
         onClose={goBackNav}
-        onShift={(item) => {
+        onShift={(item: any) => {
           setActiveShiftItems([item]);
           setIsShiftReduced(true);
           setIsShiftModalOpen(true);
@@ -6644,7 +6644,7 @@ export const NormalAppStudio: React.FC<Props> = ({
       <ZipToApkBuilder
         isOpen={isZipBuilderOpen}
         onClose={goBackNav}
-        onShift={(item) => {
+        onShift={(item: any) => {
           setActiveShiftItems([item]);
           setIsShiftReduced(true);
           setIsShiftModalOpen(true);
@@ -6658,7 +6658,7 @@ export const NormalAppStudio: React.FC<Props> = ({
         projectName={currentProjectName}
         projectFiles={files}
         packageId={currentProjectId}
-        onShift={(item) => {
+        onShift={(item: any) => {
           setActiveShiftItems([item]);
           setIsShiftReduced(true);
           setIsShiftModalOpen(true);
@@ -6698,7 +6698,7 @@ export const NormalAppStudio: React.FC<Props> = ({
             pushNavView('icons8_glass');
           }
         }}
-        onShift={(item) => {
+        onShift={(item: any) => {
           setActiveShiftItems([item]);
           setIsShiftReduced(true);
           setIsShiftModalOpen(true);
@@ -6710,7 +6710,7 @@ export const NormalAppStudio: React.FC<Props> = ({
         isOpen={isExposingMenuOpen}
         onClose={goBackNav}
         initialTab={activeExposingTab}
-        onShift={(item) => {
+        onShift={(item: any) => {
           setActiveShiftItems([item]);
           setIsShiftReduced(true);
           setIsShiftModalOpen(true);
@@ -6721,7 +6721,7 @@ export const NormalAppStudio: React.FC<Props> = ({
       <ExposingQR
         isOpen={isExposingQRBoardOpen}
         onClose={goBackNav}
-        onShift={(item) => {
+        onShift={(item: any) => {
           setActiveShiftItems([item]);
           setIsShiftReduced(true);
           setIsShiftModalOpen(true);
@@ -6732,7 +6732,7 @@ export const NormalAppStudio: React.FC<Props> = ({
       <CloudConvertStudio
         isOpen={isCloudConvertOpen}
         onClose={goBackNav}
-        onShift={(item) => {
+        onShift={(item: any) => {
           setActiveShiftItems([item]);
           setIsShiftReduced(true);
           setIsShiftModalOpen(true);
@@ -6831,7 +6831,7 @@ export const NormalAppStudio: React.FC<Props> = ({
         isOpen={isVaultDrawerOpen}
         onClose={() => setIsVaultDrawerOpen(false)}
         userId={user?.uid || 'anonymous'}
-        onApplyToActiveFile={(content) => {
+        onApplyToActiveFile={(content: any) => {
           // Apply to current selected file
           setFiles(prev => prev.map(f => f.name === selectedFile ? { ...f, content } : f));
           setProjectToast("⚡ Vault నుండి కోడ్ అప్లై చేయబడింది!");

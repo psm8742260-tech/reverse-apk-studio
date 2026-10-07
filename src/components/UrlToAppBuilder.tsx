@@ -177,7 +177,7 @@ export const UrlToAppBuilder: React.FC<UrlToAppBuilderProps> = ({ isOpen, onClos
         hasServiceWorker: false,
         manifestFound: false,
         manifest: null,
-        appIconUrl: null,
+        appIconUrl: undefined,
         counts: {
           errors: 1,
           warnings: 0,

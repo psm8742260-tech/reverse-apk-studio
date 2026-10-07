@@ -1,50 +1,43 @@
 import React from 'react';
 import { FeatureFlags } from '../../types';
-import { Settings2, Cpu, Eye, Code, Bot, Download, Globe, PlayCircle, Moon, Zap, ArrowLeft, Wand2, Lock } from 'lucide-react';
-import { STUDIO_FEATURES_CONFIG } from '../../utils/studioButtonsConfig';
+import { ToggleLeft, ToggleRight, Sliders, Shield, ArrowLeft, Check, Sparkles } from 'lucide-react';
 
-interface Props {
+interface FeaturesManagementSectionProps {
   flags: FeatureFlags;
-  onUpdateFlags: (updated: FeatureFlags) => void;
+  onUpdateFlags: (flags: FeatureFlags) => void;
   onBack?: () => void;
 }
 
-export const FeaturesManagementSection: React.FC<Props> = ({ flags, onUpdateFlags, onBack }) => {
+export function FeaturesManagementSection({
+  flags,
+  onUpdateFlags,
+  onBack
+}: FeaturesManagementSectionProps) {
   const toggleFlag = (key: keyof FeatureFlags) => {
-    onUpdateFlags({ ...flags, [key]: !flags[key] });
+    onUpdateFlags({
+      ...flags,
+      [key]: !flags[key]
+    });
   };
 
-  // 🏛️ అడ్మిన్ గారు, మీ నిబంధనల ప్రకారం ఇక్కడ ఉన్న పెద్ద పెట్టెలు (Boxes) తొలగించి కేవలం నేకెడ్ మైక్రో ఐకాన్స్ (Micro Icons) మాత్రమే వచ్చేలా చేసాము.
-  const iconsMap: Record<keyof FeatureFlags, React.ReactNode> = {
-    enableUnpacker: <Cpu className="w-5 h-5 text-sky-400" />,
-    enableLivePreview: <Eye className="w-5 h-5 text-indigo-400" />,
-    enableCodeEditor: <Code className="w-5 h-5 text-emerald-400" />,
-    enableAIAssistant: <Bot className="w-5 h-5 text-purple-400" />,
-    enableZipExporter: <Download className="w-5 h-5 text-amber-400" />,
-    enableCorsProxy: <Globe className="w-5 h-5 text-teal-400" />,
-    enableDemoApks: <PlayCircle className="w-5 h-5 text-pink-400" />,
-    darkModeDefault: <Moon className="w-5 h-5 text-yellow-400" />,
-    enableSelfFixer: <Zap className="w-5 h-5 text-amber-500" />,
-    enableVisualBuilder: <Wand2 className="w-5 h-5 text-pink-400" />,
-    enableAgentRegulations: <Lock className="w-5 h-5 text-emerald-400" />,
-    enableAdminDemoControllers: <Settings2 className="w-5 h-5 text-rose-400" />,
-    enableInvisibleAgentDaemon: <Eye className="w-5 h-5 text-indigo-400" />,
-  };
-
-  const featureItems = STUDIO_FEATURES_CONFIG.map(item => ({
-    ...item,
-    icon: iconsMap[item.key]
-  }));
+  const featureItems: { key: keyof FeatureFlags; label: string; desc: string; category: string }[] = [
+    { key: 'enableLivePreview', label: 'లైవ్ ప్రివ్యూ ఇంజిన్ (Live Web Preview)', desc: 'డీకంపైల్ లేదా బిల్డ్ చేసిన యాప్ బ్రౌజర్‌లో లైవ్‌గా రన్ చేయడానికి ప్రివ్యూ ఫ్రేమ్', category: 'Core' },
+    { key: 'enableCodeEditor', label: 'కోడ్ ఎడిటర్ (In-Studio Code Editor)', desc: 'ఫైల్స్‌ని నేరుగా స్టూడియోలో సవరించడానికి ఎడిటర్ ప్యానెల్', category: 'Core' },
+    { key: 'enableAIAssistant', label: 'బ్రహ్మాస్త్రం ఏఐ అసిస్టెంట్ (AI Assistant)', desc: 'కోడ్ జనరేషన్, ఆటో-రిపేర్ మరియు ఆర్కిటెక్చర్ అనాలిసిస్ ఏఐ సపోర్ట్', category: 'AI' },
+    { key: 'enableSelfFixer', label: 'సెల్ఫ్-ఫిక్సర్ స్టూడియో (Self Fixer)', desc: 'సింటాక్స్ ఎర్రర్లు మరియు డిపెండెన్సీ సమస్యలను ఆటోమేటిక్‌గా సరిదిద్దే టూల్', category: 'Fixer' },
+    { key: 'enableVisualBuilder', label: 'విజువల్ బిల్డర్ వీక్షణ (Visual Builder)', desc: 'డ్రాగ్ & డ్రాప్ కాంపోనెంట్స్ మరియు లైవ్ విజువల్ ఎడిటింగ్ సదుపాయం', category: 'UI' },
+    { key: 'enableZipExporter', label: 'జిప్ ఎగుమతి (ZIP Exporter)', desc: 'మార్పులు చేసిన పూర్తి ప్రాజెక్ట్‌ను క్లీన్ ZIP ఫైల్‌గా డౌన్‌లోడ్ చేసుకునే సదుపాయం', category: 'Export' },
+    { key: 'enableCorsProxy', label: 'కార్స్ ప్రాక్సీ సర్వీస్ (CORS Proxy)', desc: 'ఎక్స్‌టర్నల్ ఏపీఐ కాల్స్ మరియు చిత్రాల లోడింగ్ కోసం లోకల్ ప్రాక్సీ రూట్', category: 'Network' },
+    { key: 'enableUnpacker', label: 'APK అన్‌ప్యాకర్ ఇంజిన్ (APK Unpacker)', desc: 'ఆండ్రాయిడ్ APK బైనరీలను మరియు అసెట్స్‌ను అన్‌జిప్ చేసే ప్రాసెసర్', category: 'Core' },
+    { key: 'enableDemoApks', label: 'డెమో శాంపిల్ APKలు (Demo APKs)', desc: 'స్టూడియోని టెస్ట్ చేయడానికి సిద్ధంగా ఉన్న శాంపిల్ ప్రాజెక్ట్‌లు', category: 'Demo' },
+    { key: 'enableInvisibleAgentDaemon', label: 'ఇన్విజిబుల్ ఏజెంట్ డెమోన్ (Invisible Agent)', desc: 'బ్యాక్‌గ్రౌండ్‌లో నిరంతరం కోడ్ నాణ్యతను పరిశీలించే స్వతంత్ర ఏజెంట్', category: 'Agent' },
+    { key: 'enableAgentRegulations', label: 'ఏజెంట్ రెగ్యులేషన్స్ (Rules Enforcement)', desc: 'AGENTS.md నిబంధనలను కఠినంగా అమలు చేసే భద్రతా లేయర్', category: 'Security' },
+    { key: 'enableAdminDemoControllers', label: 'అడ్మిన్ డెమో కంట్రోలర్స్', desc: 'అడ్మిన్ ప్యానెల్‌లోని టెస్ట్ కంట్రోలర్‌లను యాక్టివేట్ చేసే స్విచ్', category: 'Admin' }
+  ];
 
   return (
-    <div 
-      onDoubleClick={(e) => {
-        e.stopPropagation();
-        onBack?.();
-      }}
-      className="space-y-6"
-    >
-      {/* Banner */}
+    <div className="space-y-6 animate-fade-in text-slate-100 font-sans">
+      {/* Header Banner */}
       <div className="bg-slate-800/80 border border-slate-700/60 rounded-xl p-5 flex items-center justify-between">
         <div className="flex items-center gap-3">
           {onBack && (
@@ -56,50 +49,57 @@ export const FeaturesManagementSection: React.FC<Props> = ({ flags, onUpdateFlag
               <ArrowLeft className="w-4 h-4" />
             </button>
           )}
-          {/* 🏛️ అడ్మిన్ గారు! ఇక్కడ పెట్టె తొలగించబడి సాధారణ మైక్రో ఐకాన్ మాత్రమే అమర్చబడింది. */}
-          <div className="p-3 bg-sky-500/10 text-sky-400 border border-sky-500/20 rounded-lg">
-            <Settings2 className="w-6 h-6" />
+          <div className="p-3 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-lg">
+            <Sliders className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-slate-100">Features Management Section</h3>
+            <h3 className="text-lg font-bold text-slate-100">ఫీచర్స్ & మోడ్యూల్స్ నిర్వహణ (Feature Management)</h3>
             <p className="text-xs text-slate-400">
-              Master control switches to dynamically toggle core subsystems, preview engines, and tools.
+              స్టూడియోలోని ఫీచర్లు, టూల్స్ మరియు భద్రతా స్విచ్‌లను మీ అవసరానికి అనుగుణంగా ఆన్/ఆఫ్ చేయండి.
             </p>
           </div>
         </div>
-        <div className="px-3 py-1 text-xs font-mono font-semibold rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30">
-          11 SUBSYSTEMS
+        <div className="px-3 py-1 text-xs font-semibold rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center gap-1.5">
+          <Shield className="w-3.5 h-3.5" />
+          <span>REAL-TIME TOGGLE</span>
         </div>
       </div>
 
-      {/* Feature Toggles Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {featureItems.map((item) => (
-          <div
-            key={item.key}
-            className="bg-slate-800/50 border border-slate-700 py-1.5 px-4 rounded-xl flex items-center justify-between hover:border-slate-600 transition"
-          >
-            <div className="flex items-center gap-3">
-              {/* 🏛️ అడ్మిన్ గారు! మీ గ్లోబల్ డిజైన్ ప్రకారం ఇక్కడ ఉన్న ఐకాన్ చుట్టూ ఉండే బాక్స్ మరియు బోర్డర్‌ను పూర్తిగా తొలగించి, సాదా మైక్రో ఐకాన్‌ను మాత్రమే ప్రదర్శిస్తున్నాము. */}
-              <div className="p-1.5 bg-slate-900 rounded-lg border border-slate-800 shrink-0">{item.icon}</div>
-              <div>
-                <h4 className="text-sm font-bold text-slate-200">{item.title}</h4>
-                <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">{item.desc}</p>
+      {/* Grid of Toggles */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+        {featureItems.map((item) => {
+          const isEnabled = !!flags[item.key];
+          return (
+            <div
+              key={item.key}
+              onClick={() => toggleFlag(item.key)}
+              className={`p-4 rounded-xl border cursor-pointer select-none transition-all flex items-start justify-between gap-3 ${
+                isEnabled
+                  ? 'bg-slate-800/70 border-indigo-500/40 hover:border-indigo-500/70'
+                  : 'bg-slate-900/60 border-slate-800 hover:border-slate-700 opacity-60'
+              }`}
+            >
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-white">{item.label}</span>
+                  <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded bg-slate-700/60 text-slate-300">
+                    {item.category}
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-400 leading-snug">{item.desc}</p>
+              </div>
+
+              <div className="shrink-0 mt-0.5">
+                {isEnabled ? (
+                  <ToggleRight className="w-6 h-6 text-indigo-400" />
+                ) : (
+                  <ToggleLeft className="w-6 h-6 text-slate-600" />
+                )}
               </div>
             </div>
-
-            <label className="relative inline-flex items-center cursor-pointer shrink-0 ml-3">
-              <input
-                type="checkbox"
-                checked={flags[item.key]}
-                onChange={() => toggleFlag(item.key)}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
-            </label>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
-};
+}

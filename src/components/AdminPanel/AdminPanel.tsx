@@ -176,7 +176,7 @@ export const AdminPanel: React.FC<Props> = ({
         <ExposingStudio 
           isOpen={true} 
           onClose={popView} 
-          onShift={(item) => {
+          onShift={(item: any) => {
             // Shift from Exposing Studio
           }}
         />

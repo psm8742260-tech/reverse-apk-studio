@@ -1,6 +1,51 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script>
+      (function() {
+        var NativeWebSocket = window.WebSocket;
+        if (NativeWebSocket) {
+          function SafeWebSocket(url, protocols) {
+            if (protocols === 'vite-hmr' || (typeof url === 'string' && (url.indexOf('token=') !== -1 || url.indexOf('@vite') !== -1))) {
+              return {
+                readyState: 1,
+                addEventListener: function(event, cb) {
+                  if (event === 'open') setTimeout(cb, 0);
+                },
+                removeEventListener: function() {},
+                send: function() {},
+                close: function() {}
+              };
+            }
+            return new NativeWebSocket(url, protocols);
+          }
+          SafeWebSocket.prototype = NativeWebSocket.prototype;
+          SafeWebSocket.CONNECTING = 0;
+          SafeWebSocket.OPEN = 1;
+          SafeWebSocket.CLOSING = 2;
+          SafeWebSocket.CLOSED = 3;
+          window.WebSocket = SafeWebSocket;
+        }
+        function isIgnorable(msg) {
+          if (!msg) return false;
+          var m = String(msg).toLowerCase();
+          return m.indexOf('websocket') !== -1 || m.indexOf('vite') !== -1 || m.indexOf('hmr') !== -1 || m.indexOf('createwebsocketmodulerunner') !== -1 || m.indexOf('error 0:') !== -1;
+        }
+        window.addEventListener('error', function(e) {
+          if (isIgnorable(e && (e.message || (e.error && e.error.message))) || isIgnorable(e && e.filename)) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            return true;
+          }
+        }, true);
+        window.addEventListener('unhandledrejection', function(e) {
+          if (isIgnorable(e && e.reason && (e.reason.message || e.reason))) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+          }
+        }, true);
+      })();
+    </script>
     <script type="module">
       import RefreshRuntime from "/@react-refresh"
       RefreshRuntime.injectIntoGlobalHook(window)

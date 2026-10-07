@@ -33,6 +33,7 @@ import multer from 'multer';
 import JSZip from 'jszip';
 import { setupDevServer } from './server/dev-server-manager.ts';
 import { registerPhrsCloudRoutes } from './server/phrsCloudConnector.ts';
+import { buildRemoteApkFromZip } from './server/services/phrsRemoteWorker.ts';
 
 // 💡 తెలుగు వివరణ: బ్రహ్మాస్త్రం ఏజెంట్ కోడ్ మొత్తాన్ని ఒకే PDF గా మార్చి డౌన్‌లోడ్ చేయడానికి 'pdfkit' ని ఇంపోర్ట్ చేసుకుంటున్నాము.
 
@@ -3956,78 +3957,27 @@ android {
     if (!buildEnv.isWorker) {
       sendLog('Routing', '⚡ Dedicated build tools missing locally. Routing build job to central PHRS Android Build Worker (https://phrscrowd.online)...', 45);
       
-      try {
-        const axios = (await import('axios')).default;
-        const FormData = (await import('form-data')).default;
-        const fsStream = await import('node:fs');
-        
-        const form = new FormData();
-        form.append('zipFile', fsStream.createReadStream(zipFile.path), {
-          filename: zipFile.originalname,
-          contentType: 'application/zip'
-        });
-        
-        const fields = ['appName', 'packageId', 'buildType', 'keystoreMode', 'keystorePassword', 'keyAlias', 'keyPassword'];
-        for (const f of fields) {
-           if (req.body[f]) form.append(f, req.body[f]);
-        }
-        
-        sendLog('Routing', 'Worker endpoint: https://phrscrowd.online/api/build-apk', 46);
-        sendLog('Building', '🛠️ రిమోట్ క్లౌడ్ వర్కర్‌లో కంపైలేషన్ జరుగుతోంది (Gradle assemble)...', 55);
+      const remoteApkDest = path.join(workspaceDir, 'remote-output.apk');
+      const remoteRes = await buildRemoteApkFromZip(
+        zipFile.path,
+        {
+          appName,
+          packageId,
+          buildType,
+          keystoreMode: req.body.keystoreMode,
+          keystorePassword: req.body.keystorePassword,
+          keyAlias: req.body.keyAlias,
+          keyPassword: req.body.keyPassword
+        },
+        remoteApkDest,
+        (msg) => sendLog('Building', msg, 60)
+      );
 
-        const remoteRes = await axios.post('https://phrscrowd.online/api/build-apk', form, {
-          headers: { ...form.getHeaders() },
-          timeout: 600000,
-          responseType: 'arraybuffer',
-          validateStatus: () => true 
-        });
-
-        const contentType = remoteRes.headers['content-type'] || '';
-        const isApk = String(contentType).includes('application/vnd.android.package-archive') || 
-                      String(contentType).includes('application/octet-stream') || 
-                      (remoteRes.data && remoteRes.data.length > 100000);
-        
-        if (remoteRes.status === 200 && isApk) {
-           sendLog('Building', '📦 రిమోట్ వర్కర్ నుండి బైనరీ ఆర్టిఫ్యాక్ట్స్ స్వీకరించబడ్డాయి!', 75);
-           apkPathFound = path.join(workspaceDir, 'remote-output.apk');
-           await fs.mkdir(workspaceDir, { recursive: true });
-           await fs.writeFile(apkPathFound, Buffer.from(remoteRes.data));
-           
-           const isValid = await validateArtifact(apkPathFound, 'apk', (msg) => log(msg));
-           if (!isValid) {
-              // Check if it's actually a ZIP containing the APK
-              try {
-                const zipObj = await JSZip.loadAsync(Buffer.from(remoteRes.data));
-                const innerApk = Object.keys(zipObj.files).find(f => f.endsWith('.apk'));
-                if (innerApk) {
-                  sendLog('Extracting', `📦 Extracting ${innerApk} from worker bundle...`, 78);
-                  const apkContent = await zipObj.file(innerApk)?.async('nodebuffer');
-                  if (apkContent) {
-                    await fs.writeFile(apkPathFound, apkContent);
-                    sendLog('Building', '✅ APK successfully extracted from worker bundle.', 80);
-                  }
-                } else {
-                  sendLog('Verifying', '⚠️ Remote response binary accepted as valid build artifact.', 82);
-                }
-              } catch (e: any) {
-                sendLog('Verifying', `⚠️ Accepting binary artifact directly (size: ${(remoteRes.data as Buffer).length} bytes).`, 82);
-              }
-           }
-        } else {
-           const isJson = String(contentType).includes('application/json');
-           let workerError = `HTTP ${remoteRes.status} (Non-JSON)`;
-           if (isJson) {
-             try {
-               const parsedErr = JSON.parse(Buffer.from(remoteRes.data).toString('utf8'));
-               workerError = parsedErr.error || parsedErr.message || workerError;
-             } catch {}
-           }
-           sendLog('Routing', `❌ Remote worker failed: ${workerError}`, 100, true);
-           return res.end();
-        }
-      } catch (remoteErr: any) {
-        const errorDetail = remoteErr.response?.data?.error || remoteErr.message;
-        sendLog('Routing', `❌ Remote build routing failed: ${errorDetail}`, 100, true);
+      if (remoteRes.success) {
+        apkPathFound = remoteRes.apkPath;
+        sendLog('Building', '📦 రిమోట్ వర్కర్ నుండి బైనరీ ఆర్టిఫ్యాక్ట్స్ స్వీకరించబడ్డాయి!', 75);
+      } else {
+        sendLog('Routing', `❌ Remote worker failed: ${remoteRes.error || 'Unknown error'}`, 100, true);
         return res.end();
       }
     } else {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronRight } from 'lucide-react';
+import { AlertCircle, AlertTriangle, Info, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
 import { ActionItem } from './types';
 
 interface DiagnosticCardProps {
@@ -9,57 +9,63 @@ interface DiagnosticCardProps {
   onToggle: () => void;
 }
 
-export const DiagnosticCard: React.FC<DiagnosticCardProps> = ({ item, idx, isExpanded, onToggle }) => {
-  let cardBgClass = 'bg-slate-50/50 border-slate-200 hover:bg-slate-100/50 hover:border-slate-300';
-  let iconElem = <div className="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-xs shrink-0 shadow-3xs">🔍</div>;
-  let chevronColor = 'text-slate-400';
+export function DiagnosticCard({ item, idx, isExpanded, onToggle }: DiagnosticCardProps) {
+  const isError = item.type === 'error';
+  const isWarning = item.type === 'warning';
+  const isFeature = item.type === 'feature';
 
-  if (item.type === 'error') {
-    cardBgClass = 'bg-rose-50/45 border-rose-100 hover:bg-rose-50 hover:border-rose-200';
-    iconElem = <div className="w-8 h-8 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center text-xs shrink-0 shadow-3xs">🛑</div>;
-    chevronColor = 'text-rose-500';
-  } else if (item.type === 'warning') {
-    cardBgClass = 'bg-amber-50/45 border-amber-100 hover:bg-amber-50/70 hover:border-amber-200';
-    iconElem = <div className="w-8 h-8 rounded-full bg-amber-50 border border-amber-100 flex items-center justify-center text-xs shrink-0 shadow-3xs">⚠️</div>;
-    chevronColor = 'text-amber-500';
-  } else if (item.type === 'info') {
-    cardBgClass = 'bg-sky-50/45 border-sky-100 hover:bg-sky-50/70 hover:border-sky-200';
-    iconElem = <div className="w-8 h-8 rounded-full bg-sky-50 border border-sky-100 flex items-center justify-center text-xs shrink-0 shadow-3xs">ℹ️</div>;
-    chevronColor = 'text-sky-500';
-  } else {
-    // capability / feature
-    cardBgClass = 'bg-[#faf9ff] border-[#e8e3ff] hover:bg-[#f5f2ff] hover:border-[#d7ceff]';
-    iconElem = <div className="w-8 h-8 rounded-full bg-[#f3efff] border border-[#e3daff] flex items-center justify-center text-xs shrink-0 shadow-3xs">⚡</div>;
-    chevronColor = 'text-purple-600';
-  }
+  const borderColor = isError
+    ? 'border-rose-200 bg-rose-50/40'
+    : isWarning
+    ? 'border-amber-200 bg-amber-50/40'
+    : isFeature
+    ? 'border-emerald-200 bg-emerald-50/40'
+    : 'border-slate-200 bg-slate-50/40';
+
+  const icon = isError ? (
+    <AlertCircle className="w-5 h-5 text-rose-500 shrink-0" />
+  ) : isWarning ? (
+    <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0" />
+  ) : isFeature ? (
+    <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
+  ) : (
+    <Info className="w-5 h-5 text-blue-500 shrink-0" />
+  );
 
   return (
-    <div
-      onClick={onToggle}
-      className={`p-4.5 rounded-2xl border text-xs transition duration-200 cursor-pointer shadow-3xs ${cardBgClass}`}
-    >
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3.5 w-full">
-          {iconElem}
-          <span className="font-bold text-slate-800 text-xs leading-snug">
-            {item.title}
-          </span>
-        </div>
-        <ChevronRight className={`w-4 h-4 shrink-0 transition-transform ${isExpanded ? 'rotate-90' : ''} ${chevronColor}`} />
-      </div>
-      
-      {isExpanded && (
-        <div className="mt-4 pt-4 border-t border-slate-200/60 animate-fade-in space-y-3">
-          <div className="text-slate-600 leading-relaxed font-medium">
-            {item.message}
+    <div className={`border rounded-xl p-3.5 transition-all ${borderColor}`}>
+      <div 
+        onClick={onToggle}
+        className="flex items-center justify-between cursor-pointer select-none"
+      >
+        <div className="flex items-center gap-2.5">
+          {icon}
+          <div>
+            <h4 className="text-xs font-bold text-slate-800">{item.title}</h4>
+            <p className="text-[11px] text-slate-500">{item.description}</p>
           </div>
+        </div>
+        <button 
+          type="button"
+          className="text-slate-400 hover:text-slate-600 p-1"
+          aria-label="వివరాలు చూడండి"
+        >
+          {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </button>
+      </div>
+
+      {isExpanded && item.message && (
+        <div className="mt-2.5 pt-2 border-t border-slate-200/60 text-[11px] text-slate-600">
+          <p>{item.message}</p>
           {item.action && (
-            <div className="bg-white/60 p-3 rounded-xl border border-slate-200/40 text-[11px] font-bold text-indigo-700">
-              {item.action}
+            <div className="mt-2">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 bg-slate-200/60 px-2 py-0.5 rounded">
+                సూచన: {item.action}
+              </span>
             </div>
           )}
         </div>
       )}
     </div>
   );
-};
+}

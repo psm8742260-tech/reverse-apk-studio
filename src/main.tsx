@@ -18,6 +18,7 @@ const isIgnorableError = (message: string) => {
          msg.includes('database is closed') ||
          msg.includes('database is hidden') ||
          msg.includes('closing/hidden') ||
+         msg.includes('createwebsocketmodulerunnertransport') ||
          msg.includes('error 0:');
 };
 
