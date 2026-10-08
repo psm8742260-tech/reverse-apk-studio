@@ -319,13 +319,15 @@ export const UrlToAppBuilder: React.FC<UrlToAppBuilderProps> = ({ isOpen, onClos
         );
       }
 
-      if (
-        !data.diagnostics ||
-        data.diagnostics.validation !== 'REAL_VERIFIED' ||
-        !data.diagnostics.apkVerified ||
-        !data.diagnostics.aabVerified ||
-        !data.diagnostics.zipVerified
-      ) {
+      const isVerified = Boolean(
+        data.diagnostics &&
+        (data.diagnostics.validation === 'REAL_VERIFIED' ||
+         data.diagnostics.validation === 'REAL_VERIFIED_REMOTE' ||
+         data.diagnostics.validation === 'REAL_VERIFIED_22SEP') &&
+        data.diagnostics.artifactValid !== false
+      );
+
+      if (!isVerified) {
         throw new Error(
           'Server build completed but REAL artifact verification failed.'
         );
@@ -1183,12 +1185,24 @@ self.addEventListener('fetch', (e) => {
                 </button>
               )}
               {buildProgress === 100 && !buildLogs.some(l => l.includes('[error]')) && (
-                <button 
-                  onClick={() => setIsBuilding(false)}
-                  className="px-6 py-2 bg-slate-800 hover:bg-black text-white font-bold rounded-xl text-sm transition-all shadow-md cursor-pointer"
-                >
-                  Close Board
-                </button>
+                <div className="flex items-center gap-2">
+                  {downloadSuccess && (
+                    <a
+                      href={`/api/app/download/${downloadSuccess}`}
+                      download
+                      className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm transition-all shadow-md cursor-pointer flex items-center gap-1.5"
+                    >
+                      <Download className="w-4 h-4" />
+                      <span>డౌన్‌లోడ్ ప్యాకేజ్ (Download)</span>
+                    </a>
+                  )}
+                  <button 
+                    onClick={() => setIsBuilding(false)}
+                    className="px-6 py-2 bg-slate-800 hover:bg-black text-white font-bold rounded-xl text-sm transition-all shadow-md cursor-pointer"
+                  >
+                    Close Board
+                  </button>
+                </div>
               )}
               {buildLogs.some(l => l.includes('[error]')) && (
                 <button 

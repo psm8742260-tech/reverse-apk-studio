@@ -59,6 +59,12 @@
       "allowEditWithoutPasscode": false
     },
     {
+      "filePath": "src/components/UrlToAppBuilder.tsx",
+      "description": "వెబ్ URL నుండి ఆండ్రాయిడ్ TWA/APK/AAB బిల్డర్ మరియు ప్యాకేజింగ్ ఇంజిన్",
+      "lockLevel": "PROTECTED_FEATURE",
+      "allowEditWithoutPasscode": false
+    },
+    {
       "filePath": "src/components/PhoneLoginScreen.tsx",
       "description": "ఫోన్ నంబర్ మరియు OTP ద్వారా సురక్షిత లాగిన్ వ్యవస్థ",
       "lockLevel": "PROTECTED_AUTH",
