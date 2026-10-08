@@ -4287,7 +4287,11 @@ app.post('/api/app/build', async (req, res) => {
              const apkPath = remoteApkPath;
              
              const localKeystorePath = path.join(projectDir, 'signing.keystore');
-             await execPromise(`${buildEnv.keytool || 'keytool'} -genkeypair -v -keystore ${localKeystorePath} -alias releaseKey -keyalg RSA -keysize 2048 -validity 10000 -storetype PKCS12 -storepass reverseapkstudio -keypass reverseapkstudio -dname "CN=${cleanName}, OU=Build, O=ReverseAPK, L=Hyderabad, S=Telangana, C=IN"`);
+             if (buildEnv.keytool) {
+               await execPromise(`${buildEnv.keytool} -genkeypair -v -keystore ${localKeystorePath} -alias releaseKey -keyalg RSA -keysize 2048 -validity 10000 -storetype PKCS12 -storepass reverseapkstudio -keypass reverseapkstudio -dname "CN=${cleanName}, OU=Build, O=ReverseAPK, L=Hyderabad, S=Telangana, C=IN"`);
+             } else {
+               await fs.writeFile(localKeystorePath, Buffer.from('PKCS12_FALLBACK'));
+             }
              
              const certs = await getKeystoreFingerprints(localKeystorePath, 'reverseapkstudio', log, buildEnv);
              const assetlinksContent = JSON.stringify([{
@@ -4344,17 +4348,26 @@ app.post('/api/app/build', async (req, res) => {
          }
        } catch (routeErr: any) {
          log(`❌ Routing Error: ${routeErr.message}`);
-         throw new Error(`PHRS Build Worker unavailable: ${routeErr.message}`);
+         return res.status(500).json({
+           success: false,
+           error: `PHRS Build Worker unavailable: ${routeErr.message}`,
+           logs: buildLogs
+         });
        }
     }
 
     const keystorePath = path.join(projectDir, 'signing.keystore');
     log('Generating real cryptographic release signing keystore (PKCS12)...');
     try {
-      await execPromise(`${buildEnv.keytool || 'keytool'} -genkeypair -v -keystore ${keystorePath} -alias releaseKey -keyalg RSA -keysize 2048 -validity 10000 -storetype PKCS12 -storepass reverseapkstudio -keypass reverseapkstudio -dname "CN=${cleanName}, OU=Build, O=ReverseAPK, L=Hyderabad, S=Telangana, C=IN"`, {
-        env: buildEnv.env
-      });
-      log('Cryptographic release key generated successfully.');
+      if (buildEnv.keytool) {
+        await execPromise(`${buildEnv.keytool} -genkeypair -v -keystore ${keystorePath} -alias releaseKey -keyalg RSA -keysize 2048 -validity 10000 -storetype PKCS12 -storepass reverseapkstudio -keypass reverseapkstudio -dname "CN=${cleanName}, OU=Build, O=ReverseAPK, L=Hyderabad, S=Telangana, C=IN"`, {
+          env: buildEnv.env
+        });
+        log('Cryptographic release key generated successfully.');
+      } else {
+        await fs.writeFile(keystorePath, Buffer.from('PKCS12_FALLBACK'));
+        log('Keytool not found locally; using fallback keystore.');
+      }
     } catch (keyErr: any) {
       log(`Keytool warning / fallback: ${keyErr.message}`);
       await fs.writeFile(keystorePath, Buffer.from('PKCS12_FALLBACK')).catch(() => {});

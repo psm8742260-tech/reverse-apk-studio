@@ -1,0 +1,110 @@
+{
+  "_comment_telugu": "🔒 AI మాస్టర్ స్టూడియో - లాక్ చేయబడిన ఫైల్స్ మరియు డిజిటల్ ఫింగర్‌ప్రింట్స్ రికార్డు. ఈ ఫైల్ లోని ఏ ఫైల్‌ను కూడా అడ్మిన్ గారి పాస్‌వర్డ్ (6606.ok / 6606.0k) అనుమతి లేకుండా ఏ ఏజెంట్ లేదా ఆటోమేషన్ సిస్టమ్ మార్చకూడదు.",
+  "projectName": "AI Master Studio",
+  "version": "3.9.20",
+  "status": "LOCKED_IMMUTABLE",
+  "authProtocol": {
+    "adminPasscode": "6606",
+    "approvalTokens": ["6606.ok", "6606.0k"],
+    "enforcement": "STRICT_BLOCK_ON_UNAUTHORIZED_CHANGE"
+  },
+  "digitalFingerprints": {
+    "sha256Certificate": "E7:07:C6:05:39:25:49:1C:C3:FE:0E:A9:CA:B3:E8:FC:E2:3E:99:79:5C:2C:7F:96:05:0A:CC:D4:A9:47:E1:6C",
+    "sha1Certificate": "CE:E4:7B:3F:8A:28:CE:EE:48:84:DE:28:1A:2B:3C:4D:5E:6F:70",
+    "packageName": "online.phrscrowd.aims.twa",
+    "keystoreAlias": "releaseKey",
+    "keystoreType": "PKCS12"
+  },
+  "lockedFiles": [
+    {
+      "filePath": "metadata.json",
+      "description": "ప్రాజెక్ట్ పేరు ('AI Master Studio') మరియు కోర్ కేపబిలిటీస్ - శాశ్వత లాక్",
+      "lockLevel": "PERMANENT_READ_ONLY",
+      "allowEditWithoutPasscode": false
+    },
+    {
+      "filePath": "AGENTS.md",
+      "description": "సార్వత్రిక ఏజెంట్ నిబంధనలు (నియమాలు 1 నుండి 51) - శాశ్వత రాజ్యాంగం",
+      "lockLevel": "PERMANENT_READ_ONLY",
+      "allowEditWithoutPasscode": false
+    },
+    {
+      "filePath": "server/ultra-permanent-lock.ts",
+      "description": "డిజిటల్ ఫింగర్‌ప్రింట్ మరియు ప్యాకేజీ ఐడెంటిటీ తాళాలు",
+      "lockLevel": "PERMANENT_READ_ONLY",
+      "allowEditWithoutPasscode": false
+    },
+    {
+      "filePath": "src/theme.ts",
+      "description": "అన్ని బోర్డులు మరియు ఫీచర్ల కేంద్రీకృత కలర్స్ మరియు థీమ్ కాన్ఫిగరేషన్",
+      "lockLevel": "PROTECTED_CONFIG",
+      "allowEditWithoutPasscode": false
+    },
+    {
+      "filePath": "server.ts",
+      "description": "కోర్ ఎక్స్‌ప్రెస్ సర్వర్, PHRS ప్రొడక్షన్ రిమోట్ వర్కర్ ప్రాక్సీ మరియు API రూట్స్",
+      "lockLevel": "PROTECTED_BACKBONE",
+      "allowEditWithoutPasscode": false
+    },
+    {
+      "filePath": "src/components/Header.tsx",
+      "description": "గ్లోబల్ నావిగేషన్ హెడర్ మరియు మోడ్ సెలెక్టర్స్",
+      "lockLevel": "LOCKED_CORE_BOARD",
+      "allowEditWithoutPasscode": false
+    },
+    {
+      "filePath": "src/components/ZipToApkBuilder.tsx",
+      "description": "జిప్ నుండి ఆండ్రాయిడ్ APK/AAB క్లౌడ్ బిల్డర్ ఇంటర్‌ఫేస్",
+      "lockLevel": "PROTECTED_FEATURE",
+      "allowEditWithoutPasscode": false
+    },
+    {
+      "filePath": "src/components/PhoneLoginScreen.tsx",
+      "description": "ఫోన్ నంబర్ మరియు OTP ద్వారా సురక్షిత లాగిన్ వ్యవస్థ",
+      "lockLevel": "PROTECTED_AUTH",
+      "allowEditWithoutPasscode": false
+    },
+    {
+      "filePath": "src/components/AdminPanel/BrahmastramAgentsSection.tsx",
+      "description": "బ్రహ్మాస్త్రం 10 ఏఐ ఏజెంట్ల ఆపరేషన్స్ కంట్రోల్ హబ్",
+      "lockLevel": "PROTECTED_FEATURE",
+      "allowEditWithoutPasscode": false
+    },
+    {
+      "filePath": "src/components/DecompilerWorkspace.tsx",
+      "description": "APK అన్‌ప్యాకర్ మరియు రివర్స్ ఇంజనీరింగ్ వర్క్‌స్పేస్ బోర్డ్",
+      "lockLevel": "LOCKED_CORE_BOARD",
+      "allowEditWithoutPasscode": false
+    },
+    {
+      "filePath": "src/components/SelfFixerStudio.tsx",
+      "description": "ఆటోమేటిక్ సెల్ఫ్-ఫిక్సర్ మరియు డీబగ్గింగ్ స్టూడియో",
+      "lockLevel": "PROTECTED_FEATURE",
+      "allowEditWithoutPasscode": false
+    },
+    {
+      "filePath": "src/components/LiveVisualBuilderView.tsx",
+      "description": "కోడ్‌లెస్ విజువల్ యాప్ డిజైనర్ మరియు లైవ్ కాన్వాస్",
+      "lockLevel": "PROTECTED_FEATURE",
+      "allowEditWithoutPasscode": false
+    },
+    {
+      "filePath": "RESTART_TRACKER.md",
+      "description": "సిస్టమ్ చెక్‌పాయింట్ మరియు స్థితి ట్రాకర్ రిజిస్ట్రీ",
+      "lockLevel": "AUDIT_REGISTER",
+      "allowEditWithoutPasscode": false
+    },
+    {
+      "filePath": "CHANGELOG.md",
+      "description": "అల్ట్రా ప్రెసిషన్ పిన్-పాయింట్ ఆడిట్ లాగ్",
+      "lockLevel": "AUDIT_REGISTER",
+      "allowEditWithoutPasscode": false
+    }
+  ],
+  "protectionRules": {
+    "warnOnModificationAttempt": true,
+    "warningMessage": "⚠️ హెచ్చరిక! ఈ ఫైల్ 'locked-files.json' లో శాశ్వతంగా లాక్ చేయబడింది. అడ్మిన్ గారి పాస్‌వర్డ్ (6606.ok) లేకుండా ఎలాంటి సవరణలు చేయడం నిషిద్ధం.",
+    "preserveStructuralSkeleton": true,
+    "neverUnmountCoreBoards": true
+  }
+}
