@@ -283,9 +283,9 @@ export function ZipToApkBuilder({ isOpen, onClose, onShift }: ZipToApkBuilderPro
                 <p className="text-xs text-slate-300 mt-0.5">{buildResult.downloadName || `${appName}.${buildType.toLowerCase()}`}</p>
               </div>
 
-              {buildResult.downloadUrl && (
+              {(buildResult.downloadUrl || buildResult.playZipUrl || buildResult.apkUrl) && (
                 <a
-                  href={buildResult.downloadUrl}
+                  href={buildResult.downloadUrl || buildResult.playZipUrl || buildResult.apkUrl}
                   download
                   className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg transition-all"
                 >
