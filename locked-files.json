@@ -99,6 +99,12 @@
       "description": "అల్ట్రా ప్రెసిషన్ పిన్-పాయింట్ ఆడిట్ లాగ్",
       "lockLevel": "AUDIT_REGISTER",
       "allowEditWithoutPasscode": false
+    },
+    {
+      "filePath": "src/utils/phrsCloud.ts",
+      "description": "PHRS క్లౌడ్ & PHRS Crowd లైవ్ పబ్లిషింగ్ ఇంజిన్ (publishAppToPhrsCrowd) - రక్షిత సర్వీస్",
+      "lockLevel": "PROTECTED_SERVICE",
+      "allowEditWithoutPasscode": false
     }
   ],
   "protectionRules": {

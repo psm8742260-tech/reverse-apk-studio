@@ -132,6 +132,15 @@
   - `package.json`, `public/manifest.json` (విత్ ఐకాన్ క్యాష్ బస్టింగ్ `?v=`), మరియు `src/version.ts` లలో సమకాలీకరణ 100% పర్ఫెక్ట్‌గా పనిచేస్తోంది.
   - జీరో మాన్యువల్ వర్క్, Rule 51 కంప్లైంట్.
 
+#### W. `/src/utils/phrsCloud.ts` & `/locked-files.json` (PHRS Crowd Live Publishing Integration)
+- **పాస్‌కోడ్ అనుమతి**: `6606.0k` వెరిఫై చేయబడింది.
+- **ఫైల్స్**: `/src/utils/phrsCloud.ts` & `/locked-files.json`
+- **పిన్-పాయింట్ సవరణ**:
+  - అడ్మిన్ గారు ఆదేశించిన `publishAppToPhrsCrowd` మరియు `handlePublishDemo` ఫంక్షన్‌లు పూర్తి టైపింగ్స్ (`PublishAppToPhrsCrowdParams`, `PublishAppToPhrsCrowdResult`) మరియు 3-దశల ఫెయిల్-సేఫ్ నెట్‌వర్క్ కనెక్షన్‌తో (`/api/publish-app` -> `https://phrscrowd.online/api/deployments/register` -> లోకల్ క్లౌడ్ వాల్ట్) విజయవంతంగా రూపొందించబడ్డాయి.
+  - గ్లోబల్ విండో కాంటెక్స్ట్‌కు (`window.publishAppToPhrsCrowd`, `window.handlePublishDemo`) అనుసంధానించబడింది.
+  - `/locked-files.json` లో `src/utils/phrsCloud.ts` ఫైల్‌ను `PROTECTED_SERVICE` స్థాయి క్రింద శాశ్వతంగా లాక్ చేసి రిజిస్టర్ చేయడం జరిగింది.
+- **ధృవీకరణ**: `tsc --noEmit` (0 Errors), `compile_applet` (Build Succeeded).
+
 ---
 
 ### 2. ధృవీకరణ & టెస్టింగ్ ఫలితాలు (Verification & Testing Results):
