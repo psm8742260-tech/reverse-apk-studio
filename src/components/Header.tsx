@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Lock, Cpu, Play, LogOut, Phone, Rocket, Smartphone, ArrowLeft, Settings, Globe, Coins } from 'lucide-react';
+import { APP_VERSION } from '../version';
 import { FLUENT_EMOJIS } from '../utils/fluentEmojis';
 import { LanguageCode, LANGUAGE_NAMES, translate } from '../utils/translations';
 import { NORMAL_STUDIO_AGENTS } from '../config/agentsConfig';
@@ -113,7 +114,7 @@ export const Header: React.FC<Props> = ({
                 AI Master<span className="bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent ml-1">Studio</span>
               </h1>
               <span className="text-[9px] sm:text-[10px] font-mono font-bold px-1.5 sm:px-2 py-0.5 rounded bg-sky-50 text-sky-700 border border-sky-200 shrink-0">
-                PRO ENGINE
+                PRO ENGINE v{APP_VERSION}
               </span>
             </div>
             <p className="text-[10px] sm:text-[11px] text-slate-500 hidden sm:block">AI Master Studio • Client Decompiler • Live Web Preview</p>

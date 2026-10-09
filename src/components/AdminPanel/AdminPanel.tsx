@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { APP_VERSION } from '../../version';
 import { STUDIO_ADMIN_SECTIONS_CONFIG } from '../../utils/studioButtonsConfig';
 import { isAdminUser, AUTHORIZED_ADMIN_GMAIL } from '../../config/adminAccess';
 import { DecompiledApp, FeatureFlags, SecurityLog } from '../../types';
@@ -89,6 +90,7 @@ export const AdminPanel: React.FC<Props> = ({
   const [targetAgentForStudio, setTargetAgentForStudio] = useState<string>('[Code Generator]');
 
   const activeView = navHistory[navHistory.length - 1];
+  const renderKey = React.useMemo(() => Date.now(), [activeView]);
 
   const pushView = (view: string) => {
     setNavHistory(prev => [...prev, view]);
@@ -141,12 +143,6 @@ export const AdminPanel: React.FC<Props> = ({
           onBack={popView}
         />
       )
-    },
-    { 
-      id: 'export', 
-      label: STUDIO_ADMIN_SECTIONS_CONFIG.export?.label || 'PWA Builder', 
-      icon: <span className="text-3xl filter drop-shadow-md">🌐</span>,
-      component: <PwaExportSection currentApp={currentApp} onBack={popView} />
     },
     { 
       id: 'selffixer', 
@@ -279,8 +275,23 @@ export const AdminPanel: React.FC<Props> = ({
           onClose={popView}
         />
       )
+    },
+    { 
+      id: 'export', 
+      label: 'PWA SYSTEM', 
+      icon: (
+        <div className="flex flex-col items-center justify-center relative">
+          <span className="text-3xl filter drop-shadow-md animate-bounce" style={{ animationDuration: '2s' }}>🌐</span>
+          <span className="text-[8px] font-black px-1.5 py-0.5 rounded bg-sky-500 text-white mt-0.5 uppercase tracking-tighter animate-pulse shadow-[0_0_8px_rgba(14,165,233,0.8)]">
+            v{APP_VERSION}
+          </span>
+        </div>
+      ),
+      component: <PwaExportSection currentApp={currentApp} onBack={popView} />
     }
   ];
+
+  console.log("AdminPanel Sections:", sections);
 
   return (
     <div className="fixed inset-0 z-[100] bg-[#F4F1EA] flex flex-col font-sans overflow-hidden">
@@ -296,9 +307,14 @@ export const AdminPanel: React.FC<Props> = ({
             </button>
           )}
           <div>
-            <h2 className="text-xl font-black text-slate-900 flex items-center gap-2 tracking-tight">
-              <Shield className="w-6 h-6 text-amber-600" /> Admin Master Panel
-            </h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-xl font-black text-slate-900 flex items-center gap-2 tracking-tight">
+                <Shield className="w-6 h-6 text-amber-600" /> Admin Master Panel
+              </h2>
+              <span className="text-[10px] font-mono font-black px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/30 animate-pulse tracking-wide shadow-xs">
+                v{APP_VERSION}
+              </span>
+            </div>
             <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Unified Control • Status: OPEN ACCESS</p>
           </div>
         </div>
@@ -317,9 +333,9 @@ export const AdminPanel: React.FC<Props> = ({
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto p-6 scrollbar-hide">
+      <main key={renderKey} className="flex-1 overflow-y-auto p-6 scrollbar-hide">
         {activeView === 'APP_LAUNCHER_GRID' ? (
-          <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-6 max-w-4xl mx-auto py-8">
+          <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-6 max-w-4xl mx-auto pt-6 pb-28">
             {sections.map((section) => (
               <button
                 key={section.id}

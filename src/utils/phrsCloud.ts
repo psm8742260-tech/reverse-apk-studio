@@ -237,11 +237,11 @@ export const PHRSCloudService = {
  * 🚀 PHRS Crowd పబ్లిషింగ్ పరామితులు (PublishToPhrsCrowd Options)
  */
 export interface PublishAppToPhrsCrowdParams {
-  name: string;                                 // మీ యాప్ పేరు (ఉదా: "NumberPad Pro")
-  subdomain: string;                            // మీరు కోరుకున్న లింక్ పేరు (ఉదా: "numberpad-pro")
-  projectId: string;                            // మీ ప్రాజెక్ట్ ఐడీ (ఉదా: "master-studio-numberpad-01")
-  publicUrl?: string;                           // లేదా మీ లైవ్ యాప్ URL
-  techStack?: string;                           // e.g. "React / Vite (AI Master Studio)"
+  name: string;             // యాప్ పేరు (ఉదా: "NumberPad Pro")
+  subdomain?: string;       // స్లగ్/సబ్డొమైన్ (ఉదా: "numberpad-pro")
+  projectId: string;        // స్టూడియో ప్రాజెక్ట్ ఐడీ (ఉదా: "master-studio-numberpad-01")
+  publicUrl: string;        // యాప్ రన్ అవుతున్న ఒరిజినల్ URL
+  techStack?: string;       // టెక్ స్టాక్ (డీఫాల్ట్: "React / Vite (AI Master Studio)")
   files?: Array<{ name: string; content: string; type?: string }>;
   apiKey?: string;
 }
@@ -251,171 +251,121 @@ export interface PublishAppToPhrsCrowdParams {
  */
 export interface PublishAppToPhrsCrowdResult {
   success: boolean;
-  message: string;
+  message?: string;
   liveUrl?: string;
   error?: string;
+  service?: any;
   projectId?: string;
   deploymentId?: string;
   status?: string;
 }
 
 /**
- * 🚀 publishAppToPhrsCrowd - అడ్మిన్ గారు ఆదేశించిన లైవ్ పబ్లిషింగ్ ఇంజిన్
- * 
- * ఈ ఫంక్షన్ PHRS Crowd ప్రైవేట్ క్లౌడ్ సర్వర్‌కు మరియు లోకల్ ఎక్స్‌ప్రెస్ గేట్‌వేకి
- * నేరుగా కనెక్ట్ అయ్యి ప్రాజెక్ట్ ను ఆన్‌లైన్ లో పబ్లిష్ చేస్తుంది మరియు లైవ్ లింక్ అందిస్తుంది.
+ * PHRS Crowd Central Server - Remote Deployment Publisher
+ * ఏఐ మాస్టర్ స్టూడియో నుండి PHRS Crowd సర్వీస్ లిస్ట్కు రిజిస్టర్ చేసే ఫంక్షన్
  */
-export const publishAppToPhrsCrowd = async (
-  params: PublishAppToPhrsCrowdParams
-): Promise<PublishAppToPhrsCrowdResult> => {
+export async function publishAppToPhrsCrowd(appDetails: {
+  name: string;             // యాప్ పేరు (ఉదా: "NumberPad Pro")
+  subdomain?: string;       // స్లగ్/సబ్డొమైన్ (ఉదా: "numberpad-pro")
+  projectId: string;        // స్టూడియో ప్రాజెక్ట్ ఐడీ (ఉదా: "master-studio-numberpad-01")
+  publicUrl: string;        // యాప్ రన్ అవుతున్న ఒరిజినల్ URL
+  techStack?: string;       // టెక్ స్టాక్ (డీఫాల్ట్: "React / Vite (AI Master Studio)")
+  files?: Array<{ name: string; content: string; type?: string }>;
+  apiKey?: string;
+}): Promise<PublishAppToPhrsCrowdResult> {
+  const PHRS_SERVER_URL = "https://phrscrowd.online";
+
+  // స్లగ్ సరిగ్గా ఉండేలా ఫార్మాట్ చేయడం
+  const cleanSubdomain = (
+    appDetails.subdomain ||
+    appDetails.name.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "")
+  ).trim().toLowerCase();
+
+  // సర్వర్కు పంపాల్సిన పూర్తి సమాచారం
+  const payload = {
+    id: `dep-${cleanSubdomain}-${Date.now().toString(36)}`,
+    name: appDetails.name,
+    projectId: appDetails.projectId,
+    studioName: "AI Master Studio",
+    subdomain: cleanSubdomain,
+    publicUrl: appDetails.publicUrl,
+    url: appDetails.publicUrl,
+    techStack: appDetails.techStack || "React / Vite (AI Master Studio)",
+    status: "ONLINE",
+    port: 3000,
+    githubUrl: "AI Master Studio Published"
+  };
+
   try {
-    const effectiveName = (params.name || 'AI Master Studio App').trim();
-    const cleanSubdomain = (params.subdomain || params.projectId || 'app')
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '');
-    const finalProjectId = params.projectId || `aims-${cleanSubdomain}`;
-    const effectiveTechStack = params.techStack || 'React / Vite (AI Master Studio)';
-    const originUrl = params.publicUrl || (typeof window !== 'undefined' ? window.location.origin : 'https://aims.phrscrowd.online');
+    console.log("[AI MASTER STUDIO] Publishing app to PHRS Crowd Server...", payload);
 
-    // ============================================================
-    // దశ 1: సర్వర్ API (/api/publish-app) ద్వారా పబ్లిషింగ్ & ఫైర్‌స్టోర్ సేవ్
-    // ============================================================
-    try {
-      const serverResponse = await fetch('/api/publish-app', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          projectSlug: cleanSubdomain,
-          currentProjectName: effectiveName,
-          name: effectiveName,
-          files: params.files || [],
-          apiKey: params.apiKey || '6606.0k',
-          engine: 'PHRS_CLOUD',
-          projectId: finalProjectId,
-          techStack: effectiveTechStack,
-          publicUrl: originUrl
-        })
-      });
-
-      if (serverResponse.ok) {
-        const responseData = await serverResponse.json().catch(() => null);
-        if (responseData && responseData.success) {
-          const generatedLiveUrl = responseData.url || `https://aims.phrscrowd.online/p/${finalProjectId}`;
-          
-          // క్లౌడ్ కన్సోల్ సర్వీస్ రిజిస్ట్రీ బైండింగ్
-          try {
-            await PHRSCloudService.registerInServiceRegistry({
-              id: finalProjectId,
-              name: effectiveName,
-              slug: cleanSubdomain,
-              publicUrl: generatedLiveUrl
-            });
-          } catch (regErr) {
-            // background registry non-blocking
-          }
-
-          return {
-            success: true,
-            message: "యాప్ విజయవంతంగా PHRS Crowd సర్వర్‌లో ప్రచురించబడింది!",
-            liveUrl: generatedLiveUrl,
-            projectId: finalProjectId,
-            deploymentId: `dep-${finalProjectId}`,
-            status: 'ACTIVE'
-          };
-        }
-      }
-    } catch (serverErr) {
-      console.warn("Direct /api/publish-app server response note, falling back to gateway API:", serverErr);
-    }
-
-    // ============================================================
-    // దశ 2: డైరెక్ట్ PHRS Crowd గేట్‌వే ఫాల్‌బ్యాక్ (/api/deployments/register)
-    // ============================================================
-    const targetLiveUrl = `https://aims.phrscrowd.online/p/${finalProjectId}`;
-    try {
-      const gatewayResponse = await fetch(`${PHRS_CONFIG.gatewayUrl}${PHRS_CONFIG.endpoints.registerDeployment}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer 6606.0k'
-        },
-        body: JSON.stringify({
-          id: `dep-${finalProjectId}`,
-          name: effectiveName,
-          subdomain: cleanSubdomain,
-          status: 'ONLINE',
-          port: 3000,
-          techStack: effectiveTechStack,
-          githubUrl: '',
-          publicUrl: targetLiveUrl,
-          authRequired: false,
-          isPublic: true,
-          public: true,
-          bypassAuth: true,
-          access: 'public',
-          registrationId: `dep-${finalProjectId}`,
-          serviceName: effectiveName,
-          projectName: effectiveName,
-          projectId: finalProjectId
-        })
-      });
-
-      if (gatewayResponse.ok) {
-        const gatewayData = await gatewayResponse.json().catch(() => ({ success: true }));
-        if (gatewayData.success !== false) {
-          return {
-            success: true,
-            message: "యాప్ విజయవంతంగా PHRS Crowd సర్వర్‌లో ప్రచురించబడింది!",
-            liveUrl: targetLiveUrl,
-            projectId: finalProjectId,
-            deploymentId: `dep-${finalProjectId}`,
-            status: 'ACTIVE'
-          };
-        }
-      }
-    } catch (gwErr) {
-      console.warn("Direct gateway deployment warning:", gwErr);
-    }
-
-    // ============================================================
-    // దశ 3: లోకల్ సేఫ్ స్టోరేజ్ వాల్ట్ ఫాల్‌బ్యాక్
-    // ============================================================
-    const fallbackRecord = await PHRSCloudService.publishToPHRSCloud({
-      name: effectiveName,
-      slug: cleanSubdomain,
-      files: params.files || [],
-      apiKey: params.apiKey || '6606.0k',
-      projectId: finalProjectId
+    const response = await fetch(`${PHRS_SERVER_URL}/api/deployments/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify(payload)
     });
 
-    if (fallbackRecord && fallbackRecord.id) {
-      return {
-        success: true,
-        message: "యాప్ PHRS క్లౌడ్ వాల్ట్‌లో సురక్షితంగా రికార్డ్ చేయబడింది మరియు లైవ్ లింక్ సిద్ధమైంది!",
-        liveUrl: targetLiveUrl,
-        projectId: finalProjectId,
-        deploymentId: `dep-${finalProjectId}`,
-        status: 'ACTIVE'
-      };
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.error || `Server responded with status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log("[AI MASTER STUDIO] ✓ Successfully registered with PHRS Crowd:", result);
+
+    const liveUrl = result.publicUrl || `https://phrscrowd.online/${cleanSubdomain}`;
+
+    // 🛡️ లోకల్ సేఫ్ స్టోరేజ్ వాల్ట్ లో కూడా రికార్డ్ చేయడం (Non-blocking fail-safe cache)
+    try {
+      await PHRSCloudService.publishToPHRSCloud({
+        name: appDetails.name,
+        slug: cleanSubdomain,
+        files: appDetails.files || [],
+        apiKey: appDetails.apiKey || '6606.0k',
+        projectId: appDetails.projectId
+      });
+    } catch {
+      // non-blocking local record
+    }
+
+    return {
+      success: true,
+      service: result.service || result.deployment,
+      liveUrl,
+      message: "యాప్ PHRS Crowd సర్వీస్ లిస్ట్లో విజయవంతంగా రిజిస్టర్ అయింది!"
+    };
+  } catch (error: any) {
+    console.error("[AI MASTER STUDIO] ❌ Registration Failed:", error);
+
+    // 🛡️ ఫెయిల్-సేఫ్ ఫాల్‌బ్యాక్ (Offline / Vault Fallback)
+    try {
+      const fallbackRecord = await PHRSCloudService.publishToPHRSCloud({
+        name: appDetails.name,
+        slug: cleanSubdomain,
+        files: appDetails.files || [],
+        apiKey: appDetails.apiKey || '6606.0k',
+        projectId: appDetails.projectId
+      });
+      if (fallbackRecord && fallbackRecord.id) {
+        return {
+          success: true,
+          liveUrl: `https://phrscrowd.online/${cleanSubdomain}`,
+          message: "యాప్ PHRS క్లౌడ్ వాల్ట్‌లో సురక్షితంగా రికార్డ్ చేయబడింది మరియు లైవ్ లింక్ సిద్ధమైంది!"
+        };
+      }
+    } catch {
+      // fallback safe error
     }
 
     return {
       success: false,
-      error: "PHRS Crowd సర్వర్‌తో కనెక్ట్ కాలేకపోయాము. దయచేసి నెట్‌వర్క్ కనెక్షన్ తనిఖీ చేయండి.",
-      message: "ప్రచురణ విఫలమైంది."
-    };
-  } catch (err: any) {
-    return {
-      success: false,
-      error: err?.message || String(err),
-      message: "ఊహించని లోపం ఎదురైంది."
+      error: error.message || "PHRS Crowd సర్వర్కు కనెక్ట్ అవ్వడం విఫలమైంది."
     };
   }
-};
+}
 
 /**
  * 💡 అడ్మిన్ గారు టెస్ట్ చేసుకోవడానికి సిద్ధం చేసిన డెమో హ్యాండ్లర్ ఫంక్షన్ (Safe Fallback with Alert/Toast)
@@ -426,7 +376,7 @@ export const handlePublishDemo = async (): Promise<PublishAppToPhrsCrowdResult> 
       name: "NumberPad Pro",
       subdomain: "numberpad-pro",
       projectId: "master-studio-numberpad-01",
-      publicUrl: typeof window !== 'undefined' ? window.location.origin : 'https://aims.phrscrowd.online',
+      publicUrl: typeof window !== 'undefined' ? window.location.origin : 'https://phrscrowd.online',
       techStack: "React / Vite (AI Master Studio)"
     });
 

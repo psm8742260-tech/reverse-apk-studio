@@ -2,6 +2,18 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import './index.css';
+import { APP_VERSION } from './version';
+
+// 🚀 Automatic Cache & Stale SW Purge on Version Bump (Rule 51 Compliant)
+try {
+  const storedVer = localStorage.getItem('aims_app_version');
+  if (storedVer && storedVer !== APP_VERSION) {
+    if ('caches' in window) {
+      caches.keys().then((names) => Promise.all(names.map((name) => caches.delete(name)))).catch(() => {});
+    }
+  }
+  localStorage.setItem('aims_app_version', APP_VERSION);
+} catch {}
 
 // Global error listener to prevent silent failures and white screens
 const isIgnorableError = (message: string) => {

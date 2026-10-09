@@ -224,8 +224,8 @@ export const STUDIO_ADMIN_SECTIONS_CONFIG: Record<string, AdminSectionConfig> = 
 
   export: {
     id: 'export',
-    label: 'PWA Builder',
-    teluguGuide: 'పీడబ్ల్యూఏ బిల్డర్: అప్లికేషన్ యొక్క మెనిఫెస్ట్, ఐకాన్స్ మరియు వర్కర్ ఎగుమతులను నిర్వహించడానికి.'
+    label: 'PWA SYSTEM',
+    teluguGuide: 'పీడబ్ల్యూఏ సిస్టం (వెబ్ యాప్ సిస్టం): అప్లికేషన్ యొక్క మెనిఫెస్ట్, ఐకాన్స్ మరియు వర్కర్ ఎగుమతులను నిర్వహించడానికి.'
   },
   // 🏛️ తెలుగు వివరణ & డిక్షనరీ గైడ్:
   // 
