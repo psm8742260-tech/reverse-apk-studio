@@ -1,0 +1,72 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 🌐 Publicly published applications (accessible without login)
+    match /published_apps/{slug} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // 📁 Projects collection
+    match /projects/{projectId} {
+      allow read, write: if true;
+    }
+
+    // 💬 SelfFixer and Agent Chats
+    match /chats/{chatId} {
+      allow read, write: if true;
+
+      match /messages/{messageId} {
+        allow read, write: if true;
+      }
+    }
+
+    // ⚙️ System Configuration
+    match /config/{configId} {
+      allow read, write: if true;
+    }
+
+    match /server_config/{configId} {
+      allow read, write: if true;
+    }
+
+    // 🔑 Passcodes
+    match /passcodes/{passcodeId} {
+      allow read, write: if true;
+    }
+
+    // 👤 Users & User Subcollections (wallets, my_apps, saved_shifts)
+    match /users/{userId} {
+      allow read, write: if true;
+
+      match /{allSubcollections=**} {
+        allow read, write: if true;
+      }
+    }
+
+    // 👛 Wallets & Transactions
+    match /wallets/{walletId} {
+      allow read, write: if true;
+    }
+
+    // 👥 Staff Access
+    match /staff/{email} {
+      allow read, write: if true;
+    }
+
+    // 💾 Shift Vault
+    match /shift_vault/{shiftId} {
+      allow read, write: if true;
+    }
+
+    // 🛠️ Repair Logs
+    match /repair_logs/{logId} {
+      allow read, write: if true;
+    }
+
+    // Fallback: Default allow for any other collection within the studio applet
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}

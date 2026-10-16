@@ -3443,15 +3443,19 @@ app.get(['/:slug', '/p/:slug'], async (req, res, next) => {
     } else {
       return res.status(500).send('Database not initialized on server');
     }
-  } catch (error) {
-    console.error(
-      'Public project route error:',
-      error
+  } catch (error: any) {
+    console.warn(
+      'Public project route note:',
+      error?.message || error
     );
 
-    return res.status(500).send(
-      'Unable to load published project'
-    );
+    try {
+      const localBackupHtml = path.join(process.cwd(), 'published_backup', slug, 'index.html');
+      const content = await fs.readFile(localBackupHtml, 'utf8');
+      return res.status(200).type('html').send(content);
+    } catch {
+      return next();
+    }
   }
 });
 

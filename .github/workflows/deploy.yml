@@ -1,0 +1,39 @@
+name: 🚀 Automated Deploy to aims.phrscrowd.online
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  web-deploy:
+    name: 📦 Build and Deploy via FTP
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Check out repository code
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: 📦 Install Dependencies
+        run: npm install
+
+      - name: 🔨 Build Production Bundle
+        run: npm run build
+
+      - name: 🚀 Sync Files to aims.phrscrowd.online via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER || '65.108.76.42' }}
+          username: ${{ secrets.FTP_USERNAME || 'phrscrow' }}
+          password: ${{ secrets.FTP_PASSWORD || 'K80abi7c+EU9R@' }}
+          server-dir: /public_html/aims.phrscrowd.online/
+          local-dir: ./dist/
+          dangerous-clean-slate: false
