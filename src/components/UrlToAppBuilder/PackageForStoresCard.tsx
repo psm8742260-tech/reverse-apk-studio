@@ -13,51 +13,33 @@ export function PackageForStoresCard({
   hasErrors = false
 }: PackageForStoresCardProps) {
   return (
-    <div className="bg-gradient-to-br from-indigo-900/90 via-slate-900 to-slate-950 text-white rounded-2xl p-5 border border-indigo-500/20 shadow-lg relative overflow-hidden">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="p-2 bg-indigo-500/20 text-indigo-400 rounded-lg">
-              <Store className="w-5 h-5" />
-            </span>
-            <h3 className="text-base font-bold text-white tracking-tight">Package For Stores</h3>
-            <span className="text-[10px] bg-emerald-500/20 text-emerald-300 font-bold px-2 py-0.5 rounded-full border border-emerald-500/30">
-              Ready
-            </span>
-          </div>
-          <p className="text-xs text-slate-300 max-w-xl">
-            మీ వెబ్ అప్లికేషన్‌ను గూగుల్ ప్లే స్టోర్ లేదా ఇతర యాప్ స్టోర్‌లలో ప్రచురించడానికి అవసరమైన పూర్తి ఆండ్రాయిడ్ ప్యాకేజీని సిద్ధం చేసుకోండి.
-          </p>
+    <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-6">
+      <div className="flex flex-col items-center text-center space-y-4">
+        {/* Dark background button-like title */}
+        <div className="bg-[#2C293E] text-white px-8 py-3 rounded-full text-lg font-black tracking-wide">
+          Package For Stores
         </div>
-
-        <div className="flex items-center gap-2.5 shrink-0 w-full md:w-auto">
-          <button
-            onClick={onDownloadTest}
-            type="button"
-            className="flex-1 md:flex-none flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition-all"
-          >
-            <Download className="w-4 h-4 text-slate-400" />
-            <span>డౌన్‌లోడ్ టెస్ట్ APK</span>
-          </button>
-
-          <button
-            onClick={onOpenStoreModal}
-            type="button"
-            className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-500/25 transition-all"
-          >
-            <Package className="w-4 h-4" />
-            <span>స్టోర్ ప్యాకేజ్ సిద్ధం చేయండి</span>
-            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-          </button>
+        
+        <button
+          onClick={onDownloadTest}
+          className="text-[#6D4AFF] font-bold hover:underline"
+        >
+          Download Test Package
+        </button>
+      </div>
+      
+      <div className="border-t border-slate-100 pt-6 flex items-center justify-center gap-4 text-slate-700">
+        <span className="text-sm font-black">Available stores:</span>
+        {/* Windows / Apple / Android Icons */}
+        <div className="flex gap-4">
+           {/* Windows icon */}
+           <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 3h8v8H3zM13 3h8v8h-8zM3 13h8v8H3zM13 13h8v8h-8z"/></svg>
+           {/* Apple icon */}
+           <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.96 1.4-2.07 2.72-3.72 2.72-1.63 0-2.3-1.02-3.72-1.02-1.4 0-2.18 1.02-3.75 1.02-1.67 0-2.9-1.43-3.75-2.72C.92 17.58 0 13.57 0 10.15c0-3.32 2.05-5.07 4.1-5.07 1.43 0 2.6.97 3.75 0 1.15-1.02 2.6-1.02 3.72 0 1.15.97 2.32 0 3.75 0 2.05 0 4.1 1.75 4.1 5.07 0 3.42-.92 7.42-2.37 10.13zM11 6.55c.38-1.42 1.9-2.5 3.52-2.5.07 0 .15 0 .23 0-1.42 1.6-3.3 2.5-3.52 2.5z"/></svg>
+           {/* Android icon */}
+           <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M0 0h24v24H0z" fill="none"/><path d="M6 18c0 .55.45 1 1 1h1c.55 0 1-.45 1-1V8c0-.55-.45-1-1-1H7c-.55 0-1 .45-1 1v10zm4 0c0 .55.45 1 1 1h1c.55 0 1-.45 1-1V8c0-.55-.45-1-1-1h-1c-.55 0-1 .45-1 1v10zm4 0c0 .55.45 1 1 1h1c.55 0 1-.45 1-1V8c0-.55-.45-1-1-1h-1c-.55 0-1 .45-1 1v10zm4 0c0 .55.45 1 1 1h1c.55 0 1-.45 1-1V8c0-.55-.45-1-1-1h-1c-.55 0-1 .45-1 1v10z"/></svg>
         </div>
       </div>
-
-      {hasErrors && (
-        <div className="mt-3.5 pt-3 border-t border-slate-800 flex items-center gap-2 text-rose-400 text-xs">
-          <AlertCircle className="w-4 h-4 shrink-0" />
-          <span>కొన్ని ఎర్రర్లు గుర్తించబడ్డాయి. దయచేసి వాటిని సరిచేసిన తర్వాత స్టోర్ ప్యాకేజీని రూపొందించండి.</span>
-        </div>
-      )}
     </div>
   );
 }

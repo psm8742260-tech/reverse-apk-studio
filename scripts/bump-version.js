@@ -58,6 +58,15 @@ export default APP_VERSION;
   fs.writeFileSync(srcVersionPath, versionFileContent, 'utf8');
   console.log(`📜 [Auto-Version] src/version.ts generated: ${newVersion}`);
 
+  // 5. Update public/sw.js cache name so browser immediately purges old cache on version change
+  const swPath = path.join(rootDir, 'public/sw.js');
+  if (fs.existsSync(swPath)) {
+    let swContent = fs.readFileSync(swPath, 'utf8');
+    swContent = swContent.replace(/const CACHE_NAME = ['"].*?['"];/, `const CACHE_NAME = 'aims-service-worker-v${newVersion}';`);
+    fs.writeFileSync(swPath, swContent, 'utf8');
+    console.log(`🌐 [Auto-Version] public/sw.js cache name updated to aims-service-worker-v${newVersion}`);
+  }
+
   console.log(`✅ [Auto-Version] Version incremented successfully to ${newVersion}`);
 } catch (error) {
   console.error('⚠️ [Auto-Version Warning] Failed to increment version:', error.message);

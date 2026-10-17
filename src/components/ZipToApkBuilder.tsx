@@ -115,28 +115,28 @@ export function ZipToApkBuilder({ isOpen, onClose, onShift }: ZipToApkBuilderPro
   };
 
   return (
-    <div className="fixed inset-0 z-[120] bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 font-sans">
-      <div className="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-3xl w-full max-h-[90vh] shadow-2xl flex flex-col overflow-hidden text-slate-100 animate-fade-in">
+    <div className="fixed inset-0 z-[120] bg-white flex items-center justify-center p-3 sm:p-5 font-sans">
+      <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] shadow-xl flex flex-col overflow-hidden text-slate-800">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/80">
+        <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
           <div className="flex items-center gap-3">
             <span className="p-2.5 bg-indigo-500/20 text-indigo-400 rounded-xl border border-indigo-500/30">
               <Cpu className="w-5 h-5" />
             </span>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-white">ZIP to APK / AAB Cloud Builder</h3>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                <h3 className="text-base font-bold text-slate-900">ZIP to APK / AAB Cloud Builder</h3>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200">
                   Ultra Engine
                 </span>
               </div>
-              <p className="text-xs text-slate-400">వెబ్ ప్రాజెక్ట్ జిప్ నుండి నేరుగా ఆండ్రాయిడ్ APK లేదా AAB బిల్డ్ చేయండి</p>
+              <p className="text-xs text-slate-500">వెబ్ ప్రాజెక్ట్ జిప్ నుండి నేరుగా ఆండ్రాయిడ్ APK లేదా AAB బిల్డ్ చేయండి</p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all"
+            className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-200 transition-all"
             aria-label="మూసివేయి"
           >
             <X className="w-5 h-5" />
@@ -320,10 +320,9 @@ export function ZipToApkBuilder({ isOpen, onClose, onShift }: ZipToApkBuilderPro
           </div>
         </div>
 
-        {/* Footer with Mandatory Rule Preservation Display */}
-        <div className="p-3 bg-slate-950 border-t border-slate-800/80 flex items-center justify-center gap-2 text-xs text-rose-400">
-          <ShieldAlert className="w-4 h-4 text-rose-500 shrink-0" />
-          <span className="font-semibold">ఆటోమేటిక్ టెంపరరీ క్లీనప్ డిసేబుల్ చేయబడింది (Auto Workspace Cleanup Disabled)</span>
+        {/* Footer with subtle background indicator */}
+        <div className="px-4 py-2 flex items-center justify-center text-[10px] text-slate-400 opacity-60">
+          <span>Auto Workspace Cleanup Disabled</span>
         </div>
       </div>
     </div>
