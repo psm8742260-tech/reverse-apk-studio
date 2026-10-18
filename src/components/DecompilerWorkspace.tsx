@@ -31,6 +31,7 @@ import { LiveVisualBuilderView } from './LiveVisualBuilderView';
 import { REVERSE_STUDIO_TRAINING_RULES as VOICE_REPAIR_DECOMPILER_RULES } from '../config/training/reverseStudioTraining';
 import { translate, LanguageCode } from '../utils/translations';
 import { executeSystemSync, SyncProgress } from '../utils/systemSyncEngine';
+import { HybridBadgeH } from './HybridBadgeH';
 
 // 💡 అడ్మిన్ గారు! సిస్టమ్ సింక్ అవుతున్నప్పుడు తిరిగే బంగారు సుదర్శన చక్రం ఐకాన్.
 const SudarshanaChakraIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -642,7 +643,7 @@ export const DecompilerWorkspace: React.FC<Props> = ({
             <h2 className="text-sm font-bold text-slate-900">APK Decompiler & Web Unpacker Engine</h2>
           </div>
           <div className="flex items-center gap-2">
-            <span className="bg-sky-50 text-sky-600 border border-sky-100 px-2 py-0.5 rounded text-[9px] font-bold">HYBRID ENGINE</span>
+            <HybridBadgeH />
           </div>
         </div>
 

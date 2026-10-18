@@ -140,8 +140,8 @@ export const PhoneLoginScreen: React.FC<PhoneLoginScreenProps> = ({ onLoginSucce
         {/* Top App Icon & Title */}
         <div className="text-center space-y-3">
           <div className="inline-block relative">
-            {/* 🏛️ అడ్మిన్ గారి నిబంధనల ప్రకారం "AI Master Studio" కి చెందిన కస్టమ్ లోగోఐకాన్ (LogoIcon) ను లోడ్ చేసాము. */}
-            <LogoIcon className="w-20 h-20 mx-auto" />
+            {/* 🏛️ అడ్మిన్ గారి నిబంధనల ప్రకారం "AI Master Studio" కి చెందిన కస్టమ్ లోగోఐకాన్ (LogoIcon) ను 20% పెద్దది (w-24 h-24) చేసాము. */}
+            <LogoIcon className="w-24 h-24 mx-auto" />
             <span className="absolute -bottom-1 -right-1 bg-sky-500 text-white rounded-full p-1 shadow">
               <ShieldCheck className="w-4 h-4" />
             </span>
@@ -236,7 +236,7 @@ export const PhoneLoginScreen: React.FC<PhoneLoginScreenProps> = ({ onLoginSucce
 
         {/* Footer info */}
         <div className="pt-4 border-t border-slate-200 text-center text-[11px] text-slate-500 font-medium">
-          AI Master Studio Security • 100% Encrypted Login
+          100% Encrypted Login
         </div>
       </div>
 

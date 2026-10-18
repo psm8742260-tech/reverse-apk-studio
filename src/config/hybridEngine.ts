@@ -32,7 +32,10 @@ export const HYBRID_ENGINE: HybridEngineConfig = {
   activeModules: {
     decompilerWorkspace: true,
     normalAppStudio: true,
+    reverseEngineeringStudio: true,
     visualBuilder: true,
+    zipToApkBuilder: true,
+    urlToAppBuilder: true,
     adminMasterPanel: true,
     aiLiteModeTokenSaver: true,
     pwaAutoUpdateEngine: true,
@@ -40,8 +43,32 @@ export const HYBRID_ENGINE: HybridEngineConfig = {
     codeEditorCore: true,
     fileManagerBoard: true,
     uploadEngine: true,
+    selfFixerAiEngine: true,
+    phrsCloudTerminal: true,
+    androidPackagerEngine: true,
+    apkUnpackerEngine: true,
+    mobilePreviewEngine: true,
+    deepseekFixEngine: true,
+    geminiEngine: true,
   }
 };
+
+/**
+ * 🛰️ isHybridEngineOperational
+ * అడ్మిన్ గారి ఆలోచన: ఇంజిన్ రియల్-టైమ్‌లో లైవ్‌లో ఉంటేనే 5 కలర్స్ కనిపించాలి!
+ * ఇంజిన్ పనిచేయకపోతే (Offline / Inactive / Down) false రిటర్న్ చేస్తుంది.
+ */
+export function isHybridEngineOperational(): boolean {
+  try {
+    if (!HYBRID_ENGINE.isHybridActive) return false;
+    if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
+      if (navigator.onLine === false) return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 /**
  * 🚀 runHybridLiveCheck

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Lock, Cpu, Play, LogOut, Phone, Rocket, Smartphone, ArrowLeft, Settings, Globe, Coins } from 'lucide-react';
+import { Lock, Play, LogOut, Phone, Rocket, Smartphone, ArrowLeft, Settings, Globe, Coins } from 'lucide-react';
 import { APP_VERSION } from '../version';
 import { FLUENT_EMOJIS } from '../utils/fluentEmojis';
 import { LanguageCode, LANGUAGE_NAMES, translate } from '../utils/translations';
 import { NORMAL_STUDIO_AGENTS } from '../config/agentsConfig';
 import { isAdminUser } from '../config/adminAccess';
+import { HybridBadgeH } from './HybridBadgeH';
+import { LogoIcon } from './LogoIcon';
 
 interface Props {
   onOpenAdminModal: () => void;
@@ -104,21 +106,17 @@ export const Header: React.FC<Props> = ({
           className="cursor-pointer select-none group flex items-center gap-1.5 sm:gap-2.5 p-1 sm:p-1.5 rounded-xl hover:bg-slate-100 transition"
           title={isAuthorizedAdmin && isAdmin ? "AI Master Studio (Long-press or click 5 times to open Admin Gateway)" : "AI Master Studio"}
         >
-          <div className="w-8 h-8 sm:w-9 sm:h-9 bg-slate-950 rounded-xl text-white shadow-md shadow-sky-500/10 group-hover:scale-105 transition flex items-center justify-center overflow-hidden shrink-0 border border-slate-200/50">
-            {/* 🏛️ అడ్మిన్ గారు! "నీ మొఖం" (face) కనిపించకుండా ఉండాలని కోరినందున LogoIcon ని తొలగించి Cpu ఐకాన్ ని అమర్చాము. */}
-            <Cpu className="w-5 h-5 text-sky-400" />
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <h1 className="text-sm sm:text-base font-black tracking-tight whitespace-nowrap bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+          {/* 🏛️ అడ్మిన్ గారి అధికారిక ఆదేశం (6606.0k): హెడర్‌లో ఉన్న ఐకాన్ స్థానంలో మన అసలైన లోగో ఐకాన్ (LogoIcon) ను అదే సైజుతో (w-10 h-10 sm:w-11 sm:h-11) అమర్చాము. */}
+          <LogoIcon className="w-10 h-10 sm:w-11 sm:h-11 shrink-0 group-hover:scale-105 transition" />
+          <div className="flex flex-col justify-center">
+            <div className="flex items-center gap-2 sm:gap-2.5">
+              <h1 className="text-base sm:text-lg sm:text-[19px] font-black tracking-tight whitespace-nowrap bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent leading-none">
                 AI Master<span className="bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent ml-1">Studio</span>
               </h1>
-              {/* 🔒 అడ్మిన్ గారి శాశ్వత లాక్: పసుపు రంగులో మెరిసే బ్లింకింగ్ 'H' బ్యాడ్జ్ */}
-              <span className="text-[9px] sm:text-[10px] font-mono font-black px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-300 shadow-[0_0_10px_rgba(14,165,233,0.5)] shrink-0 flex items-center gap-1.5">
-                PRO ENGINE • <span className="text-yellow-500 drop-shadow-[0_0_8px_rgba(234,179,8,1)] animate-pulse font-black">H</span>
-              </span>
+              {/* 🔒 అడ్మిన్ గారి శాశ్వత ఆదేశం: ఇంజిన్ లైవ్ హెల్త్ కి అనుసంధానించబడిన 5 రంగుల అల్ట్రా హైబ్రిడ్ 'H' బ్యాడ్జ్ */}
+              <HybridBadgeH className="ml-1 sm:ml-1.5" />
             </div>
-            <p className="text-[10px] sm:text-[11px] text-slate-500 hidden sm:block">AI Master Studio • Client Decompiler • Live Web Preview</p>
+            <p className="text-[10px] sm:text-[11px] text-slate-500 hidden sm:block mt-0.5">AI Master Studio • Client Decompiler • Live Web Preview</p>
           </div>
         </div>
       </div>
