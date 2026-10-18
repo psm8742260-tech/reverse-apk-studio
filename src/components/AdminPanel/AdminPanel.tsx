@@ -20,6 +20,7 @@ import { BuildSuite } from '../BuildSuite';
 import { UrlToAppBuilder } from '../UrlToAppBuilder';
 import { Icons8GlassView } from '../Icons8GlassView';
 import { LiveVisualBuilderView } from '../LiveVisualBuilderView';
+import { AiLiteModeSection } from './AiLiteModeSection';
 import { 
   ArrowLeft, 
   Lock, 
@@ -282,12 +283,26 @@ export const AdminPanel: React.FC<Props> = ({
       icon: (
         <div className="flex flex-col items-center justify-center relative">
           <span className="text-3xl filter drop-shadow-md animate-bounce" style={{ animationDuration: '2s' }}>🌐</span>
-          <span className="text-[8px] font-black px-1.5 py-0.5 rounded bg-sky-500 text-white mt-0.5 uppercase tracking-tighter animate-pulse shadow-[0_0_8px_rgba(14,165,233,0.8)]">
-            v{APP_VERSION}
+          {/* 🔒 అడ్మిన్ గారి శాశ్వత లాక్: పసుపు రంగులో మెరిసే బ్లింకింగ్ 'H' బ్యాడ్జ్ */}
+          <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-sky-500 text-yellow-300 drop-shadow-[0_0_8px_rgba(253,224,71,1)] mt-0.5 uppercase tracking-wider animate-pulse shadow-[0_0_12px_rgba(14,165,233,0.95)]">
+            H
           </span>
         </div>
       ),
       component: <PwaExportSection currentApp={currentApp} onBack={popView} />
+    },
+    { 
+      id: 'ai_lite_mode', 
+      label: STUDIO_ADMIN_SECTIONS_CONFIG.ai_lite_mode?.label || 'AI LITE MODE', 
+      icon: (
+        <div className="flex flex-col items-center justify-center relative">
+          <span className="text-3xl filter drop-shadow-md animate-pulse">⚡</span>
+          <span className="text-[8px] font-black px-1.5 py-0.5 rounded bg-emerald-600 text-white mt-0.5 uppercase tracking-tighter shadow-[0_0_8px_rgba(16,185,129,0.8)]">
+            FLASH-LITE
+          </span>
+        </div>
+      ),
+      component: <AiLiteModeSection onBack={popView} />
     }
   ];
 
@@ -311,8 +326,9 @@ export const AdminPanel: React.FC<Props> = ({
               <h2 className="text-xl font-black text-slate-900 flex items-center gap-2 tracking-tight">
                 <Shield className="w-6 h-6 text-amber-600" /> Admin Master Panel
               </h2>
-              <span className="text-[10px] font-mono font-black px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/30 animate-pulse tracking-wide shadow-xs">
-                v{APP_VERSION}
+              {/* 🔒 అడ్మిన్ గారి శాశ్వత లాక్: పసుపు రంగులో మెరిసే బ్లింకింగ్ 'H' బ్యాడ్జ్ */}
+              <span className="text-[11px] font-mono font-black px-2.5 py-0.5 rounded-full bg-amber-500/15 text-yellow-400 drop-shadow-[0_0_10px_rgba(250,204,21,1)] border border-amber-500/40 animate-pulse shadow-[0_0_12px_rgba(245,158,11,0.85)] tracking-wider">
+                H
               </span>
             </div>
             <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Unified Control • Status: OPEN ACCESS</p>

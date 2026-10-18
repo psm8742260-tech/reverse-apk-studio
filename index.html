@@ -125,7 +125,7 @@
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').then((reg) => {
+          navigator.serviceWorker.register('/sw.js?v=3.9.77').then((reg) => {
             // Check for updates on every launch
             reg.update().catch(() => {});
             reg.addEventListener('updatefound', () => {
@@ -146,7 +146,7 @@
           navigator.serviceWorker.addEventListener('controllerchange', () => {
             if (!refreshing) {
               refreshing = true;
-              window.location.reload();
+              window.location.reload(true);
             }
           });
         });

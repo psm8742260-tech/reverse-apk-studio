@@ -62,8 +62,37 @@ const SudarshanaChakraIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+// 🏛️ అడ్మిన్ గారి శాశ్వత ఆదేశం: వంకాయ రంగు మెరుపు ఐకాన్ లోపల 5 రంగులు మెరుస్తూ ఆరిపోతూ బ్లింక్ అయ్యే మ్యాజిక్ ఐకాన్
+const MagicFiveColorZapIcon: React.FC = () => {
+  const [colorIndex, setColorIndex] = useState(0);
 
+  // 🌈 5 రంగుల సైకిల్: 1. పసుపు, 2. వంకాయ, 3. నీలం, 4. పచ్చ, 5. ఎరుపు
+  const colors = [
+    { text: 'text-yellow-500', fill: 'fill-yellow-200', glow: 'rgba(234, 179, 8, 0.95)' },
+    { text: 'text-indigo-600', fill: 'fill-indigo-100', glow: 'rgba(79, 70, 229, 0.95)' },
+    { text: 'text-cyan-500', fill: 'fill-cyan-200', glow: 'rgba(6, 182, 212, 0.95)' },
+    { text: 'text-emerald-500', fill: 'fill-emerald-200', glow: 'rgba(16, 185, 129, 0.95)' },
+    { text: 'text-rose-500', fill: 'fill-rose-200', glow: 'rgba(244, 63, 94, 0.95)' },
+  ];
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setColorIndex((prev) => (prev + 1) % colors.length);
+    }, 1800);
+    return () => clearInterval(timer);
+  }, [colors.length]);
+
+  const current = colors[colorIndex];
+
+  return (
+    <Zap 
+      className={`w-4 h-4 transition-all duration-700 ease-in-out animate-pulse ${current.text} ${current.fill}`}
+      style={{
+        filter: `drop-shadow(0 0 6px ${current.glow})`
+      }}
+    />
+  );
+};
 
 interface Props {
   userId?: string;
@@ -608,7 +637,8 @@ export const DecompilerWorkspace: React.FC<Props> = ({
       >
         <div className="flex items-center justify-between pointer-events-auto">
           <div className="flex items-center gap-1.5">
-            <Zap className="w-4 h-4 text-indigo-600 fill-indigo-100" />
+            {/* 🔒 అడ్మిన్ గారి శాశ్వత ఆదేశం: 5 రంగులు మెరుస్తూ ఆరిపోయే మ్యాజిక్ ఐకాన్ */}
+            <MagicFiveColorZapIcon />
             <h2 className="text-sm font-bold text-slate-900">APK Decompiler & Web Unpacker Engine</h2>
           </div>
           <div className="flex items-center gap-2">

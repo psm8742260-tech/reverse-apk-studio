@@ -36,19 +36,25 @@ if (!auth) {
 let db: any = null;
 try {
   if (app) {
-    // Initialize with auto-detect long-polling to prevent 10s WebSocket connection timeout warnings
+// Initialize with auto-detect long-polling to prevent 10s WebSocket connection timeout warnings
     const dbId = firebaseConfig.firestoreDatabaseId || '(default)';
-    db = initializeFirestore(app, {
-      experimentalAutoDetectLongPolling: true
-    }, dbId !== '(default)' ? dbId : undefined);
+    
+    // Create Firestore instance with a timeout promise to prevent app hanging on network issues
+    const dbPromise = Promise.race([
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Firestore connection timeout')), 2500)),
+      Promise.resolve(initializeFirestore(app, { experimentalAutoDetectLongPolling: true }, dbId !== '(default)' ? dbId : undefined))
+    ]);
+    
+    db = await dbPromise;
   }
-} catch (e) {
+} catch (e: any) {
+  console.warn("[Firebase-Safe] Firestore connection issue:", e.message);
   try {
     if (app) {
       db = getFirestore(app);
     }
   } catch (err2) {
-    console.warn("[Firebase-Safe] getFirestore fallback initialized:", err2);
+    console.error("[Firebase-Safe] getFirestore fallback failed:", err2);
   }
 }
 

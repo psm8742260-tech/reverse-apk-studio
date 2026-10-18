@@ -97,8 +97,9 @@ export const PwaExportSection: React.FC<Props> = ({ currentApp, onBack }) => {
             {/* 🏛️ అడ్మిన్ గారు, మీ ఆదేశం ప్రకారం ఇక్కడ పేరును "PWA System (Web App System)" గా మార్చాము. */}
             <div className="flex items-center gap-2">
               <h3 className="text-lg font-bold text-slate-100">PWA System (Web App System)</h3>
-              <span className="text-[10px] font-mono font-black px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/40 animate-pulse tracking-wide shadow-[0_0_10px_rgba(20,184,166,0.5)]">
-                v{APP_VERSION}
+              {/* 🔒 అడ్మిన్ గారి శాశ్వత లాక్: పసుపు రంగులో మెరిసే బ్లింకింగ్ 'H' బ్యాడ్జ్ */}
+              <span className="text-[11px] font-mono font-black px-2.5 py-0.5 rounded-full bg-teal-500/20 text-yellow-300 drop-shadow-[0_0_8px_rgba(253,224,71,1)] border border-teal-500/40 animate-pulse tracking-wide shadow-[0_0_12px_rgba(20,184,166,0.9)]">
+                H
               </span>
             </div>
             <p className="text-xs text-slate-400">
@@ -255,8 +256,9 @@ export const PwaExportSection: React.FC<Props> = ({ currentApp, onBack }) => {
             <div>
               <div className="flex items-center gap-2">
                 <h4 className="text-base font-black text-white tracking-tight">సార్వత్రిక PWA ఆటో-అప్‌డేట్ ఇంజిన్</h4>
-                <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 animate-pulse">
-                  ACTIVE • v{APP_VERSION}
+                {/* 🔒 అడ్మిన్ గారి శాశ్వత లాక్: పసుపు రంగులో మెరిసే బ్లింకింగ్ 'H' బ్యాడ్జ్ */}
+                <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.7)]">
+                  ACTIVE • <span className="text-yellow-300 drop-shadow-[0_0_6px_rgba(253,224,71,1)] animate-pulse font-black">H</span>
                 </span>
               </div>
               <p className="text-xs text-slate-400">

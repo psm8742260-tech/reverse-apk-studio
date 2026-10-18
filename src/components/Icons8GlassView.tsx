@@ -74,6 +74,25 @@ export function Icons8GlassView({ isOpen, onClose, onSendToEditor }: Icons8Glass
 
   const [copiedType, setCopiedType] = useState<string | null>(null);
 
+  // 🏛️ అడ్మిన్ గారు, AI Lite Mode State మరియు కంట్రోల్ కోసం స్టేట్ జోడించాం
+  const [isLiteModeActiveUI, setIsLiteModeActiveUI] = useState(true);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const fetchLiteMode = async () => {
+      try {
+        const res = await fetch('/api/admin/settings/LITE_MODE_OVERRIDE');
+        if (res.ok) {
+          const data = await res.json();
+          if (typeof data.value === 'boolean') {
+            setIsLiteModeActiveUI(data.value);
+          }
+        }
+      } catch (err) {}
+    };
+    fetchLiteMode();
+  }, [isOpen]);
+
   // 🏛️ అడ్మిన్ గారు, మెయిన్ స్క్రీన్‌పై కేటగిరీ ఐకాన్లు అవే రంగులతో చూపించడానికి సర్వర్ నుండి కేటగిరీలు లోడ్ చేస్తున్నాం
   const [categories, setCategories] = useState<any[]>(CATEGORIES_25);
 
@@ -300,6 +319,43 @@ export function Icons8GlassView({ isOpen, onClose, onSendToEditor }: Icons8Glass
                   transition={{ duration: 0.2 }}
                   className="p-5"
                 >
+                  {/* 🏛️ అడ్మిన్ గారు, ఐకాన్ ఫ్యూచర్ కింద సపరేట్‌గా యాడ్ చేసిన AI Lite Mode / Token Saver కంట్రోల్ ప్యానెల్ */}
+                  <div className="max-w-4xl mx-auto mb-6">
+                    <div className="p-4 rounded-3xl bg-gradient-to-r from-indigo-950/60 to-purple-950/60 border border-indigo-500/30 backdrop-blur-md shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-2xl bg-indigo-600/30 border border-indigo-400/40 flex items-center justify-center text-indigo-300 font-black">
+                          ⚡
+                        </div>
+                        <div>
+                          <h4 className="text-white text-xs font-black tracking-tight">AI Lite Mode & Token Saver Override</h4>
+                          <p className="text-[10px] text-white/60 font-medium">బటన్-1 ఆన్ చేస్తే 'gemini-3.5-flash-lite' ద్వారా టోకెన్లు పూర్తిగా ఆదా అవుతాయి.</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={async () => {
+                            const newState = !isLiteModeActiveUI;
+                            setIsLiteModeActiveUI(newState);
+                            try {
+                              await fetch('/api/admin/settings', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ key: 'LITE_MODE_OVERRIDE', value: newState })
+                              });
+                            } catch(e) {}
+                          }}
+                          className={`px-4 py-2 rounded-xl text-xs font-black transition-all shadow-md flex items-center gap-2 ${
+                            isLiteModeActiveUI 
+                              ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/30' 
+                              : 'bg-white/10 hover:bg-white/15 text-white/70 border border-white/10'
+                          }`}
+                        >
+                          <span>{isLiteModeActiveUI ? '🟢 Lite Mode ON (Flash-Lite)' : '⚪ User Model Mode'}</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-y-6 gap-x-3 max-w-4xl mx-auto">
                     {categories.map((cat) => (
                       <div 

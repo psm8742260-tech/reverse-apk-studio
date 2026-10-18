@@ -32,7 +32,8 @@ export function FeaturesManagementSection({
     { key: 'enableDemoApks', label: 'డెమో శాంపిల్ APKలు (Demo APKs)', desc: 'స్టూడియోని టెస్ట్ చేయడానికి సిద్ధంగా ఉన్న శాంపిల్ ప్రాజెక్ట్‌లు', category: 'Demo' },
     { key: 'enableInvisibleAgentDaemon', label: 'ఇన్విజిబుల్ ఏజెంట్ డెమోన్ (Invisible Agent)', desc: 'బ్యాక్‌గ్రౌండ్‌లో నిరంతరం కోడ్ నాణ్యతను పరిశీలించే స్వతంత్ర ఏజెంట్', category: 'Agent' },
     { key: 'enableAgentRegulations', label: 'ఏజెంట్ రెగ్యులేషన్స్ (Rules Enforcement)', desc: 'AGENTS.md నిబంధనలను కఠినంగా అమలు చేసే భద్రతా లేయర్', category: 'Security' },
-    { key: 'enableAdminDemoControllers', label: 'అడ్మిన్ డెమో కంట్రోలర్స్', desc: 'అడ్మిన్ ప్యానెల్‌లోని టెస్ట్ కంట్రోలర్‌లను యాక్టివేట్ చేసే స్విచ్', category: 'Admin' }
+    { key: 'enableAdminDemoControllers', label: 'అడ్మిన్ డెమో కంట్రోలర్స్', desc: 'అడ్మిన్ ప్యానెల్‌లోని టెస్ట్ కంట్రోలర్‌లను యాక్టివేట్ చేసే స్విచ్', category: 'Admin' },
+    { key: 'enableLiteMode', label: 'AI Lite Mode & Token Saver (Flash-Lite)', desc: 'బ్యాక్‌గ్రౌండ్‌లో gemini-3.5-flash-lite రన్ చేసి టోకెన్ ఖర్చును తగ్గించే మోడ్', category: 'AI' }
   ];
 
   return (

@@ -356,6 +356,11 @@ export const STUDIO_ADMIN_SECTIONS_CONFIG: Record<string, AdminSectionConfig> = 
     id: 'icons8_glass',
     label: 'Icons8 Glass',
     teluguGuide: 'ఐకాన్స్8 గ్లాస్ బోర్డు: డిజైనింగ్ కోసం అందమైన గ్లాస్ ఐకాన్స్ లైబ్రరీని పొందడానికి.'
+  },
+  ai_lite_mode: {
+    id: 'ai_lite_mode',
+    label: 'AI LITE MODE',
+    teluguGuide: 'ఏఐ లైట్ మోడ్ & టోకెన్ సేవర్: తక్కువ ఖర్చు మరియు వేగవంతమైన ఫ్లాష్-లైట్ మోడల్ ద్వారా టోకెన్లను ఆదా చేయడానికి.'
   }
   // 🏛️ తెలుగు వివరణ & డిక్షనరీ గైడ్:
   // 

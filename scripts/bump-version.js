@@ -46,13 +46,24 @@ try {
     console.log(`📱 [Auto-Version] public/manifest.json version synced: ${newVersion}`);
   }
 
-  // 4. Update src/version.ts
+  // 4. Update src/version.ts (🔒 Permanent H & HYBRID ENGINE Immutable Lock)
   const srcVersionPath = path.join(rootDir, 'src/version.ts');
-  const versionFileContent = `// 🔒 AI Master Studio Auto-Generated Version
-// ఈ ఫైల్ బిల్డ్ ప్రాసెస్ సమయంలో స్వయంచాలకంగా అప్‌డేట్ అవుతుంది (Rule 51 Compliant).
-export const APP_VERSION = '${newVersion}';
-export const PREVIOUS_VERSION = '${oldVersion}';
+  const versionFileContent = `// 🔒 AI Master Studio - Permanent Hybrid Engine Immutable Lock
+// అడ్మిన్ గారి శాశ్వత లాక్: నెంబర్లు పూర్తిగా రద్దు చేయబడ్డాయి. కేవలం 'H' మరియు 'HYBRID ENGINE' మాత్రమే ఉండాలి.
+export const APP_VERSION = 'H';
+export const ENGINE_NAME = 'HYBRID ENGINE';
+export const DISPLAY_BADGE = 'H';
+export const PREVIOUS_VERSION = 'H';
 export const BUILD_TIMESTAMP = '${new Date().toISOString()}';
+
+// 🌐 Service Worker (sw.js) & main.tsx Direct Connections
+export const SW_CACHE_NAME = 'aims-service-worker-hybrid-engine';
+export const MAIN_CACHE_KEY = 'aims_hybrid_engine';
+
+// ⚡ Hybrid Live Engine Connection (హైబ్రిడ్ లైవ్ కనెక్షన్)
+export const HYBRID_MODE_ACTIVE = true;
+export const HYBRID_SYNC_STRATEGY = 'NETWORK_FIRST_LIVE_RELOAD';
+
 export default APP_VERSION;
 `;
   fs.writeFileSync(srcVersionPath, versionFileContent, 'utf8');

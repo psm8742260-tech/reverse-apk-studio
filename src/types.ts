@@ -90,6 +90,7 @@ export interface FeatureFlags {
   enableAgentRegulations: boolean;
   enableAdminDemoControllers: boolean;
   enableInvisibleAgentDaemon: boolean;
+  enableLiteMode: boolean;
 }
 
 export interface AgentStatus {

@@ -113,8 +113,9 @@ export const Header: React.FC<Props> = ({
               <h1 className="text-sm sm:text-base font-black tracking-tight whitespace-nowrap bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
                 AI Master<span className="bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent ml-1">Studio</span>
               </h1>
-              <span className="text-[9px] sm:text-[10px] font-mono font-bold px-1.5 sm:px-2 py-0.5 rounded bg-sky-50 text-sky-700 border border-sky-200 shrink-0">
-                PRO ENGINE v{APP_VERSION}
+              {/* 🔒 అడ్మిన్ గారి శాశ్వత లాక్: పసుపు రంగులో మెరిసే బ్లింకింగ్ 'H' బ్యాడ్జ్ */}
+              <span className="text-[9px] sm:text-[10px] font-mono font-black px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-300 shadow-[0_0_10px_rgba(14,165,233,0.5)] shrink-0 flex items-center gap-1.5">
+                PRO ENGINE • <span className="text-yellow-500 drop-shadow-[0_0_8px_rgba(234,179,8,1)] animate-pulse font-black">H</span>
               </span>
             </div>
             <p className="text-[10px] sm:text-[11px] text-slate-500 hidden sm:block">AI Master Studio • Client Decompiler • Live Web Preview</p>

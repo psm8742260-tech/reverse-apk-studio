@@ -116,6 +116,11 @@ export async function buildRemoteApkFromUrl(
     let gotApk = false;
     let gotAab = false;
 
+    const contentType = (remoteRes.headers && remoteRes.headers['content-type']) || '';
+    if (String(contentType).includes('text/html') || rawBuffer.slice(0, 50).toString().includes('<!doctype') || rawBuffer.slice(0, 50).toString().includes('<html')) {
+      throw new Error('రిమోట్ సర్వర్ నుండి APK బైనరీ బదులు వెబ్ పేజ్ (HTML) వచ్చింది. దయచేసి లోకల్ బిల్డ్ వాడండి.');
+    }
+
     // జిప్ ఆర్కైవ్ గా వచ్చిందో లేదో తనిఖీ
     try {
       const incomingZip = await JSZip.loadAsync(rawBuffer);
@@ -133,14 +138,18 @@ export async function buildRemoteApkFromUrl(
         await fs.writeFile(finalAabPath, aabBuf);
         gotAab = true;
       }
+      if (!gotApk && incomingZip.file('AndroidManifest.xml')) {
+        await fs.writeFile(finalApkPath, rawBuffer);
+        gotApk = true;
+      }
     } catch {
-      // జిప్ కాకపోతే నేరుగా కంటైనర్ బైనరీని APK గా సేవ్ చేస్తాము
+      // జిప్ కాకపోతే చెక్ చేయాలి
     }
 
     if (!gotApk) {
-      await fs.writeFile(finalApkPath, rawBuffer);
+      throw new Error('చెల్లుబాటు అయ్యే APK ఫైల్ ఆర్కైవ్ లభించలేదు.');
     }
-    appendLog('✅ [PHRS Worker] రిమోట్ వర్కర్ నుండి APK ఆర్టిఫ్యాక్ట్ స్వీకరించబడింది.');
+    appendLog('✅ [PHRS Worker] రిమోట్ వర్కర్ నుండి నిజమైన APK ఆర్టిఫ్యాక్ట్ స్వీకరించబడింది.');
 
     // AAB లేకపోతే ప్రామాణికమైన ఆండ్రాయిడ్ యాప్ బండిల్ (.aab) ను సిద్ధం చేస్తాము
     if (!gotAab) {

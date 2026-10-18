@@ -80,6 +80,7 @@ function AppContent() {
     enableAgentRegulations: true,
     enableAdminDemoControllers: true,
     enableInvisibleAgentDaemon: true,
+    enableLiteMode: true,
   });
 
   const [currentLang, setCurrentLang] = useState<LanguageCode>('te');
@@ -358,14 +359,19 @@ function AppContent() {
           {/* Firebase Sync Indicator */}
           <div className="flex items-center gap-4">
              {user ? (
-               <div className="flex items-center gap-2 text-emerald-600 font-bold">
-                 <div className="w-2 h-2 bg-emerald-500 rounded-full" />
+               <button 
+                 onClick={logout}
+                 className="px-2.5 py-0.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 active:scale-95 transition text-[11px] font-bold shadow-xs cursor-pointer flex items-center gap-1.5"
+                 title="క్లిక్ చేసి ఆఫ్ చేయండి (Click to Turn OFF)"
+               >
+                 <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
                  <span>Cloud Synced</span>
-               </div>
+               </button>
              ) : (
                <button 
                  onClick={login}
-                 className="px-3 py-1 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+                 className="px-2.5 py-0.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 active:scale-95 transition text-[11px] font-bold shadow-xs cursor-pointer"
+                 title="క్లిక్ చేసి ఆన్ చేయండి (Click to Turn ON)"
                >
                  Connect Cloud
                </button>

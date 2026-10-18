@@ -2,7 +2,7 @@
 // భవిష్యత్తులో మీరు లేదా యూజర్లు ఏ యాప్‌ను ఇన్‌స్టాల్ చేసుకున్నా,
 // కొత్త వెర్షన్ వచ్చిన వెంటనే ఆటోమేటిక్‌గా అప్‌డేట్ అయ్యేలా ఈ ఇంజిన్ నిర్మించబడింది.
 
-const CACHE_NAME = 'aims-service-worker-v3.9.60';
+const CACHE_NAME = 'aims-service-worker-v3.9.72';
 
 // 1. Installation - Install fresh and immediately activate
 self.addEventListener('install', (event) => {
@@ -27,15 +27,25 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// 3. Network Fetch - Network first for all navigation and API requests with seamless fallback
+// 3. Hybrid Network-First Fetch Engine (హైబ్రిడ్ లైవ్ నెట్‌వర్క్ ఫస్ట్ ఇంజిన్)
+// పేజీ రీలోడ్ చేసిన వెంటనే సర్వర్ నుండి సరికొత్త మార్పులను లైవ్‌గా లోడ్ చేస్తుంది
 self.addEventListener('fetch', (event) => {
-  // Pass-through without stale locking
-  if (event.request.mode === 'navigate') {
-    event.respondWith(
-      fetch(event.request).catch(() => caches.match(event.request))
-    );
-    return;
-  }
+  // Ignore non-GET and chrome-extension/internal requests
+  if (event.request.method !== 'GET' || !event.request.url.startsWith('http')) return;
+
+  event.respondWith(
+    Promise.race([
+      fetch(event.request).then((networkResponse) => {
+        // Clone and update cache with freshest response
+        if (networkResponse && networkResponse.status === 200) {
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone)).catch(() => {});
+        }
+        return networkResponse;
+      }),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Network timeout')), 1800))
+    ]).catch(() => caches.match(event.request))
+  );
 });
 
 // 4. Client Communication - Handle manual and automated skip waiting requests
