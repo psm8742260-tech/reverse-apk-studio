@@ -3546,7 +3546,7 @@ export const NormalAppStudio: React.FC<Props> = ({
         </div>
 
         {/* Action Icons at the Top Right */}
-        <div className="flex items-center gap-1 sm:gap-2">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           <div className="relative flex items-center gap-1 bg-slate-50 p-1 rounded-xl border border-slate-100">
             <button
               onClick={() => setPreviewKey((prev) => prev + 1)}
@@ -3711,7 +3711,7 @@ export const NormalAppStudio: React.FC<Props> = ({
             )}
           <button
             onClick={() => handleOpenShift(true)}
-            className="p-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-lg transition shadow-sm border border-indigo-100 flex items-center gap-1"
+            className="p-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-lg transition shadow-sm border border-indigo-100 flex items-center gap-1 shrink-0 cursor-pointer"
             title="Universal Shift"
           >
             <Rocket className="w-4 h-4" />
