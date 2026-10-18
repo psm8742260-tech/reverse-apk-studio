@@ -95,9 +95,9 @@
       "allowEditWithoutPasscode": false
     },
     {
-      "filePath": "RESTART_TRACKER.md",
-      "description": "సిస్టమ్ చెక్‌పాయింట్ మరియు స్థితి ట్రాకర్ రిజిస్ట్రీ",
-      "lockLevel": "AUDIT_REGISTER",
+      "filePath": "BACKUP.md",
+      "description": "అధికారిక శాశ్వత బ్యాకప్ మరియు సిస్టమ్ చెక్‌పాయింట్ ఫైల్ - శాశ్వత రక్షణ",
+      "lockLevel": "PERMANENT_READ_ONLY",
       "allowEditWithoutPasscode": false
     },
     {
@@ -110,6 +110,12 @@
       "filePath": "src/utils/phrsCloud.ts",
       "description": "PHRS క్లౌడ్ & PHRS Crowd లైవ్ పబ్లిషింగ్ ఇంజిన్ (publishAppToPhrsCrowd) - రక్షిత సర్వీస్",
       "lockLevel": "PROTECTED_SERVICE",
+      "allowEditWithoutPasscode": false
+    },
+    {
+      "filePath": "server/services/pwaAndroidPackager.ts",
+      "description": "PWABuilder 6-ఫైళ్ల గూగుల్ ప్లే ప్యాకేజీ మరియు APK resources.arsc లాంచర్ ఐకాన్ ఇంజిన్ - శాశ్వత రక్షణ",
+      "lockLevel": "PROTECTED_BACKBONE",
       "allowEditWithoutPasscode": false
     }
   ],

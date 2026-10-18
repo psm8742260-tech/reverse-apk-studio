@@ -13,7 +13,19 @@ export const ULTRA_PERMANENT_CONFIG = {
   SHA256_FINGERPRINT: "E7:07:C6:05:39:25:49:1C:C3:FE:0E:A9:CA:B3:E8:FC:E2:3E:99:79:5C:2C:7F:96:05:0A:CC:D4:A9:47:E1:6C",
   
   // రిలేషన్ టైప్
-  RELATION: ["delegate_permission/common.handle_all_urls"]
+  RELATION: ["delegate_permission/common.handle_all_urls"],
+
+  // 🔒 అడ్మిన్ గారి ఆదేశం: PHRS క్రౌడ్ సర్వర్ టెర్మినల్ బ్రిడ్జి శాశ్వత లాక్
+  PHRS_CROWD_BRIDGE: {
+    SERVER_URL: "https://phrscrowd.online",
+    NODE_ID: "phrs-master-cloud",
+    TERMINAL_ENDPOINT: "/api/phrs/terminal",
+    STATUS_ENDPOINT: "/api/phrs/status",
+    LOCAL_PORT: 3000,
+    SUPPORTED_LANGUAGES: ["telugu", "english"],
+    TERMINAL_BOARD_HEIGHT_EXPANDED_50_PERCENT: true,
+    PERMANENT_LOCK: true
+  }
 };
 
 /**

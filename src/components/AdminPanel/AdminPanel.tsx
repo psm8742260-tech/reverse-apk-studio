@@ -65,11 +65,11 @@ const AiConfigBadge: React.FC = () => {
       .catch(() => {});
   }, []);
 
-  // 🏛️ అడ్మిన్ గారు, ప్యానెల్ హెడర్‌లో ఎల్లప్పుడూ "AI Engines Online" అని గ్రీన్ పల్స్‌తో కనిపించడానికి ఇక్కడ పర్మినెంట్ హార్డ్‌కోడ్ చేశాము
+  // 🏛️ అడ్మిన్ గారు! హెడర్‌లో ఎల్లప్పుడూ "AI Online" అని గ్రీన్ పల్స్‌తో కనిపించే కాంపాక్ట్ బ్యాడ్జ్
   return (
-    <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
-      <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-      <span className="text-[10px] font-black text-emerald-600 uppercase tracking-wider">AI Engines Online</span>
+    <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full shrink-0">
+      <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+      <span className="text-[9px] font-black text-emerald-600 uppercase tracking-wider whitespace-nowrap">AI Engines Online</span>
     </div>
   );
 };
@@ -310,42 +310,45 @@ export const AdminPanel: React.FC<Props> = ({
 
   return (
     <div className="fixed inset-0 z-[100] bg-[#F4F1EA] flex flex-col font-sans overflow-hidden">
-      {/* Admin Panel Header */}
-      <header className="bg-[#E9E4DC]/90 backdrop-blur-md border-b border-[#D8D2C5] px-6 py-5 flex items-center justify-between shrink-0 sticky top-0 z-20">
-        <div className="flex items-center gap-4">
+      {/* 🔒 అడ్మిన్ గారి శాశ్వత లాక్ (RULE 52): 90% ఎత్తు తగ్గించిన కాంపాక్ట్ అడ్మిన్ హెడర్ */}
+      <header className="bg-[#E9E4DC]/95 backdrop-blur-md border-b border-[#D8D2C5] px-2.5 py-1.5 sm:px-4 sm:py-2 flex items-center justify-between shrink-0 sticky top-0 z-20 shadow-xs">
+        <div className="flex items-center gap-1.5 sm:gap-3 min-w-0">
           {activeView !== 'APP_LAUNCHER_GRID' && (
             <button
               onClick={popView}
-              className="p-2.5 bg-rose-600 hover:bg-rose-500 text-white rounded-2xl transition-all flex items-center gap-2 text-xs font-black shadow-lg hover:scale-105 active:scale-95"
+              className="px-2 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded-lg transition-all flex items-center gap-1 text-[10px] sm:text-xs font-bold shadow-xs active:scale-95 shrink-0 cursor-pointer"
             >
-              <ArrowLeft className="w-4 h-4" /> BACK
+              <ArrowLeft className="w-3.5 h-3.5" /> BACK
             </button>
           )}
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-xl font-black text-slate-900 flex items-center gap-2 tracking-tight">
-                <Shield className="w-6 h-6 text-amber-600" /> Admin Master Panel
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5">
+              <Shield className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600 shrink-0" />
+              <h2 className="text-xs sm:text-sm font-black text-slate-900 tracking-tight whitespace-nowrap truncate">
+                Admin Master Panel
               </h2>
               {/* 🔒 అడ్మిన్ గారి శాశ్వత లాక్: పసుపు రంగులో మెరిసే బ్లింకింగ్ 'H' బ్యాడ్జ్ */}
-              <span className="text-[11px] font-mono font-black px-2.5 py-0.5 rounded-full bg-amber-500/15 text-yellow-400 drop-shadow-[0_0_10px_rgba(250,204,21,1)] border border-amber-500/40 animate-pulse shadow-[0_0_12px_rgba(245,158,11,0.85)] tracking-wider">
+              <span className="text-[9px] sm:text-[10px] font-mono font-black px-1.5 sm:px-2 py-0.5 rounded-full bg-amber-500/15 text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,1)] border border-amber-500/40 animate-pulse shadow-[0_0_10px_rgba(245,158,11,0.85)] tracking-wider shrink-0">
                 H
               </span>
             </div>
-            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Unified Control • Status: OPEN ACCESS</p>
+            <p className="text-[8px] text-slate-500 font-bold uppercase tracking-wider hidden sm:block">Unified Control • Status: OPEN ACCESS</p>
           </div>
         </div>
 
         {/* 🏛️ అడ్మిన్ గారు, AI సెట్టింగ్స్ సరిగ్గా లేకపోతే ఇక్కడ వార్నింగ్ చూపిస్తున్నాను. */}
-        <AiConfigBadge />
+        <div className="flex items-center gap-1.5 shrink-0">
+          <AiConfigBadge />
 
-        {activeView === 'APP_LAUNCHER_GRID' && (
-          <button
-            onClick={onClose}
-            className="p-2.5 bg-[#D8D2C5] hover:bg-[#C9C2B4] text-slate-700 rounded-2xl transition-all border border-[#C9C2B4]"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        )}
+          {activeView === 'APP_LAUNCHER_GRID' && (
+            <button
+              onClick={onClose}
+              className="p-1 sm:p-1.5 bg-[#D8D2C5] hover:bg-[#C9C2B4] text-slate-700 rounded-lg transition-all border border-[#C9C2B4] active:scale-95 shadow-xs"
+            >
+              <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            </button>
+          )}
+        </div>
       </header>
 
       {/* Main Content Area */}
