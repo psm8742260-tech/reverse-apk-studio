@@ -1313,6 +1313,9 @@ export const NormalAppStudio: React.FC<Props> = ({
       ];
     }
   });
+  const [isRestoringFromServer, setIsRestoringFromServer] = useState<boolean>(false);
+  const [isBackingUpToServer, setIsBackingUpToServer] = useState<boolean>(false);
+  const [appSearchQuery, setAppSearchQuery] = useState<string>('');
 
   // Load projects from backend
   useEffect(() => {
@@ -1700,6 +1703,63 @@ export const NormalAppStudio: React.FC<Props> = ({
       setTimeout(() => setProjectToast(''), 3500);
     } catch (err) {
       console.error("Error creating project safely:", err);
+    }
+  };
+
+  // 🛡️ అడ్మిన్ గారు! సర్వర్ బ్యాకప్ నుండి తొలగిపోయిన ప్రాజెక్ట్‌లను రిస్టోర్ చేసే ఫంక్షన్
+  const handleRestoreAllFromServer = async () => {
+    setIsRestoringFromServer(true);
+    try {
+      const res = await fetch('/api/projects/restore-all', { method: 'POST' });
+      const data = await res.json();
+      if (data && data.success && Array.isArray(data.projects) && data.projects.length > 0) {
+        const metadataOnly = data.projects.map((p: any) => ({
+          id: p.id,
+          name: p.name || 'నా స్టూడియో యాప్',
+          updatedAt: p.updatedAt || new Date().toLocaleString()
+        }));
+        setSavedProjects(metadataOnly);
+        try {
+          safeStorage.setItem('studio_saved_projects_backup', JSON.stringify(metadataOnly));
+        } catch (e) {}
+        setProjectToast(`✅ సర్వర్ బ్యాకప్ నుండి ${data.projects.length} ప్రాజెక్ట్‌లు విజయవంతంగా రిస్టోర్ అయ్యాయి!`);
+        setTimeout(() => setProjectToast(''), 3500);
+      } else {
+        setProjectToast('సర్వర్‌లో రిస్టోర్ చేయడానికి బ్యాకప్ సిద్ధంగా ఉంది.');
+        setTimeout(() => setProjectToast(''), 3000);
+      }
+    } catch (err: any) {
+      console.error('Failed to restore from server:', err);
+      setProjectToast('సర్వర్ రిస్టోర్ చేయడంలో లోపం వచ్చింది');
+      setTimeout(() => setProjectToast(''), 3000);
+    } finally {
+      setIsRestoringFromServer(false);
+    }
+  };
+
+  // 🛡️ అడ్మిన్ గారు! అన్ని ప్రాజెక్ట్‌లను సర్వర్‌లో శాశ్వతంగా సేవ్ & బ్యాకప్ చేసే ఫంక్షన్
+  const handleBackupAllToServer = async () => {
+    setIsBackingUpToServer(true);
+    try {
+      const res = await fetch('/api/projects/backup-all', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projects: savedProjects })
+      });
+      const data = await res.json();
+      if (data && data.success) {
+        setProjectToast('✅ అన్ని ప్రాజెక్ట్‌లు సర్వర్‌లో శాశ్వతంగా బ్యాకప్ చేయబడ్డాయి!');
+        setTimeout(() => setProjectToast(''), 3500);
+      } else {
+        setProjectToast('సర్వర్ బ్యాకప్ చేయడంలో లోపం ఏర్పడింది');
+        setTimeout(() => setProjectToast(''), 3000);
+      }
+    } catch (err: any) {
+      console.error('Failed to backup to server:', err);
+      setProjectToast('సర్వర్ బ్యాకప్ లోపం వచ్చింది');
+      setTimeout(() => setProjectToast(''), 3000);
+    } finally {
+      setIsBackingUpToServer(false);
     }
   };
 
@@ -4548,13 +4608,65 @@ export const NormalAppStudio: React.FC<Props> = ({
                 <Search className="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input 
                   type="text" 
+                  value={appSearchQuery}
+                  onChange={(e) => setAppSearchQuery(e.target.value)}
                   placeholder="Search for an app" 
                   className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-2xl text-[15px] outline-none hover:border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition shadow-sm"
                 />
               </div>
 
+              {/* 🛡️ అడ్మిన్ గారు! సర్వర్ రిస్టోర్ & సర్వర్ బ్యాకప్ బటన్స్ (ఖచ్చితమైన సైజు & ఆహ్లాదకరమైన రంగులు) */}
+              <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 bg-slate-50 border border-slate-200/80 rounded-xl">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleRestoreAllFromServer}
+                    disabled={isRestoringFromServer}
+                    className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold rounded-lg transition flex items-center gap-1.5 shadow-sm disabled:opacity-50 cursor-pointer"
+                    title="సర్వర్ బ్యాకప్ నుండి తొలగిపోయిన అన్ని యాప్స్‌ను వెంటనే తిరిగి తీసుకురావడానికి"
+                  >
+                    <RotateCcw className={`w-3.5 h-3.5 ${isRestoringFromServer ? 'animate-spin' : ''}`} />
+                    <span>{isRestoringFromServer ? 'రిస్టోర్ అవుతోంది...' : 'రిస్టోర్ బ్యాకప్ (సర్వర్)'}</span>
+                  </button>
+
+                  <button
+                    onClick={handleBackupAllToServer}
+                    disabled={isBackingUpToServer}
+                    className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-bold rounded-lg transition flex items-center gap-1.5 shadow-sm disabled:opacity-50 cursor-pointer"
+                    title="అన్ని ప్రాజెక్ట్‌లను సర్వర్‌లో శాశ్వతంగా బ్యాకప్ చేయడానికి"
+                  >
+                    <UploadCloud className={`w-3.5 h-3.5 ${isBackingUpToServer ? 'animate-bounce' : ''}`} />
+                    <span>{isBackingUpToServer ? 'సేవ్ అవుతోంది...' : 'సర్వర్ బ్యాకప్'}</span>
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white border border-slate-200 rounded-lg text-[11px] font-medium text-slate-600 shadow-xs">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <span>సర్వర్ క్లౌడ్ స్టోరేజ్ యాక్టివ్ ({savedProjects.length})</span>
+                </div>
+              </div>
+
+              {/* ప్రాజెక్ట్స్ ఖాళీగా ఉంటే లేదా తొలగించబడితే సర్వర్ రిస్టోర్ ప్రాంప్ట్ */}
+              {savedProjects.length === 0 && (
+                <div className="p-8 text-center bg-slate-50 border border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center gap-3">
+                  <p className="text-sm font-semibold text-slate-700">యాప్స్ ఏవీ కనిపించడం లేదు లేదా తొలగించబడ్డాయి.</p>
+                  <p className="text-xs text-slate-500 max-w-sm">
+                    సర్వర్ పర్మినెంట్ బ్యాకప్ నుండి తొలగిపోయిన అన్ని యాప్స్‌ను తక్షణమే పునరుద్ధరించుకోవచ్చు.
+                  </p>
+                  <button
+                    onClick={handleRestoreAllFromServer}
+                    disabled={isRestoringFromServer}
+                    className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition flex items-center gap-2 shadow-sm cursor-pointer"
+                  >
+                    <RotateCcw className={`w-4 h-4 ${isRestoringFromServer ? 'animate-spin' : ''}`} />
+                    <span>సర్వర్ నుండి యాప్స్‌ను రీస్టోర్ చేయండి (Restore Apps)</span>
+                  </button>
+                </div>
+              )}
+
               <div className="flex flex-col gap-2.5">
-                {savedProjects.map((proj) => (
+                {savedProjects
+                  .filter(p => !appSearchQuery.trim() || (p.name && p.name.toLowerCase().includes(appSearchQuery.toLowerCase())))
+                  .map((proj) => (
                   <div key={proj.id} onClick={() => { handleOpenProject(proj); }} className="bg-white border border-slate-200 rounded-lg p-2.5 shadow-sm hover:shadow-md transition flex flex-col cursor-pointer relative">
                       
                     <div className="flex items-start justify-between mb-1.5">

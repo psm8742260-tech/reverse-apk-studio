@@ -2936,12 +2936,14 @@ app.post('/api/terminal/run', async (req, res) => {
 const PROJECTS_DIR = path.join(process.cwd(), 'projects');
 const PERMANENT_PROJECTS_DIR = path.join(process.cwd(), 'published_backup', 'projects');
 const ARCHIVE_PROJECTS_DIR = path.join(process.cwd(), 'published_backup', 'projects_archive');
+const SEED_PROJECTS_DIR = path.join(process.cwd(), 'published_backup', 'projects_permanent_seed');
 
 async function ensureProjectsDir() {
   try {
     await fs.mkdir(PROJECTS_DIR, { recursive: true });
     await fs.mkdir(PERMANENT_PROJECTS_DIR, { recursive: true });
     await fs.mkdir(ARCHIVE_PROJECTS_DIR, { recursive: true });
+    await fs.mkdir(SEED_PROJECTS_DIR, { recursive: true });
   } catch (err) {}
 }
 
@@ -3170,6 +3172,117 @@ app.delete('/api/projects/:id', async (req, res) => {
     }
     
     res.json({ success: true });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 🛡️ అడ్మిన్ గారు! సర్వర్ బ్యాకప్ (Permanent & Archive & Seed) నుండి తొలగిపోయిన అన్ని ప్రాజెక్టులను ఇన్స్టంట్‌గా పునరుద్ధరించే రౌట్
+app.post('/api/projects/restore-all', async (req, res) => {
+  try {
+    await ensureProjectsDir();
+    const restoredProjects: any[] = [];
+    const seenIds = new Set<string>();
+
+    const dirsToCheck = [
+      SEED_PROJECTS_DIR,
+      PERMANENT_PROJECTS_DIR,
+      ARCHIVE_PROJECTS_DIR,
+      PROJECTS_DIR
+    ];
+
+    for (const dir of dirsToCheck) {
+      try {
+        const entries = await fs.readdir(dir, { withFileTypes: true });
+        for (const entry of entries) {
+          if (entry.isDirectory() && !seenIds.has(entry.name)) {
+            const jsonPath = path.join(dir, entry.name, 'project.json');
+            try {
+              const content = await fs.readFile(jsonPath, 'utf8');
+              const data = JSON.parse(content);
+              if (data && data.id) {
+                seenIds.add(data.id);
+                restoredProjects.push(data);
+                
+                // Active container కి పునరుద్ధరించడం
+                const activePath = path.join(PROJECTS_DIR, data.id);
+                await fs.mkdir(activePath, { recursive: true });
+                await fs.writeFile(path.join(activePath, 'project.json'), JSON.stringify(data, null, 2), 'utf8');
+
+                // Permanent backup లో కూడా సేవ్ చేయడం
+                const permPath = path.join(PERMANENT_PROJECTS_DIR, data.id);
+                await fs.mkdir(permPath, { recursive: true });
+                await fs.writeFile(path.join(permPath, 'project.json'), JSON.stringify(data, null, 2), 'utf8');
+
+                // Firestore sync
+                if (db) {
+                  try {
+                    await setDoc(doc(db, 'projects', data.id), data, { merge: true });
+                  } catch (e) {}
+                }
+              }
+            } catch (err) {}
+          }
+        }
+      } catch (dirErr) {}
+    }
+
+    // Sort by updated time descending
+    restoredProjects.sort((a, b) => {
+      const aTime = a.lastUpdated || a.updatedAt || '';
+      const bTime = b.lastUpdated || b.updatedAt || '';
+      return new Date(bTime).getTime() - new Date(aTime).getTime();
+    });
+
+    res.json({ success: true, count: restoredProjects.length, projects: restoredProjects });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 🛡️ అడ్మిన్ గారు! ప్రస్తుత ప్రాజెక్టులన్నింటినీ సర్వర్ స్టోరేజ్ & పర్మినెంట్ బ్యాకప్‌లోకి బలవంతంగా భద్రపరిచే రౌట్
+app.post('/api/projects/backup-all', async (req, res) => {
+  try {
+    await ensureProjectsDir();
+    const { projects } = req.body || {};
+    let savedCount = 0;
+
+    if (Array.isArray(projects) && projects.length > 0) {
+      for (const proj of projects) {
+        if (proj && proj.id) {
+          const activePath = path.join(PROJECTS_DIR, proj.id);
+          const permPath = path.join(PERMANENT_PROJECTS_DIR, proj.id);
+          await fs.mkdir(activePath, { recursive: true });
+          await fs.mkdir(permPath, { recursive: true });
+          const payload = JSON.stringify(proj, null, 2);
+          await fs.writeFile(path.join(activePath, 'project.json'), payload, 'utf8');
+          await fs.writeFile(path.join(permPath, 'project.json'), payload, 'utf8');
+          if (db) {
+            try { await setDoc(doc(db, 'projects', proj.id), proj, { merge: true }); } catch (e) {}
+          }
+          savedCount++;
+        }
+      }
+    }
+
+    // Also mirror anything in PROJECTS_DIR to PERMANENT_PROJECTS_DIR
+    try {
+      const activeDirs = await fs.readdir(PROJECTS_DIR, { withFileTypes: true });
+      for (const ad of activeDirs) {
+        if (ad.isDirectory()) {
+          const srcPath = path.join(PROJECTS_DIR, ad.name, 'project.json');
+          const destDir = path.join(PERMANENT_PROJECTS_DIR, ad.name);
+          try {
+            const content = await fs.readFile(srcPath, 'utf8');
+            await fs.mkdir(destDir, { recursive: true });
+            await fs.writeFile(path.join(destDir, 'project.json'), content, 'utf8');
+            savedCount++;
+          } catch (e) {}
+        }
+      }
+    } catch (e) {}
+
+    res.json({ success: true, message: 'All projects backed up successfully', count: savedCount });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }

@@ -122,6 +122,8 @@ export const AdminPanel: React.FC<Props> = ({
       component: (
         <PasswordSecuritySection
           securityLogs={securityLogs}
+          userEmail={userEmail}
+          onBack={popView}
         />
       )
     },
