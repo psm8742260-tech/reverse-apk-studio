@@ -13,7 +13,7 @@ export function LogoIcon({ className = "w-8 h-8" }: { className?: string }) {
 
   return (
     <img
-      src="/icon-192.png?v=3.9.62"
+      src="/icon-192.png?mode=hybrid"
       alt="AI Master Studio"
       onError={() => setImgError(true)}
       className={`${className} rounded-2xl object-cover shadow-lg border border-slate-200/80 bg-white`}

@@ -6,7 +6,7 @@
 export const APP_THEME = {
   metadata: {
     name: "AI Master Studio Theme",
-    version: "3.9.6",
+    version: "H",
     author: "ReverseAPK Studio Master Architect",
   },
 

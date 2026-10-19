@@ -125,7 +125,7 @@
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js?v=3.9.77').then((reg) => {
+          navigator.serviceWorker.register('/sw.js?mode=hybrid').then((reg) => {
             // Check for updates on every launch
             reg.update().catch(() => {});
             reg.addEventListener('updatefound', () => {

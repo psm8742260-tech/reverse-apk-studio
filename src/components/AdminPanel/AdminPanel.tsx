@@ -115,6 +115,12 @@ export const AdminPanel: React.FC<Props> = ({
   const isGlobalAdminUnlocked = localStorage.getItem('ai_master_admin_bypass') === 'true';
 
   const sections = [
+    {
+      id: 'master_backup',
+      label: 'Master Backup',
+      icon: <span className='text-3xl'>💾</span>,
+      component: <MasterBackupSection onBack={popView} />
+    },
     { 
       id: 'security', 
       label: STUDIO_ADMIN_SECTIONS_CONFIG.security?.label || 'Security', 

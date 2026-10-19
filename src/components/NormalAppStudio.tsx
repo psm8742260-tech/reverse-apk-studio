@@ -4922,7 +4922,7 @@ export const NormalAppStudio: React.FC<Props> = ({
 
           <div className="flex-1 overflow-y-auto bg-slate-50/30 p-6 space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-slate-900 tracking-tight">Version history</h2>
+               <h2 className="text-xl font-bold text-slate-900 tracking-tight">Hybrid history</h2>
               <span className="text-[10px] font-black bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-lg border border-indigo-100 uppercase tracking-widest">
                 Autosaved
               </span>
@@ -4951,13 +4951,13 @@ export const NormalAppStudio: React.FC<Props> = ({
                         setFiles(restoredFiles);
                         handleSaveCurrentProject(currentProjectName, true, restoredFiles);
                         setPreviewKey(prev => prev + 1);
-                        setProjectToast(`వర్షన్ "${version.desc}" రీస్టోర్ చేయబడింది!`);
+                        setProjectToast(`హైబ్రిడ్ "${version.desc}" రీస్టోర్ చేయబడింది!`);
                         setTimeout(() => setProjectToast(''), 4000);
                         goBackNav();
                       }}
                       className="px-4 py-2 bg-indigo-600 text-white text-[11px] font-bold rounded-xl hover:bg-indigo-500 transition shadow-lg shadow-indigo-100"
                     >
-                      Restore this version
+                      Restore hybrid state
                     </button>
                   </div>
                 </div>
@@ -4978,7 +4978,7 @@ export const NormalAppStudio: React.FC<Props> = ({
                 <div className="space-y-1">
                   <div className="text-xs font-bold text-amber-900 uppercase tracking-wide">ముఖ్యమైన గమనిక (Note)</div>
                   <p className="text-[11px] text-amber-800 leading-relaxed font-medium">
-                    మీరు పాత వర్షన్‌ను రీస్టోర్ చేసినప్పుడు, ప్రస్తుత మార్పులు పోయే అవకాశం ఉంది. కాబట్టి జాగ్రత్తగా పరిశీలించి రీస్టోర్ చేయండి.
+                    మీరు పాత హైబ్రిడ్‌ను రీస్టోర్ చేసినప్పుడు, ప్రస్తుత మార్పులు పోయే అవకాశం ఉంది. కాబట్టి జాగ్రత్తగా పరిశీలించి రీస్టోర్ చేయండి.
                   </p>
                 </div>
               </div>
@@ -5563,7 +5563,7 @@ export const NormalAppStudio: React.FC<Props> = ({
                     <button onClick={() => { setActiveModal('models'); pushNavView('modal:models'); }} className="px-3.5 py-1.5 rounded-full hover:bg-slate-50 text-slate-500 transition shrink-0">Models</button>
                     <button onClick={() => { setActiveModal('share'); pushNavView('modal:share'); }} className="px-3.5 py-1.5 rounded-full hover:bg-slate-50 text-slate-500 transition shrink-0">Share</button>
                     <button onClick={handleOpenPublishModal} className="px-3.5 py-1.5 rounded-full hover:bg-slate-50 text-slate-500 transition shrink-0">Publish</button>
-                    <button onClick={() => { setActiveModal('version_history'); pushNavView('modal:version_history'); }} className="px-3.5 py-1.5 rounded-full hover:bg-slate-50 text-slate-500 transition shrink-0">Versions</button>
+                    <button onClick={() => { setActiveModal('version_history'); pushNavView('modal:version_history'); }} className="px-3.5 py-1.5 rounded-full hover:bg-slate-50 text-slate-500 transition shrink-0">Hybrid</button>
                     <button onClick={() => { setActiveModal('integrations'); pushNavView('modal:integrations'); }} className="px-3.5 py-1.5 rounded-full hover:bg-slate-50 text-slate-500 transition shrink-0">Integrations</button>
                     <button onClick={() => { setActiveModal('secrets'); pushNavView('modal:secrets'); }} className="px-3.5 py-1.5 rounded-full hover:bg-slate-50 text-slate-500 transition shrink-0">Secrets</button>
                     <button className="px-3.5 py-1.5 rounded-full bg-slate-100 text-slate-900 flex items-center gap-1.5 shrink-0">
@@ -6048,7 +6048,7 @@ export const NormalAppStudio: React.FC<Props> = ({
                   <div className="w-1.5 h-1.5 rounded-full bg-slate-900" />
                   Publish
                 </button>
-                <button onClick={() => { setActiveModal('version_history'); pushNavView('modal:version_history'); }} className="px-3.5 py-1.5 rounded-full hover:bg-slate-50 text-slate-500 transition shrink-0">Versions</button>
+                <button onClick={() => { setActiveModal('version_history'); pushNavView('modal:version_history'); }} className="px-3.5 py-1.5 rounded-full hover:bg-slate-50 text-slate-500 transition shrink-0">Hybrid</button>
                 <button onClick={() => { setActiveModal('integrations'); pushNavView('modal:integrations'); }} className="px-3.5 py-1.5 rounded-full hover:bg-slate-50 text-slate-500 transition shrink-0">Integrations</button>
                 <button onClick={() => { setActiveModal('secrets'); pushNavView('modal:secrets'); }} className="px-3.5 py-1.5 rounded-full hover:bg-slate-50 text-slate-500 transition shrink-0">Secrets</button>
                 <button onClick={() => { setActiveModal('github'); pushNavView('modal:github'); }} className="px-3.5 py-1.5 rounded-full hover:bg-slate-50 text-slate-500 transition shrink-0">GitHub</button>

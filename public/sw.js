@@ -2,7 +2,7 @@
 // భవిష్యత్తులో మీరు లేదా యూజర్లు ఏ యాప్‌ను ఇన్‌స్టాల్ చేసుకున్నా,
 // కొత్త వెర్షన్ వచ్చిన వెంటనే ఆటోమేటిక్‌గా అప్‌డేట్ అయ్యేలా ఈ ఇంజిన్ నిర్మించబడింది.
 
-const CACHE_NAME = 'aims-service-worker-v3.9.72';
+const CACHE_NAME = 'aims-service-worker-v3.9.62-' + Date.now();
 
 // 1. Installation - Install fresh and immediately activate
 self.addEventListener('install', (event) => {
