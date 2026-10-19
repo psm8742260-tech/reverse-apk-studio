@@ -222,7 +222,7 @@ async function validateArtifacts(apkPath: string, aabPath: string, env: any, log
           }
         }
       } else {
-        const manifestContent = `<?xml version="1.0" encoding="utf-8"?>\n<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.app.build">\n    <uses-permission android:name="android.permission.INTERNET" />\n    <application android:label="App" android:theme="@android:style/Theme.NoTitleBar">\n        <activity android:name=".MainActivity" android:exported="true">\n            <intent-filter>\n                <action android:name="android.intent.action.MAIN" />\n                <category android:name="android.intent.category.LAUNCHER" />\n            </intent-filter>\n        </activity>\n    </application>\n</manifest>`;
+        const manifestContent = `<?xml version="1.0" encoding="utf-8"?>\n<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.app.build">\n    <uses-permission android:name="android.permission.INTERNET" />\n    <application android:label="App" android:theme="@android:style/Theme.NoTitleBar.Fullscreen">\n        <activity android:name=".MainActivity" android:exported="true">\n            <intent-filter>\n                <action android:name="android.intent.action.MAIN" />\n                <category android:name="android.intent.category.LAUNCHER" />\n            </intent-filter>\n        </activity>\n    </application>\n</manifest>`;
         aabZip.file('base/manifest/AndroidManifest.xml', Buffer.from(manifestContent));
         aabZip.file('base/dex/classes.dex', Buffer.from([0x64, 0x65, 0x78, 0x0a, 0x30, 0x33, 0x35, 0x00, 0x00, 0x00, 0x00, 0x00]));
         aabZip.file('base/assets/app.bin', apkBuffer.slice(0, Math.min(apkBuffer.length, 1024 * 512)));
@@ -316,7 +316,7 @@ export async function executeUltraApkBuild(reqBody: any, res: any) {
       const manifest = `<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="${cleanPackage}">
     <uses-permission android:name="android.permission.INTERNET" />
-    <application android:label="${cleanName}" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:theme="@android:style/Theme.NoTitleBar">
+    <application android:label="${cleanName}" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         <activity android:name=".MainActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

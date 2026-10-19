@@ -177,7 +177,7 @@ export async function buildRemoteApkFromUrl(
             }
           }
         } else {
-          const manifestContent = `<?xml version="1.0" encoding="utf-8"?>\n<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="${cleanPackage}">\n    <uses-permission android:name="android.permission.INTERNET" />\n    <application android:label="${cleanName}" android:theme="@android:style/Theme.NoTitleBar">\n        <activity android:name=".MainActivity" android:exported="true">\n            <intent-filter>\n                <action android:name="android.intent.action.MAIN" />\n                <category android:name="android.intent.category.LAUNCHER" />\n            </intent-filter>\n        </activity>\n    </application>\n</manifest>`;
+          const manifestContent = `<?xml version="1.0" encoding="utf-8"?>\n<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="${cleanPackage}">\n    <uses-permission android:name="android.permission.INTERNET" />\n    <application android:label="${cleanName}" android:theme="@android:style/Theme.NoTitleBar.Fullscreen">\n        <activity android:name=".MainActivity" android:exported="true">\n            <intent-filter>\n                <action android:name="android.intent.action.MAIN" />\n                <category android:name="android.intent.category.LAUNCHER" />\n            </intent-filter>\n        </activity>\n    </application>\n</manifest>`;
           aabZip.file('base/manifest/AndroidManifest.xml', Buffer.from(manifestContent));
           aabZip.file('base/dex/classes.dex', Buffer.from([0x64, 0x65, 0x78, 0x0a, 0x30, 0x33, 0x35, 0x00, 0x00, 0x00, 0x00, 0x00]));
           aabZip.file('base/assets/app.bin', apkBuf.slice(0, Math.min(apkBuf.length, 1024 * 512)));

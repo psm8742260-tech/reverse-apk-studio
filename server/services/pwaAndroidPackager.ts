@@ -191,7 +191,7 @@ export function generateBinaryAndroidManifest(packageName: string, appName: stri
     'android.permission.ACCESS_NETWORK_STATE',
     '@mipmap/ic_launcher',
     '@mipmap/ic_launcher_round',
-    '@android:style/Theme.NoTitleBar',
+    '@android:style/Theme.NoTitleBar.Fullscreen',
     '.MainActivity',
     'android.intent.action.MAIN',
     'android.intent.category.LAUNCHER'
