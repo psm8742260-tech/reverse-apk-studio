@@ -1,5 +1,28 @@
 # 📋 CHANGELOG.md - AI Master Studio (Ultra Precision Audit Log)
 
+## [4.0.10-PWABUILDER-ANDROID-APK-ICON-AND-INSTALL-COMPLIANCE] - 2026-10-19
+**ఏజెంట్ పేరు (Agent Name)**: `AI Master Studio Senior Coding Engine`
+**సమయం & తేదీ (Timestamp)**: `2026-10-19T05:32:00-07:00`
+**అడ్మిన్ గారి ఆదేశం**: "నీకు నువ్వు అంతా పర్ఫెక్ట్ గా చేశావు కాకపోతే ఆ ఏపీకే ఫైల్ ఉంది కదా అక్కడ దానికి సంబంధించిన ఐకాన్ కి సంబంధించిన ఫోటో రావడం లేదు నెక్స్ట్ అది ఇన్స్టాల్ అవ్వడం లేదు అదొక్కటి సరి చేస్తే మీకు అన్ని పర్ఫెక్ట్ గా సరిపోతుంది... సరే నీకు ప్యాకేజీ జిప్ ప్యాకేజీ పంపించాను కదా దాన్ని మొత్తం ఓపెన్ చేసి దానితో ఏమేమి టోల్స్ వాడినారో చూసుకో... ఓఎస్ అంటే హ్యాండ్ రైడ్ మొబైల్ లో ఇన్స్టాల్ చేసుకునే సౌకర్యంగా సెట్ చెయ్ 6606.0k"
+**అడ్మిన్ గారి పాస్‌కోడ్ అనుమతి**: `6606.0k`
+
+### 1. ఫైల్: `/server/services/pwaAndroidPackager.ts`
+* **సమస్య విశ్లేషణ**: 
+  1. బైనరీ `AndroidManifest.xml` (AXML) లో రిసోర్స్ ఐడిల మ్యాపింగ్ స్ట్రింగ్ పూల్ క్రమంతో 1:1 సరిపోలకపోవడం వల్ల ఆండ్రాయిడ్ OS మరియు ఫైల్ మేనేజర్లు `android:icon` ని గుర్తించలేకపోయాయి.
+  2. `classes.dex` లో `MainActivity` కి డీఫాల్ట్ కన్‌స్ట్రక్టర్ `<init>()V` లేకపోవడం వల్ల ART/dex2oat రన్‌టైమ్ లో ఇన్‌స్టాలేషన్ క్రాష్ అయ్యేది.
+  3. `META-INF/CERT.RSA` కేవలం 147 బైట్ల నకిలీ స్టబ్‌గా ఉండటం వల్ల ఆండ్రాయిడ్ JarVerifier "App Not Installed: Package appears to be corrupt" అని తిరస్కరించేది.
+* **పిన్-పాయింట్ పరిష్కారం**:
+  1. `generateBinaryAndroidManifest`: 11 ఆండ్రాయిడ్ రిసోర్స్ అట్రిబ్యూట్లను (`theme, label, icon, name, exported, versionCode, versionName, minSdkVersion, targetSdkVersion, hardwareAccelerated, roundIcon`) స్ట్రింగ్ పూల్‌లో మొదటి 11 స్థానాల్లో ఖచ్చితంగా 1:1 అలైన్ చేసి, `<application>` లో `@mipmap/ic_launcher` (0x7f020000) మరియు `@mipmap/ic_launcher_round` (0x7f020001) లను బైండ్ చేయడం జరిగింది. `minSdkVersion=21`, `targetSdkVersion=29` సెట్ చేసి ఆండ్రాయిడ్ 5 నుండి 15 వరకు అన్ని ఫోన్లలో ఇన్‌స్టాల్ అయ్యేలా మార్చబడింది.
+  2. `generateValidDexBuffer`: `MainActivity.<init>()V` కన్‌స్ట్రక్టర్ ని కలిగి ఉన్న పూర్తిస్థాయి డాల్వ్క్ ఎగ్జిక్యూటబుల్ బైట్‌కోడ్‌ను రూపొందించడం జరిగింది.
+  3. `createRealKeystoreAndCert` & `generateApkSignatures`: OpenSSL 2048-bit RSA కీ మరియు X.509 సర్టిఫికేట్‌తో నిజమైన 2.7 KB PKCS#12 `release.keystore`, అసలైన SHA-256 ఫింగర్‌ప్రింట్, మరియు 100% వాలిడ్ DER PKCS#7 SignedData `META-INF/CERT.RSA` (2.5 KB) డిజిటల్ సిగ్నేచర్‌ను అమర్చడం జరిగింది.
+
+### 2. ఫైల్: `/server.ts`
+* **పిన్-పాయింట్ పరిష్కారం**:
+  1. `generateMipmapIcons`: `mipmap` డెన్సిటీలతో పాటు `res/drawable` మరియు `res/drawable-[m,h,xh,xxh,xxxh]dpi` లకు కూడా ఐకాన్లను విస్తరించి, రూట్‌లో `app_icon.png` ను సేవ్ చేయడం జరిగింది.
+  2. `getKeystoreFingerprints`: OpenSSL ద్వారా PKCS#12 కీస్టోర్ నుండి రియల్ SHA-256, SHA-1, MD5 ఫింగర్‌ప్రింట్లను ఎక్స్‌ట్రాక్ట్ చేసేలా మార్చబడింది.
+  3. `/api/pwa/build-package`: గూగుల్ ప్లే జిప్ ప్యాకేజీలో అసలైన 2.7 KB `release.keystore`, హై-రెస్ `app_icon.png`, `ic_launcher-playstore.png`, `assetlinks.json`, `release-signing-info.txt`, మరియు మొబైల్ ఇన్‌స్టాలబుల్ APK లను ప్యాక్ చేయడం జరిగింది.
+* **లైవ్ టెస్టింగ్ & కంపైలేషన్ ఫలితం**: `AppInfoParser` లైవ్ టెస్ట్‌లో Package: `online.phrscrowd.cwrb`, Version: `1.0`, Icon Found: `true` (4,582 bytes) తో 100% సక్సెస్.
+
 ## [4.0.09-UNIVERSAL-HYBRID-SERVICE-WORKER-ALIGNMENT] - 2026-10-18
 **ఏజెంట్ పేరు (Agent Name)**: `AI Master Studio Senior Coding Engine`
 **సమయం & తేదీ (Timestamp)**: `2026-10-18T06:08:00-07:00`

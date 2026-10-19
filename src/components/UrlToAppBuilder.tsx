@@ -52,6 +52,7 @@ import { DiagnosticCard } from './UrlToAppBuilder/DiagnosticCard';
 import { AnalysisSummaryCard } from './UrlToAppBuilder/AnalysisSummaryCard';
 import { ActionItemsHeader, ActionItemsFilters } from './UrlToAppBuilder/ActionItemsHeader';
 import { AndroidPackageOptionsModal } from './UrlToAppBuilder/AndroidPackageOptionsModal';
+import { HybridBadgeH } from './HybridBadgeH';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface UrlToAppBuilderProps {
@@ -419,6 +420,8 @@ export const UrlToAppBuilder: React.FC<UrlToAppBuilderProps> = ({ isOpen, onClos
               <RotateCw className={`w-4 h-4 text-indigo-600 ${isAnalyzing ? 'animate-spin' : ''}`} />
               <span className="hidden sm:inline">రీలోడ్</span>
             </button>
+            {/* 🔒 అడ్మిన్ గారి శాశ్వత ఆదేశం: రీలోడ్ బటన్ పక్కన 5-కలర్స్ లైవ్ హైబ్రిడ్ 'H' బ్యాడ్జ్ */}
+            <HybridBadgeH />
 
             {/* Functional Shift Button */}
             <button

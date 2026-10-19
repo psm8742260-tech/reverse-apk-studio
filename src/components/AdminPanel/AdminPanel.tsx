@@ -12,6 +12,7 @@ import { ApiFailoverSection } from './ApiFailoverSection';
 import { UserWalletSection } from './UserWalletSection';
 import { ShiftVaultSection } from './ShiftVaultSection';
 import { SavedWorkspaceSection } from './SavedWorkspaceSection';
+import { MasterBackupSection } from './MasterBackupSection';
 import { SelfFixerStudio } from '../SelfFixerStudio';
 import { CloudConvertStudio } from '../CloudConvertStudio';
 import { ExposingStudio } from '../ExposingStudio';

@@ -188,6 +188,8 @@ export function ZipToApkBuilder({ isOpen, onClose, onShift }: ZipToApkBuilderPro
               <RefreshCw className="w-3 h-3 text-white" />
               <span>రీలోడ్</span>
             </button>
+            {/* 🔒 అడ్మిన్ గారి శాశ్వత ఆదేశం: రీలోడ్ బటన్ పక్కన 5-కలర్స్ లైవ్ హైబ్రిడ్ 'H' బ్యాడ్జ్ */}
+            <HybridBadgeH />
 
             <button
               onClick={onClose}
