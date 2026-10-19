@@ -6,6 +6,8 @@ import fs from 'node:fs/promises';
 import crypto from 'node:crypto';
 import { execSync } from 'node:child_process';
 import JSZip from 'jszip';
+import fsSync from "node:fs";
+import { generateKeyPairSync } from "node:crypto";
 import sharp from 'sharp';
 import axios from 'axios';
 
@@ -340,8 +342,8 @@ export function generateBinaryAndroidManifest(packageName: string, appName: stri
     // <application label=... icon=... roundIcon=... theme=... hardwareAccelerated=true>
     makeStartElement('application', [
       { ns: 'http://schemas.android.com/apk/res/android', name: 'label', valueStr: appName, dataType: 0x03, dataValue: strIdx[appName] },
-      { ns: 'http://schemas.android.com/apk/res/android', name: 'icon', valueStr: '@mipmap/ic_launcher', dataType: 0x01, dataValue: 0x7f020000 },
-      { ns: 'http://schemas.android.com/apk/res/android', name: 'roundIcon', valueStr: '@mipmap/ic_launcher_round', dataType: 0x01, dataValue: 0x7f020001 },
+      { ns: 'http://schemas.android.com/apk/res/android', name: 'icon', valueStr: '@mipmap/ic_launcher', dataType: 0x1c, dataValue: 0x7f020000 },
+      { ns: 'http://schemas.android.com/apk/res/android', name: 'roundIcon', valueStr: '@mipmap/ic_launcher_round', dataType: 0x1c, dataValue: 0x7f020001 },
       { ns: 'http://schemas.android.com/apk/res/android', name: 'theme', valueStr: '@android:style/Theme.NoTitleBar', dataType: 0x01, dataValue: 0x01030006 },
       { ns: 'http://schemas.android.com/apk/res/android', name: 'hardwareAccelerated', dataType: 0x12, dataValue: 0xffffffff }
     ]),
@@ -630,7 +632,7 @@ export function createRealKeystoreAndCert(targetDir: string, appName: string = '
   md5: string;
   keystoreBuffer: Buffer;
 } {
-  const fsSync = require('node:fs');
+
   fsSync.mkdirSync(targetDir, { recursive: true });
 
   const keyPath = path.join(targetDir, 'release.key');
@@ -646,7 +648,7 @@ export function createRealKeystoreAndCert(targetDir: string, appName: string = '
         -out "${keystorePath}" -password pass:reverseapkstudio -name releaseKey 2>/dev/null`);
     } catch {
       // Fail-safe Node.js keypair generation
-      const { generateKeyPairSync } = require('node:crypto');
+
       const { privateKey, publicKey } = generateKeyPairSync('rsa', { modulusLength: 2048 });
       fsSync.writeFileSync(keyPath, privateKey.export({ type: 'pkcs8', format: 'pem' }));
       fsSync.writeFileSync(certPath, publicKey.export({ type: 'spki', format: 'pem' }));
@@ -678,7 +680,7 @@ export function createRealKeystoreAndCert(targetDir: string, appName: string = '
  * ఆండ్రాయిడ్ ఫోన్లలో ఇన్‌స్టాల్ చేసేటప్పుడు 'App Not Installed' రాకుండా ఖచ్చితమైన SHA-256 డైజెస్ట్‌లు మరియు అసలైన PKCS#7 DER సైనింగ్ బ్లాక్‌ను రూపొందిస్తుంది.
  */
 export function generateApkSignatures(files: Record<string, Buffer>, targetDir?: string): { manifestMf: string; certSf: string; certRsa: Buffer; sha256: string } {
-  const fsSync = require('node:fs');
+
   const workDir = targetDir || '/tmp/apk_signing_keys';
   const ks = createRealKeystoreAndCert(workDir);
 

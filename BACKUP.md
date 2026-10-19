@@ -931,3 +931,17 @@ const zipFileName = `${fileBaseName}-Google-Play-package.zip`;
 ### 🛡️ భద్రత మరియు ధృవీకరణ (Safety & Verification):
 - 3 కోర్ బోర్డులు, బటన్లు, మరియు లేఅవుట్ నిర్మాణంలో ఎలాంటి ఆటంకం లేకుండా 100% సేఫ్‌గా ఉంది.
 - లైవ్ హైబ్రిడ్ ఇంజిన్ (`isHybridEngineOperational`) నడుస్తుంటేనే 5 రంగుల సైకిల్ మారుతుంది.
+
+
+## PWA Android Icon Fix Update (2026-10-19)
+- **Target File:** `server/services/pwaAndroidPackager.ts`
+- **Previous Code (dataType: 0x01):**
+```ts
+      { ns: 'http://schemas.android.com/apk/res/android', name: 'icon', valueStr: '@mipmap/ic_launcher', dataType: 0x01, dataValue: 0x7f020000 },
+      { ns: 'http://schemas.android.com/apk/res/android', name: 'roundIcon', valueStr: '@mipmap/ic_launcher_round', dataType: 0x01, dataValue: 0x7f020001 },
+```
+- **New Code (dataType: 0x1c - TYPE_REFERENCE):**
+```ts
+      { ns: 'http://schemas.android.com/apk/res/android', name: 'icon', valueStr: '@mipmap/ic_launcher', dataType: 0x1c, dataValue: 0x7f020000 },
+      { ns: 'http://schemas.android.com/apk/res/android', name: 'roundIcon', valueStr: '@mipmap/ic_launcher_round', dataType: 0x1c, dataValue: 0x7f020001 },
+```
