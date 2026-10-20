@@ -33,7 +33,7 @@ jobs:
         with:
           server: ${{ secrets.FTP_SERVER || '65.108.76.42' }}
           username: ${{ secrets.FTP_USERNAME || 'phrscrow' }}
-          password: ${{ secrets.FTP_PASSWORD || 'K80abi7c+EU9R@' }}
+          password: ${{ secrets.FTP_PASSWORD }}
           server-dir: /public_html/aims.phrscrowd.online/
           local-dir: ./dist/
           dangerous-clean-slate: false
