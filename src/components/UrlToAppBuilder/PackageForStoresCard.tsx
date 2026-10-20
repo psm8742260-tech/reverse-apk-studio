@@ -27,14 +27,7 @@ export function PackageForStoresCard({
             </p>
           </div>
         </div>
-      ) : (
-        <div className="w-full bg-emerald-50 border border-emerald-200 rounded-2xl p-3 flex items-center justify-center gap-2.5 text-left shadow-xs">
-          <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
-          <span className="text-xs font-bold text-emerald-800">
-            ✅ మీ వెబ్ యాప్ 100% నేటివ్ ఫుల్ స్క్రీన్ ఆండ్రాయిడ్ ప్యాకేజింగ్‌కు సిద్ధంగా ఉంది.
-          </span>
-        </div>
-      )}
+      ) : null}
 
       <div className="flex flex-col items-center text-center space-y-4">
         {/* 🏛️ అడ్మిన్ గారి ఆదేశం: రియల్ ఇంటరాక్టివ్ బటన్ - క్లిక్ చేయగానే ప్యాకేజ్ మోడల్ ఓపెన్ అవుతుంది */}
