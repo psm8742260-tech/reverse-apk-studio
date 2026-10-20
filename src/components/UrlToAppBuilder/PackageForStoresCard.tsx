@@ -14,6 +14,28 @@ export function PackageForStoresCard({
 }: PackageForStoresCardProps) {
   return (
     <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-6">
+      {/* 📱 తెలుగు వివరణ: PWABuilder తరహాలోనే ఒకవేళ URL లో లోపాలు లేదా మిస్సింగ్ ఐకాన్లు/మేనిఫెస్ట్ ఉంటే యూజర్‌కు స్పష్టమైన ఎర్రర్ ఇక్కడ కనిపిస్తుంది. */}
+      {hasErrors ? (
+        <div className="w-full bg-rose-50 border border-rose-200 rounded-2xl p-4 flex items-start gap-3 text-left shadow-xs">
+          <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <h4 className="text-sm font-black text-rose-900">
+              PWA ఎర్రర్ గుర్తించబడింది (PWA Requirements Missing)
+            </h4>
+            <p className="text-xs text-rose-700 leading-relaxed font-medium">
+              ఈ URL లో PWA కి సంబంధించిన అంశాలు (Manifest, Icons, లేదా HTTPS) లోపించాయి. అయినప్పటికీ మీరు టెస్ట్ ప్యాకేజ్ డౌన్‌లోడ్ చేసుకోవచ్చు లేదా కింది యాక్షన్ ఐటమ్స్‌ను పరిశీలించవచ్చు.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="w-full bg-emerald-50 border border-emerald-200 rounded-2xl p-3 flex items-center justify-center gap-2.5 text-left shadow-xs">
+          <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
+          <span className="text-xs font-bold text-emerald-800">
+            ✅ మీ వెబ్ యాప్ 100% నేటివ్ ఫుల్ స్క్రీన్ ఆండ్రాయిడ్ ప్యాకేజింగ్‌కు సిద్ధంగా ఉంది.
+          </span>
+        </div>
+      )}
+
       <div className="flex flex-col items-center text-center space-y-4">
         {/* 🏛️ అడ్మిన్ గారి ఆదేశం: రియల్ ఇంటరాక్టివ్ బటన్ - క్లిక్ చేయగానే ప్యాకేజ్ మోడల్ ఓపెన్ అవుతుంది */}
         <button

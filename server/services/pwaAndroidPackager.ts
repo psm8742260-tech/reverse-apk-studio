@@ -152,8 +152,9 @@ export async function resolveAppIconBuffer(
 /**
  * 📦 2. ఆండ్రాయిడ్ కంప్లైంట్ బైనరీ AndroidManifest.xml (AXML) జనరేటర్
  * ఆండ్రాయిడ్ మొబైల్స్ లో ఇన్‌స్టాల్ చేసేటప్పుడు క్రాష్ కాకుండా పూర్తి బైనరీ చంక్స్ అందిస్తుంది.
+ * 📱 తెలుగు వివరణ: నిర్దిష్ట ఆండ్రాయిడ్ వెర్షన్ లేకుండా అన్ని డివైజ్‌లకు పనికొచ్చేలా యూనివర్సల్ "HYBRID" గా సెట్ చేస్తున్నాము.
  */
-export function generateBinaryAndroidManifest(packageName: string, appName: string, versionCode = 1, versionName = '1.0'): Buffer {
+export function generateBinaryAndroidManifest(packageName: string, appName: string, versionCode = 1, versionName = 'HYBRID'): Buffer {
   // 1. Android Resource Attribute definitions with explicit 1:1 ID mapping
   const attrDefs = [
     { name: 'theme', resId: 0x01010000 },
@@ -320,10 +321,11 @@ export function generateBinaryAndroidManifest(packageName: string, appName: stri
       { ns: 'http://schemas.android.com/apk/res/android', name: 'versionName', valueStr: versionName, dataType: 0x03, dataValue: strIdx[versionName] }
     ]),
 
-    // <uses-sdk minSdkVersion=21 targetSdkVersion=29 /> (Android 5.0 to 15.0 full install compatibility)
+    // 📱 తెలుగు వివరణ: ఆండ్రాయిడ్ 5.0 (API 21) నుండి ఆండ్రాయిడ్ 15 (API 34) వరకు అన్ని మొబైల్స్ లో ఇన్‌స్టాల్ అయ్యేలా యూనివర్సల్ హైబ్రిడ్ SDK సెట్ చేస్తున్నాము.
+    // <uses-sdk minSdkVersion=21 targetSdkVersion=34 /> (Android 5.0 to 15.0 Universal Hybrid install compatibility)
     makeStartElement('uses-sdk', [
       { ns: 'http://schemas.android.com/apk/res/android', name: 'minSdkVersion', dataType: 0x10, dataValue: 21 },
-      { ns: 'http://schemas.android.com/apk/res/android', name: 'targetSdkVersion', dataType: 0x10, dataValue: 29 }
+      { ns: 'http://schemas.android.com/apk/res/android', name: 'targetSdkVersion', dataType: 0x10, dataValue: 34 }
     ]),
     makeEndElement('uses-sdk'),
 
@@ -339,18 +341,20 @@ export function generateBinaryAndroidManifest(packageName: string, appName: stri
     ]),
     makeEndElement('uses-permission'),
 
+    // 📱 తెలుగు వివరణ: ఆండ్రాయిడ్ మొబైల్ ఫోన్‌లో యాప్ ఓపెన్ అయినప్పుడు అడ్రస్ బార్ లేదా టైటిల్ బార్ అస్సలు రాకుండా 100% నేటివ్ ఫుల్ స్క్రీన్‌గా ఉండేలా Theme.NoTitleBar.Fullscreen థీమ్‌ను (ID: 0x01030007) అప్లై చేస్తున్నాము.
     // <application label=... icon=... roundIcon=... theme=... hardwareAccelerated=true>
     makeStartElement('application', [
       { ns: 'http://schemas.android.com/apk/res/android', name: 'label', valueStr: appName, dataType: 0x03, dataValue: strIdx[appName] },
       { ns: 'http://schemas.android.com/apk/res/android', name: 'icon', valueStr: '@mipmap/ic_launcher', dataType: 0x1c, dataValue: 0x7f020000 },
       { ns: 'http://schemas.android.com/apk/res/android', name: 'roundIcon', valueStr: '@mipmap/ic_launcher_round', dataType: 0x1c, dataValue: 0x7f020001 },
-      { ns: 'http://schemas.android.com/apk/res/android', name: 'theme', valueStr: '@android:style/Theme.NoTitleBar', dataType: 0x01, dataValue: 0x01030006 },
+      { ns: 'http://schemas.android.com/apk/res/android', name: 'theme', valueStr: '@android:style/Theme.NoTitleBar.Fullscreen', dataType: 0x01, dataValue: 0x01030007 },
       { ns: 'http://schemas.android.com/apk/res/android', name: 'hardwareAccelerated', dataType: 0x12, dataValue: 0xffffffff }
     ]),
 
-    // <activity name=".MainActivity" exported=true>
+    // <activity name=".MainActivity" theme=Theme.NoTitleBar.Fullscreen exported=true>
     makeStartElement('activity', [
       { ns: 'http://schemas.android.com/apk/res/android', name: 'name', valueStr: '.MainActivity', dataType: 0x03, dataValue: strIdx['.MainActivity'] },
+      { ns: 'http://schemas.android.com/apk/res/android', name: 'theme', valueStr: '@android:style/Theme.NoTitleBar.Fullscreen', dataType: 0x01, dataValue: 0x01030007 },
       { ns: 'http://schemas.android.com/apk/res/android', name: 'exported', dataType: 0x12, dataValue: 0xffffffff }
     ]),
 
@@ -790,9 +794,10 @@ export function generateBinaryResourcesArsc(packageName: string, appName: string
   typeSpec1.writeUInt32LE(1, 12); // entryCount = 1
   typeSpec1.writeUInt32LE(0, 16);
 
+  // 📱 తెలుగు వివరణ: ఆండ్రాయిడ్ OS అసెట్ మేనేజర్ (AssetManager) క్రాష్ అవ్వకుండా, ResTable_type స్ట్రక్చర్ ప్రకారం హెడర్ సైజును ఖచ్చితంగా 76 బైట్లుగా (20 బైట్ల హెడర్ + 56 బైట్ల కాన్ఫిగ్) అమరుస్తున్నాము.
   // Type for string (id 1, default config)
   const configSize = 56;
-  const headerSize1 = 16 + configSize;
+  const headerSize1 = 20 + configSize;
   const entryCount1 = 1;
   const entryTableSize1 = 4 * entryCount1;
   const entryData1 = Buffer.alloc(16);

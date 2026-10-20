@@ -40,6 +40,8 @@ export const FILE_VERSIONS: Record<string, string> = {
   "src/components/AdminPanel/InvisibleAgentSection.tsx": "HYBRID",
   "src/components/AdminPanel/MasterBackupSection.tsx": "HYBRID",
   "src/components/AdminPanel/PwaExportSection.tsx": "HYBRID",
+  "src/components/UrlToAppBuilder/PackageForStoresCard.tsx": "HYBRID",
+  "server/services/pwaAndroidPackager.ts": "HYBRID",
   "server.ts": "HYBRID",
   "vite.config.ts": "HYBRID"
 };

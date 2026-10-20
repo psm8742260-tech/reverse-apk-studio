@@ -4153,12 +4153,25 @@ android {
           userIconArg = undefined;
         }
 
+        // 📱 తెలుగు వివరణ: జిప్ లేదా ప్రాజెక్ట్ లోని మేనిఫెస్ట్ ఫైల్ నుండి అసలైన URL ను గుర్తించి, ఆండ్రాయిడ్ యాప్‌కు ఖచ్చితమైన లాంచర్ ఐకాన్లను రూపొందిస్తున్నాము.
+        let dynamicSiteUrl = 'https://reverseapkstudio.online';
+        try {
+          const manifestCandidate = await fs.readFile(path.join(workspaceDir, 'manifest.json'), 'utf8').catch(() => null) ||
+                                  await fs.readFile(path.join(workspaceDir, 'public/manifest.json'), 'utf8').catch(() => null);
+          if (manifestCandidate) {
+            const parsed = JSON.parse(manifestCandidate);
+            if (parsed.start_url && (parsed.start_url.startsWith('http://') || parsed.start_url.startsWith('https://'))) {
+              dynamicSiteUrl = parsed.start_url;
+            }
+          }
+        } catch {}
+
         await generateMipmapIcons(
           userIconArg,
           workspaceDir,
           (msg) => sendLog('Packaging', msg, 60),
           cleanName,
-          'https://example.com'
+          dynamicSiteUrl
         );
 
         // 1. Build Real Installable APK
@@ -5080,13 +5093,8 @@ Alias: releaseKey</pre>
     zip.file('release-signing-info.txt', signingInfoContent);
     zip.file('release.keystore', await fs.readFile(keystorePath));
     
-    // Add high-res app icon to the root of ZIP package (matching PWABuilder standard)
-    const playstoreIconBuf = await fs.readFile(path.join(projectDir, 'ic_launcher-playstore.png')).catch(() => null);
-    if (playstoreIconBuf) {
-      zip.file('app_icon.png', playstoreIconBuf);
-      zip.file('ic_launcher-playstore.png', playstoreIconBuf);
-    }
-    
+    // 📱 తెలుగు వివరణ: అడ్మిన్ గారి ఖచ్చితమైన ఆదేశం మరియు రూల్ 54 ప్రకారం గూగుల్ ప్లే ప్యాకేజీ జిప్ లో ఖచ్చితంగా 6 ఫైల్స్ మాత్రమే ఉండాలి.
+    // అనవసరమైన పై 2 ఇమేజ్ ఫైల్స్ తొలగించి, క్లీన్ 6-ఫైళ్ల బండిల్ (Readme, assetlinks, signing-info, keystore, apk, aab) మాత్రమే రూపొందిస్తున్నాము.
     zip.file(`${fileBaseName}.apk`, await fs.readFile(apkPath));
     if (aabPath) zip.file(`${fileBaseName}.aab`, await fs.readFile(aabPath));
 

@@ -945,3 +945,45 @@ const zipFileName = `${fileBaseName}-Google-Play-package.zip`;
       { ns: 'http://schemas.android.com/apk/res/android', name: 'icon', valueStr: '@mipmap/ic_launcher', dataType: 0x1c, dataValue: 0x7f020000 },
       { ns: 'http://schemas.android.com/apk/res/android', name: 'roundIcon', valueStr: '@mipmap/ic_launcher_round', dataType: 0x1c, dataValue: 0x7f020001 },
 ```
+
+## PWA Android Mobile Fullscreen (No Address Bar) & Icon Resolution & PWABuilder Parity Errors (2026-10-20)
+- **అడ్మిన్ గారి పాస్‌కోడ్ అనుమతి:** `6606.0k`
+- **1. Target File:** `server/services/pwaAndroidPackager.ts`
+  - **పాత కోడ్:**
+    ```ts
+      { ns: 'http://schemas.android.com/apk/res/android', name: 'theme', valueStr: '@android:style/Theme.NoTitleBar', dataType: 0x01, dataValue: 0x01030006 },
+    ```
+  - **కొత్త కోడ్ (Theme.NoTitleBar.Fullscreen & ID: 0x01030007 applied to both application and activity):**
+    ```ts
+      // 📱 తెలుగు వివరణ: ఆండ్రాయిడ్ మొబైల్ ఫోన్‌లో యాప్ ఓపెన్ అయినప్పుడు అడ్రస్ బార్ లేదా టైటిల్ బార్ అస్సలు రాకుండా 100% నేటివ్ ఫుల్ స్క్రీన్‌గా ఉండేలా Theme.NoTitleBar.Fullscreen థీమ్‌ను (ID: 0x01030007) అప్లై చేస్తున్నాము.
+      { ns: 'http://schemas.android.com/apk/res/android', name: 'theme', valueStr: '@android:style/Theme.NoTitleBar.Fullscreen', dataType: 0x01, dataValue: 0x01030007 },
+    ```
+- **2. Target File:** `server.ts`
+  - **పాత కోడ్:**
+    ```ts
+      await generateMipmapIcons(userIconArg, workspaceDir, (msg) => sendLog('Packaging', msg, 60), cleanName, 'https://example.com');
+    ```
+  - **కొత్త కోడ్:**
+    ```ts
+      // 📱 తెలుగు వివరణ: జిప్ లేదా ప్రాజెక్ట్ లోని మేనిఫెస్ట్ ఫైల్ నుండి అసలైన URL ను గుర్తించి, ఆండ్రాయిడ్ యాప్‌కు ఖచ్చితమైన లాంచర్ ఐకాన్లను రూపొందిస్తున్నాము.
+      let dynamicSiteUrl = 'https://reverseapkstudio.online';
+      ...
+      await generateMipmapIcons(userIconArg, workspaceDir, (msg) => sendLog('Packaging', msg, 60), cleanName, dynamicSiteUrl);
+    ```
+- **3. Target File:** `src/components/UrlToAppBuilder/PackageForStoresCard.tsx`
+  - PWABuilder తరహాలోనే ఒకవేళ URL లో లోపాలు లేదా మిస్సింగ్ అంశాలు ఉంటే స్పష్టమైన ఎర్రర్ నోటిఫికేషన్ మరియు సూచనలు హార్డ్‌కోడ్ చేయబడ్డాయి.
+- **4. Target Files:** `index.html` & `public/manifest.json`
+  - `mobile-web-app-capable`, `apple-mobile-web-app-capable`, `display_override` (`fullscreen`) మరియు `purpose: "any maskable"` ఐకాన్లు సెట్ చేయబడ్డాయి.
+- **5. Target File:** `src/version.ts`
+  - హైబ్రిడ్ వెర్షన్ మ్యాపింగ్‌లో చేర్చి శాశ్వతంగా లాక్ చేయబడింది.
+
+## Universal Hybrid & 6-File Bundle Checkpoint (2026-10-20)
+- **అడ్మిన్ గారి పాస్‌కోడ్ అనుమతి:** `6606.0k`
+- **1. Target File:** `/server.ts`
+  - **సవరణ:** గూగుల్ ప్లే ప్యాకేజీ జిప్ నుండి పై 2 విడిగా ఉన్న ఇమేజ్ ఫైల్స్ (`app_icon.png` మరియు `ic_launcher-playstore.png`) తొలగించబడ్డాయి. రూల్ 54 ప్రకారం ఖచ్చితంగా 6 క్లీన్ ఫైల్స్ (`APK`, `AAB`, `Keystore`, `Signing-info`, `Assetlinks`, `Readme`) మాత్రమే జిప్‌లో ఉండేలా శాశ్వతంగా లాక్ చేయబడింది.
+- **2. Target File:** `/server/services/pwaAndroidPackager.ts`
+  - **సవరణ:** `resources.arsc` లోని `headerSize1` ను ఖచ్చితంగా 76 బైట్లుగా (`20 + configSize = 76`) లెక్కించి, ఆండ్రాయిడ్ `AssetManager` క్రాష్ కాకుండా ఒరిజినల్ లోగో నేరుగా `myapplication.apk` పై కనిపించేలా అలైన్ చేశాము.
+  - ఆండ్రాయిడ్ 5.0 (API 21) నుండి ఆండ్రాయిడ్ 15 (API 34) వరకు అన్ని మొబైల్స్ లో ఇన్‌స్టాల్ అయ్యేలా యూనివర్సల్ `"HYBRID"` వెర్షన్‌గా కాన్ఫిగర్ చేయబడింది.
+- **ధృవీకరణ:** Linter 0 Errors, Applet Compilation Succeeded.
+
+
