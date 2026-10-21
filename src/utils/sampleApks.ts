@@ -15,7 +15,7 @@ export const SAMPLE_APK_TEMPLATES: SampleApkTemplate[] = [
     id: 'cyberdash',
     name: 'CyberDash Pro (Mobile Web APK)',
     packageName: 'com.cyberdash.app',
-    version: '2.4.0',
+    version: 'HYBRID',
     description: 'High-tech fintech dashboard with live metrics, dark theme, and interactive charts.',
     sizeKb: 42,
     badge: 'Popular',
@@ -24,7 +24,7 @@ export const SAMPLE_APK_TEMPLATES: SampleApkTemplate[] = [
     id: 'weatherpro',
     name: 'WeatherPro Mobile (Cordova APK)',
     packageName: 'net.weatherpro.mobile',
-    version: '1.8.5',
+    version: 'HYBRID',
     description: 'Glassmorphism weather app with 7-day forecast, hourly radar, and search.',
     sizeKb: 38,
     badge: 'PWA WebApp',
@@ -33,7 +33,7 @@ export const SAMPLE_APK_TEMPLATES: SampleApkTemplate[] = [
     id: 'retroarcade',
     name: 'RetroArcade Cyber (HTML5 Game APK)',
     packageName: 'org.retroarcade.cyber',
-    version: '3.0.1',
+    version: 'HYBRID',
     description: 'Canvas arcade game with sound generator, retro CRT filter, and high scores.',
     sizeKb: 55,
     badge: 'HTML5 Game',
@@ -218,7 +218,7 @@ android {
 <body>
   <div class="app-container">
     <header class="header">
-      <div class="logo">⚡ CYBERDASH <span class="version">v2.4</span></div>
+      <div class="logo">⚡ CYBERDASH <span class="version">HYBRID</span></div>
       <div class="status-pill">LIVE ENGINE</div>
     </header>
     

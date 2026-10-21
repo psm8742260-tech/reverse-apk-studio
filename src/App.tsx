@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowLeft, Globe, X } from 'lucide-react';
 import { DecompiledApp, FeatureFlags, SecurityLog } from './types';
+import { APP_VERSION } from './version';
 import Header from './components/Header';
 import DecompilerWorkspace from './components/DecompilerWorkspace';
 import NormalAppStudio from './components/NormalAppStudio';
@@ -281,7 +282,7 @@ function AppContent() {
     );
   }
 
-  const isAdmin = true;
+  const isAdmin = isAdminUser(user?.email, userPhone, isAdminUnlocked);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col selection:bg-sky-500 selection:text-white">
@@ -418,7 +419,7 @@ function AppContent() {
 
       {/* Footer */}
       <footer className="border-t border-slate-200 bg-white px-6 py-4 text-center text-xs text-slate-500 font-mono flex items-center justify-between max-w-7xl mx-auto w-full">
-        <div>AI Master Studio v1.0 • Client Unpacker & Brahmastram AI Builder</div>
+        <div>AI Master Studio {APP_VERSION} • Client Unpacker & Brahmastram AI Builder</div>
         <div>Active Mode: <span className="text-sky-600 font-bold uppercase">{studioMode} Studio</span> • Auth: <span className="text-emerald-600 font-bold">Gmail Connected</span></div>
       </footer>
 

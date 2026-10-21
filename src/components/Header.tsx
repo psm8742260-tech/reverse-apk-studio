@@ -4,7 +4,7 @@ import { APP_VERSION } from '../version';
 import { FLUENT_EMOJIS } from '../utils/fluentEmojis';
 import { LanguageCode, LANGUAGE_NAMES, translate } from '../utils/translations';
 import { NORMAL_STUDIO_AGENTS } from '../config/agentsConfig';
-import { isAdminUser } from '../config/adminAccess';
+import { isAdminUser, canShowHeaderAdminButton } from '../config/adminAccess';
 import { HybridBadgeH } from './HybridBadgeH';
 import { LogoIcon } from './LogoIcon';
 
@@ -63,7 +63,7 @@ export const Header: React.FC<Props> = ({
   const [pressTimer, setPressTimer] = useState<NodeJS.Timeout | null>(null);
   const [isLangOpen, setIsLangOpen] = useState(false);
 
-  const isAdmin = true;
+  const isAdmin = canShowHeaderAdminButton(userEmail, userPhone, isAuthorizedAdmin);
 
   // Handle Long Press trigger on Header Title
   const handleTouchStart = () => {
@@ -197,14 +197,16 @@ export const Header: React.FC<Props> = ({
           </span>
         </button>
 
-        {/* 🔒 3-LAYER SECURITY (Layer 1): Admin button visible ALWAYS */}
-        <button
-          onClick={onOpenAdminModal}
-          className="bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-200 px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl text-[10px] sm:text-xs font-semibold transition flex items-center gap-1.5 shadow-xs cursor-pointer"
-          title="Open Admin Gateway"
-        >
-          <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" /> Admin
-        </button>
+        {/* 🔒 అడ్మిన్ యాక్సెస్ ఫైల్ (adminAccess.ts) ఆధారంగా అడ్మిన్ కు మాత్రమే కనిపించే బటన్ */}
+        {isAdmin && (
+          <button
+            onClick={onOpenAdminModal}
+            className="bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-200 px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl text-[10px] sm:text-xs font-semibold transition flex items-center gap-1.5 shadow-xs cursor-pointer"
+            title="Open Admin Gateway"
+          >
+            <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" /> Admin
+          </button>
+        )}
 
         {/* 💡 తెలుగు వివరణ: అడ్మిన్ గారు! బ్లూ కలర్ గ్లోబల్ షిఫ్ట్ రాకెట్ బటన్ ను భవిష్యత్తు కోసం కోడ్ లో ఉంచి తాత్కాలికంగా దాచడానికి 'false &&' కండిషన్ జత చేసాము. */}
         {false && onOpenShift && (

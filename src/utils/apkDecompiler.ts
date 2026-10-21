@@ -155,7 +155,7 @@ export async function decompileApk(fileOrBlob: Blob, fileName: string): Promise<
 function parseManifest(manifestXml: string | undefined, fileName: string, fileCount: number, totalBytes: number): ManifestInfo {
   let packageName = 'com.extracted.app';
   let appTitle = fileName.replace(/\.(apk|zip)$/i, '');
-  let versionName = '1.0.0';
+  let versionName = 'HYBRID';
   let versionCode = 100;
   let minSdkVersion = '21 (Android 5.0)';
   let targetSdkVersion = '34 (Android 14)';

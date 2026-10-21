@@ -150,7 +150,7 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
 // 💡 అడ్మిన్ గారు! మన కేంద్రీకృత ఫైల్ నుండి మోడల్ వివరాలను ఇక్కడ ఇంపోర్ట్ చేసాము. 
 // దీనివల్ల మనం ఒకే చోట మార్పులు చేస్తే యాప్ అంతటా మారుతుంది.
 import { NORMAL_STUDIO_AGENTS } from '../config/agentsConfig';
-import { isAdminMobileUser } from '../config/adminAccess';
+import { isAdminMobileUser, canShowAdminDeveloperControl } from '../config/adminAccess';
 import { getUserAccessRules } from '../config/userAccess';
 export const AVAILABLE_STUDIO_MODELS = NORMAL_STUDIO_AGENTS;
 
@@ -216,7 +216,7 @@ body {
   {
     name: 'package.json',
     type: 'json',
-    content: `{\n  "name": "studio-project",\n  "version": "1.0.0",\n  "private": true,\n  "scripts": {\n    "dev": "vite",\n    "build": "vite build"\n  }\n}`,
+    content: `{\n  "name": "studio-project",\n  "version": "Hybrid",\n  "private": true,\n  "scripts": {\n    "dev": "vite",\n    "build": "vite build"\n  }\n}`,
   },
 ];
 
@@ -1015,7 +1015,7 @@ export const NormalAppStudio: React.FC<Props> = ({
     try {
       const e = user?.email || safeStorage.getItem('user_email') || '';
       const p = safeStorage.getItem('user_phone') || (typeof safeStorage !== 'undefined' ? safeStorage.getItem('user_phone') : '') || user?.phoneNumber || '';
-      return isAdminMobileUser(e, p, isAdminUnlocked);
+      return canShowAdminDeveloperControl(e, p, isAdminUnlocked);
     } catch {
       return false;
     }
@@ -2188,36 +2188,152 @@ export const NormalAppStudio: React.FC<Props> = ({
     return () => window.removeEventListener('open-language-selector', handleOpenLang);
   }, []);
 
-  // Update Preview whenever files change
+  // ⚡ Replit-Style Live Execution Pipeline: Dynamic Universal Virtual Asset Linker
   useEffect(() => {
-    const htmlFile = files.find((f) => f.name.endsWith('.html')) || files[0];
-    const cssFile = files.find((f) => f.name.endsWith('.css'));
-    const jsFile = files.find((f) => f.name.endsWith('.js'));
+    const createdUrls: string[] = [];
 
-    let htmlContent = htmlFile ? htmlFile.content : '<h1>Empty App</h1>';
+    try {
+      // 1. Locate primary HTML file
+      let htmlFile = files.find((f) => f.name.toLowerCase() === 'index.html');
+      if (!htmlFile) htmlFile = files.find((f) => f.name.toLowerCase().endsWith('/index.html'));
+      if (!htmlFile) htmlFile = files.find((f) => f.name.toLowerCase().endsWith('.html'));
+      if (!htmlFile && files.length > 0) htmlFile = files[0];
 
-    if (cssFile && cssFile.content) {
-      const cssBlob = new Blob([cssFile.content], { type: 'text/css' });
-      const cssUrl = URL.createObjectURL(cssBlob);
-      htmlContent = htmlContent.replaceAll('style.css', cssUrl);
-      htmlContent = htmlContent.replaceAll('./style.css', cssUrl);
+      let htmlContent = htmlFile ? htmlFile.content : '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Live App</title></head><body><div id="root"><h1>Live App</h1></div></body></html>';
+
+      // 2. Classify Assets
+      const cssFiles = files.filter((f) => f.name.endsWith('.css'));
+      const jsFiles = files.filter((f) => f.name.endsWith('.js') || f.name.endsWith('.jsx') || f.name.endsWith('.ts') || f.name.endsWith('.tsx'));
+      const mediaFiles = files.filter((f) => f.name.match(/\.(png|jpe?g|gif|svg|webp|ico|bmp|json)$/i));
+
+      // 3. Build Dynamic Virtual Asset Map
+      const assetMap: Record<string, string> = {};
+
+      // Register Media & JSON
+      mediaFiles.forEach((f) => {
+        let url = f.content;
+        if (!url.startsWith('data:')) {
+          const mime = f.name.endsWith('.json') ? 'application/json' : f.name.endsWith('.svg') ? 'image/svg+xml' : 'image/png';
+          try {
+            const b = new Blob([f.content], { type: mime });
+            url = URL.createObjectURL(b);
+            createdUrls.push(url);
+          } catch (e) {
+            url = f.content;
+          }
+        }
+        const base = f.name.split('/').pop() || f.name;
+        assetMap[f.name] = url;
+        assetMap['./' + f.name] = url;
+        assetMap['/' + f.name] = url;
+        assetMap[base] = url;
+        assetMap['./' + base] = url;
+      });
+
+      // Register CSS Files (and link any media assets referenced inside them)
+      cssFiles.forEach((f) => {
+        let cssContent = f.content;
+        Object.entries(assetMap).forEach(([origKey, val]) => {
+          if (origKey.match(/\.(png|jpe?g|gif|svg|webp|ico)$/i)) {
+            cssContent = cssContent.split(origKey).join(val);
+          }
+        });
+        const cssBlob = new Blob([cssContent], { type: 'text/css' });
+        const cssUrl = URL.createObjectURL(cssBlob);
+        createdUrls.push(cssUrl);
+
+        const base = f.name.split('/').pop() || f.name;
+        assetMap[f.name] = cssUrl;
+        assetMap['./' + f.name] = cssUrl;
+        assetMap['/' + f.name] = cssUrl;
+        assetMap[base] = cssUrl;
+        assetMap['./' + base] = cssUrl;
+      });
+
+      // Register JS Files
+      jsFiles.forEach((f) => {
+        let jsContent = f.content;
+        Object.entries(assetMap).forEach(([origKey, val]) => {
+          if (origKey.match(/\.(png|jpe?g|gif|svg|webp|ico|json)$/i)) {
+            jsContent = jsContent.split(origKey).join(val);
+          }
+        });
+        const jsBlob = new Blob([jsContent], { type: 'application/javascript' });
+        const jsUrl = URL.createObjectURL(jsBlob);
+        createdUrls.push(jsUrl);
+
+        const base = f.name.split('/').pop() || f.name;
+        assetMap[f.name] = jsUrl;
+        assetMap['./' + f.name] = jsUrl;
+        assetMap['/' + f.name] = jsUrl;
+        assetMap[base] = jsUrl;
+        assetMap['./' + base] = jsUrl;
+      });
+
+      // 4. Safe Preview Error Trap script for Live Runner stability
+      const previewErrorTrap = `
+<script>
+  window.addEventListener('error', function(event) {
+    console.warn('[Studio Live Preview Error]:', event.message);
+  });
+</script>
+`;
+      if (htmlContent.includes('<head>')) {
+        htmlContent = htmlContent.replace('<head>', '<head>' + previewErrorTrap);
+      } else {
+        htmlContent = previewErrorTrap + htmlContent;
+      }
+
+      // 5. Replace references in HTML
+      Object.entries(assetMap).forEach(([origKey, targetUrl]) => {
+        htmlContent = htmlContent.split(`"${origKey}"`).join(`"${targetUrl}"`);
+        htmlContent = htmlContent.split(`'${origKey}'`).join(`'${targetUrl}'`);
+        htmlContent = htmlContent.split(`(${origKey})`).join(`(${targetUrl})`);
+      });
+
+      // 6. Auto-inject missing CSS files into <head> if not explicitly referenced
+      cssFiles.forEach((f) => {
+        const base = f.name.split('/').pop() || f.name;
+        const url = assetMap[base] || assetMap[f.name];
+        if (url && !htmlContent.includes(url)) {
+          if (htmlContent.includes('</head>')) {
+            htmlContent = htmlContent.replace('</head>', `  <link rel="stylesheet" href="${url}">\n</head>`);
+          } else {
+            htmlContent = `<link rel="stylesheet" href="${url}">\n` + htmlContent;
+          }
+        }
+      });
+
+      // 7. Auto-inject missing JS files into <body> if not explicitly referenced
+      jsFiles.forEach((f) => {
+        const base = f.name.split('/').pop() || f.name;
+        const url = assetMap[base] || assetMap[f.name];
+        if (url && !htmlContent.includes(url)) {
+          if (htmlContent.includes('</body>')) {
+            htmlContent = htmlContent.replace('</body>', `  <script src="${url}"><\/script>\n</body>`);
+          } else {
+            htmlContent = htmlContent + `\n<script src="${url}"><\/script>`;
+          }
+        }
+      });
+
+      // 8. Create unified Main HTML Blob
+      const mainBlob = new Blob([htmlContent], { type: 'text/html' });
+      const mainUrl = URL.createObjectURL(mainBlob);
+      setPreviewBlobUrl(mainUrl);
+
+      // Clean up previous blob URLs when files or preview changes
+      return () => {
+        URL.revokeObjectURL(mainUrl);
+        createdUrls.forEach((u) => {
+          try {
+            URL.revokeObjectURL(u);
+          } catch (e) {}
+        });
+      };
+    } catch (err) {
+      console.error('[Live Execution Pipeline Error]:', err);
     }
-
-    if (jsFile && jsFile.content) {
-      const jsBlob = new Blob([jsFile.content], { type: 'application/javascript' });
-      const jsUrl = URL.createObjectURL(jsBlob);
-      htmlContent = htmlContent.replaceAll('app.js', jsUrl);
-      htmlContent = htmlContent.replaceAll('./app.js', jsUrl);
-    }
-
-    const mainBlob = new Blob([htmlContent], { type: 'text/html' });
-    const mainUrl = URL.createObjectURL(mainBlob);
-    setPreviewBlobUrl(mainUrl);
-
-    // 🛡️ అడ్మిన్ గారు! మెమరీ లీక్స్ నివారించడానికి మరియు యాప్ హ్యాంగ్ కాకుండా ఉండటానికి పాత బ్లబ్ URLలను క్లీన్ చేస్తున్నాము.
-    return () => {
-      URL.revokeObjectURL(mainUrl);
-    };
   }, [files]);
 
   useEffect(() => {
@@ -2575,7 +2691,12 @@ export const NormalAppStudio: React.FC<Props> = ({
       const filesToExport = (files && files.length > 0) ? files : DEFAULT_FILES;
       filesToExport.forEach((f) => {
         const cleanPath = f.name.replace(/^(\.\/|\/)/, '');
-        zip.file(cleanPath, f.content);
+        if (f.content.startsWith('data:') && f.content.includes(';base64,')) {
+          const base64Data = f.content.split(';base64,')[1];
+          zip.file(cleanPath, base64Data, { base64: true });
+        } else {
+          zip.file(cleanPath, f.content);
+        }
       });
       const blob = await zip.generateAsync({ type: 'blob' });
       const url = URL.createObjectURL(blob);
@@ -2594,38 +2715,53 @@ export const NormalAppStudio: React.FC<Props> = ({
     }
   };
 
-  // 💡 అడ్మిన్ గారు! వెలుపలి నుండి తెచ్చిన సొంత ప్రాజెక్ట్ జిప్ (.zip) ఫైళ్లను క్షణాల్లో విప్పి,
-  // లోపల ఉన్న HTML, CSS, JS కోడ్‌ను మన లైవ్ ఎడిటర్ & ప్రివ్యూలోకి లోడ్ చేసే అద్భుతమైన ఫంక్షన్ ఇక్కడ జోడించబడింది.
+  // 💡 అడ్మిన్ గారు! Replit-Style Full Workspace & Live Execution Pipeline:
+  // వెలుపలి నుండి తెచ్చిన సొంత ప్రాజెక్ట్ జిప్ (.zip) ఫైళ్లను క్షణాల్లో విప్పి,
+  // ఇమేజ్/మీడియా ఫైల్స్, కోడ్ ఫైల్స్ అన్నింటినీ అమర్చి లైవ్ యాప్‌గా రన్ చేసి ఆటో-సేవ్ చేసే అద్భుతమైన పైప్‌లైన్!
   const handleImportProjectZip = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     try {
-      setProjectToast('📦 జిప్ ఫైల్‌ని విప్పుతున్నాము (Unpacking ZIP)...');
+      setProjectToast('📦 జిప్ ఫైల్‌ని విప్పుతున్నాము (Extracting Workspace Archive)...');
       const zip = await JSZip.loadAsync(file);
       const loadedFiles: ProjectFile[] = [];
 
       const filePromises: Promise<void>[] = [];
       zip.forEach((relativePath, zipEntry) => {
         if (zipEntry.dir) return;
-
         if (relativePath.includes('__MACOSX') || relativePath.includes('.DS_Store')) return;
 
-        const promise = zipEntry.async('string').then((content) => {
-          const name = zipEntry.name.split('/').pop() || zipEntry.name;
-          let fileType = 'text';
-          if (name.endsWith('.html')) fileType = 'html';
-          else if (name.endsWith('.css')) fileType = 'css';
-          else if (name.endsWith('.js') || name.endsWith('.jsx') || name.endsWith('.ts') || name.endsWith('.tsx')) fileType = 'js';
-          else if (name.endsWith('.json')) fileType = 'json';
+        const name = zipEntry.name.split('/').pop() || zipEntry.name;
+        const ext = name.split('.').pop()?.toLowerCase() || '';
+        const isImage = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'ico', 'bmp'].includes(ext);
 
-          loadedFiles.push({
-            name: relativePath,
-            type: fileType,
-            content: content
+        if (isImage) {
+          const promise = zipEntry.async('base64').then((b64) => {
+            const mime = ext === 'ico' ? 'image/x-icon' : `image/${ext === 'jpg' ? 'jpeg' : ext}`;
+            loadedFiles.push({
+              name: relativePath,
+              type: 'image',
+              content: `data:${mime};base64,${b64}`
+            });
           });
-        });
-        filePromises.push(promise);
+          filePromises.push(promise);
+        } else {
+          const promise = zipEntry.async('string').then((content) => {
+            let fileType = 'text';
+            if (name.endsWith('.html')) fileType = 'html';
+            else if (name.endsWith('.css')) fileType = 'css';
+            else if (name.endsWith('.js') || name.endsWith('.jsx') || name.endsWith('.ts') || name.endsWith('.tsx')) fileType = 'js';
+            else if (name.endsWith('.json')) fileType = 'json';
+
+            loadedFiles.push({
+              name: relativePath,
+              type: fileType,
+              content: content
+            });
+          });
+          filePromises.push(promise);
+        }
       });
 
       await Promise.all(filePromises);
@@ -2634,15 +2770,42 @@ export const NormalAppStudio: React.FC<Props> = ({
         throw new Error('జిప్ లోపల ఎలాంటి ఫైల్స్ లభించలేదు.');
       }
 
-      setFiles(loadedFiles);
-      setIsProjectLoaded(true);
+      // Check if all files are inside a single root folder (e.g. "project-name/...") and normalize paths
+      const filePaths = loadedFiles.map(f => f.name);
+      if (filePaths.length > 0 && filePaths[0].includes('/')) {
+        const rootDir = filePaths[0].split('/')[0] + '/';
+        const allInSameRoot = filePaths.every(p => p.startsWith(rootDir));
+        if (allInSameRoot) {
+          const len = rootDir.length;
+          loadedFiles.forEach(f => {
+            f.name = f.name.substring(len);
+          });
+        }
+      }
 
       const zipNameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
       const formattedProjectName = zipNameWithoutExt.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || 'ఇంపోర్ట్ చేసిన యాప్';
-      
+
+      // Auto-generate standard index.html if project lacks one
+      const hasHtml = loadedFiles.some(f => f.name.toLowerCase().endsWith('.html'));
+      if (!hasHtml) {
+        loadedFiles.unshift({
+          name: 'index.html',
+          type: 'html',
+          content: `<!DOCTYPE html>\n<html lang="te">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>${formattedProjectName}</title>\n</head>\n<body>\n  <div id="root">\n    <h1>${formattedProjectName}</h1>\n  </div>\n</body>\n</html>`
+        });
+      }
+
+      // Assign fresh project ID
+      const newProjectId = 'proj_' + Date.now();
+      setCurrentProjectId(newProjectId);
+      safeStorage.setItem('current_active_studio_project_id', newProjectId);
       setCurrentProjectName(formattedProjectName);
 
-      const indexIdx = loadedFiles.findIndex(f => f.name.toLowerCase() === 'index.html' || f.name.toLowerCase().endsWith('/index.html'));
+      setFiles(loadedFiles);
+      setIsProjectLoaded(true);
+
+      const indexIdx = loadedFiles.findIndex(f => f.name.toLowerCase() === 'index.html' || f.name.toLowerCase().endsWith('/index.html') || f.name.toLowerCase().endsWith('.html'));
       if (indexIdx !== -1) {
         setSelectedFile(loadedFiles[indexIdx].name);
         setActiveFileIndex(indexIdx);
@@ -2651,13 +2814,15 @@ export const NormalAppStudio: React.FC<Props> = ({
         setActiveFileIndex(0);
       }
 
+      // Switch to live preview immediately so user sees the newly created running app
       setActiveTab('preview');
       setRightPaneView('preview');
       setPreviewKey(prev => prev + 1);
 
-      setProjectToast(`✅ '${formattedProjectName}' ప్రాజెక్ట్ విజయవంతంగా ఇంపోర్ట్ అయింది!`);
+      setProjectToast(`✅ '${formattedProjectName}' లైవ్ యాప్ విజయవంతంగా సిద్ధమైంది!`);
       setTimeout(() => setProjectToast(''), 4000);
       
+      // Auto-save workspace snapshot immediately into My Apps
       handleSaveCurrentProject(formattedProjectName, true, loadedFiles, []);
     } catch (err: any) {
       alert(`Error importing project ZIP: ${err.message || err}`);

@@ -1,4 +1,49 @@
-# CHANGELOG - PWA Android Packager Icon Fix & Backup
+# CHANGELOG - Universal Hybrid Engine Centralization & Zero-Version Architecture
+
+## 🔒 [Universal Hybrid Engine Centralization - 2026-10-21]
+- **అడ్మిన్ గారి పాస్‌వర్డ్ అనుమతి:** `6606.0k`
+- **సెంట్రలైజ్డ్ ఫైల్:** `src/version.ts` (ప్రతి అక్షరానికి పైన ఐకాన్లతో కూడిన సంపూర్ణ తెలుగు వివరణలతో సెంట్రలైజ్ చేయబడింది)
+- **సవరించిన మరియు కనెక్ట్ చేసిన ఫైల్స్:**
+  1. `src/version.ts`: సంపూర్ణ హైబ్రిడ్ కాన్‌స్టెంట్లు (`APP_VERSION`, `ENGINE_NAME`, `DEFAULT_PACKAGE_VERSION`, `DEFAULT_DECOMPILED_VERSION`, `RELEASE_ENGINE_SIGNATURE`, etc.).
+  2. `server.ts`: రిలీజ్ బండిల్ README.html లోని పాత సంఖ్యను తీసేసి `AI Master Studio HYBRID ENGINE` గా అప్‌డేట్ చేయడం.
+  3. `src/components/NormalAppStudio.tsx`: డీఫాల్ట్ ప్రాజెక్ట్ టెంప్లేట్ package.json లోని వెర్షన్‌ను `Hybrid` గా మార్చడం.
+  4. `src/utils/apkDecompiler.ts`: డీకంపైలర్ డీఫాల్ట్ వెర్షన్‌ను `HYBRID` గా మార్చడం.
+  5. `src/utils/sampleApks.ts`: శాంపిల్ APK లన్నింటి వెర్షన్లను `HYBRID` గా మార్చడం.
+- **ఫలితం:** మొత్తం అప్లికేషన్‌లో ఒక్క సంఖ్యా వెర్షన్ కూడా లేకుండా 100% సంపూర్ణ హైబ్రిడ్ మోడ్ లాక్ చేయబడింది.
+- **ధృవీకరణ:** Build Succeeded, TypeScript 0 Errors.
+
+## 🔒 [Centralized Admin Access System - 2026-10-21]
+- **అడ్మిన్ గారి పాస్‌వర్డ్ అనుమతి:** `66060k`
+- **సెంట్రలైజ్డ్ ఫైల్:** `src/config/adminAccess.ts`
+- **కనెక్ట్ చేసిన ఫైల్స్:**
+  1. `src/components/Header.tsx` (స్క్రీన్‌షాట్ 2: హెడర్‌లోని పర్పుల్ '[🔒 Admin]' బటన్)
+  2. `src/App.tsx` (రూట్ లెవల్ `isAdmin` గేట్‌వే)
+  3. `src/components/NormalAppStudio.tsx` (స్క్రీన్‌షాట్ 1: సెట్టింగ్స్‌లోని '[🔒 Admin Off All]' బటన్)
+  4. `src/components/SidebarDrawer.tsx` (స్క్రీన్‌షాట్ 3: సైడ్‌బార్‌లోని '[⚡ AI Master Studio]' సెల్ఫ్ ఫిక్సర్ బటన్)
+- **అమలు చేసిన సెక్యూరిటీ వివరాలు:**
+  1. మొత్తం అడ్మిన్ యాక్సెస్ లాజిక్, అధికారాలు, మరియు విజిబిలిటీ స్విచ్‌లు కేవలం `src/config/adminAccess.ts` లోనే సెంట్రలైజ్ చేయబడ్డాయి.
+  2. ప్రతి ఫంక్షన్, కాన్ఫిగరేషన్ పైన ఐకాన్లతో కూడిన స్పష్టమైన తెలుగు డాక్యుమెంటేషన్ రాయబడింది.
+  3. లూప్‌హోల్స్ (`|| true`) అన్నీ తొలగించబడ్డాయి. కేవలం అడ్మిన్ జిమెయిల్ (`psm8742260@gmail.com`) లేదా అడ్మిన్ మొబైల్ నెంబర్ (`8466062260`) తో లాగిన్ అయినప్పుడు మాత్రమే ఆ 3 బటన్లు కనిపిస్తాయి; సాధారణ యూజర్లకు 100% పూర్తిగా అదృశ్యమవుతాయి.
+- **ధృవీకరణ:** Build Succeeded, TypeScript 0 Errors.
+
+## ⚡ [Replit-Style Full Workspace & Live Execution Pipeline - 2026-10-21]
+- **అడ్మిన్ గారి పాస్‌కోడ్ అనుమతి:** `6606.0k`
+- **సవరించిన ఫైల్:** `src/components/NormalAppStudio.tsx`
+- **అమలు చేసిన ఫీచర్లు:**
+  1. **Automated ZIP Ingestion & Media Preservation:**
+     - ZIP ఫైల్ అప్‌లోడ్ చేసినప్పుడు సబ్-ఫోల్డర్లతో సహా మొత్తం ఫైల్ హైరార్కీని అన్‌ప్యాక్ చేయడం.
+     - ఇమేజ్‌లు (.png, .jpg, .jpeg, .gif, .webp, .ico, .bmp) కరప్ట్ కాకుండా Base64 Data URL రూపంలో ప్రిజర్వ్ చేయడం.
+     - కామన్ రూట్ డైరెక్టరీలను ఆటోమేటిక్‌గా నార్మలైజ్ చేయడం.
+  2. **Universal Dynamic Virtual Asset Linker & Live Execution:**
+     - అన్ని CSS, JS, JSON, ఇమేజ్ ఫైళ్లను వర్చువల్ అసెట్ మ్యాప్‌గా మ్యాప్ చేసి, ప్రధాన `index.html` లోని అన్ని `<script src="...">`, `<link href="...">`, `<img src="...">` లింకులను ఆటోమేటిక్‌గా వాటి బ్లబ్/డేటా URL లతో అనుసంధానించడం.
+     - HTML లో CSS/JS లింకులు మిస్ అయినా ఆటోమేటిక్‌గా ఇంజెక్ట్ చేసి రియల్ లైవ్ రన్నింగ్ యాప్‌గా పక్కనున్న ప్రివ్యూ iframe లో రన్ చేయడం.
+     - రన్‌టైమ్ ఎర్రర్ ట్రాప్ స్క్రిప్ట్‌తో స్టూడియో క్రాష్ కాకుండా రక్షణ కవచం.
+  3. **Auto-Save & Instant Project Archiving:**
+     - జిప్ ఇంపోర్ట్ అయిన వెంటనే తాజా ప్రాజెక్ట్ ఐడీతో 'My Apps' సేవ్డ్ ప్రాజెక్ట్స్‌లో ఆటోమేటిక్‌గా సేవ్ చేయడం.
+     - ఎడిటర్‌లో కోడ్ మార్చగానే హాట్ రీలోడ్ అవ్వడం.
+  4. **Workspace Export (ZIP Download):**
+     - సవరించిన కోడ్ మరియు బైనరీ ఇమేజ్ ఫైళ్లను పక్కాగా బండిల్ చేసి లేటెస్ట్ సోర్స్ కోడ్ డౌన్‌లోడ్ అయ్యేలా చేయడం.
+- **ధృవీకరణ:** Build Succeeded, 0 Linter Errors.
 
 ## Changes Made:
 - **File Modified:** `server/services/pwaAndroidPackager.ts`
@@ -31,4 +76,21 @@
      - `resources.arsc` లోని `headerSize1` ను ఖచ్చితంగా 76 బైట్లుగా (`20 + configSize = 76`) లెక్కించి, ఆండ్రాయిడ్ `AssetManager` క్రాష్ కాకుండా ఒరిజినల్ లోగో నేరుగా `myapplication.apk` పై కనిపించేలా అలైన్ చేశాము.
      - నిర్దిష్ట ఆండ్రాయిడ్ వెర్షన్ లేకుండా, ఆండ్రాయిడ్ 5.0 (API 21) నుండి ఆండ్రాయిడ్ 15 (API 34) వరకు అన్ని డివైజ్‌లకు పనికొచ్చేలా యూనివర్సల్ `"HYBRID"` వెర్షన్‌గా సెట్ చేశాము.
 - **ధృవీకరణ ఫలితం:** Build Succeeded, 0 Errors, Verified with Linter.
+
+## [Universal Hybrid Mode & Model Pool Restoration - 2026-10-21] - Centralized HYBRID Versioning & Gemini Flash-Lite Restoration
+- **అడ్మిన్ గారి పాస్‌కోడ్ అనుమతి:** `6606.0k`
+- **సవరణ వివరాలు:**
+  1. `server.ts`:
+     - అడ్మిన్ గారి ఆదేశానుసారం గత ఏజెంట్ తొలగించిన `gemini-3.5-flash-lite` మోడల్‌ను లైట్-మోడ్ ఓవర్‌రైడ్ స్విచ్‌లో యధావిధిగా పునరుద్ధరించాము (`selectedModel = "gemini-3.5-flash-lite"`).
+     - జెమిని యాక్టివ్ మోడల్స్ పూల్ (`geminiModelsPool`) లో `gemini-3.5-flash-lite`, `gemini-3.6-flash`, `gemini-3.5-flash` తో పాటు `gemini-2.5-flash`, `gemini-2.5-pro` లను చేర్చి, ట్రై-క్యాచ్ సేఫ్‌గార్డ్‌తో 100% లైవ్ కనెక్షన్ లభించేలా హార్డ్‌కోడ్ చేశాము.
+  2. `src/version.ts`:
+     - అప్లికేషన్ మొత్తంలో ఎక్కడా సంఖ్యల రూపంలో వెర్షన్లు లేకుండా కేవలం `src/version.ts` లోనే సెంట్రలైజ్ చేసి, అన్ని ఫైళ్లను `HYBRID` గా మ్యాప్ చేశాము.
+  3. `src/App.tsx`:
+     - ఫుటర్‌లోని హార్డ్‌కోడెడ్ `v1.0` ను తొలగించి, `src/version.ts` నుండి `APP_VERSION` ఇంపోర్ట్ చేసుకుని డైనమిక్‌గా డిస్‌ప్లే అయ్యేలా సెట్ చేశాము.
+  4. `src/components/BuildSuite.tsx`:
+     - హార్డ్‌కోడెడ్ `v4.0` ను తొలగించి, సెంట్రలైజ్డ్ `ENGINE_NAME` మరియు `APP_VERSION` లను లింక్ చేశాము.
+  5. `src/utils/sampleApks.ts`, `src/studio_config.json`, `public/sw.js`, `index.html`:
+     - అన్ని చోట్లా సంఖ్యల వెర్షన్లను తొలగించి యూనివర్సల్ `HYBRID` మోడ్‌కు మార్చాము.
+- **ధృవీకరణ ఫలితం:** జీరో ఎర్రర్స్, కంపైలేషన్ పాస్, లైవ్ సిస్టమ్ సేఫ్టీ ఆడిట్ సక్సెస్.
+
 

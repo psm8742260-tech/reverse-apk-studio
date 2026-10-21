@@ -1,14 +1,63 @@
-// 🔒 AI Master Studio - Permanent Hybrid Engine Immutable Lock & PWA Version Controller
-// అడ్మిన్ గారి శాశ్వత లాక్ (6606.0k): అప్లికేషన్ మొత్తంలో ఎక్కడా నంబర్లు లేకుండా పూర్తిగా "HYBRID" అని సెట్ చేయబడింది.
-// హెడర్లలోని రీలోడ్ బటన్ పక్కన 5-రంగుల లైవ్ హైబ్రిడ్ "H" ఇంజిన్ అనుసంధానించబడింది.
+// ==============================================================================
+// 🏛️ అడ్మిన్ అధికారిక శాశ్వత హైబ్రిడ్ ఇంజిన్ ఫైల్ (CENTRAL HYBRID VERSION CONTROLLER)
+// ==============================================================================
+// 💡 తెలుగు సమగ్ర వివరణ (Master Version Telugu Documentation):
+// అడ్మిన్ గారు! AI Master Studio అప్లికేషన్‌లోని వెర్షన్‌కు సంబంధించిన పూర్తి వివరాలు,
+// ఇంజిన్ గుర్తింపులు, సర్వీస్ వర్కర్ కీలు, మరియు PWA మొబైల్ సింక్ కాన్ఫిగరేషన్లు
+// కేవలం ఈ ఒక్క ఫైల్ నుండే నియంత్రించబడతాయి.
+// మన యాప్‌లో ఎక్కడా కూడా పాత సంఖ్యలతో కూడిన వెర్షన్లు (1.0, 2.0, 3.9 etc.) ఉండకూడదని,
+// ప్రతి ఫీచర్ మరియు ఫంక్షన్ శాశ్వతంగా "HYBRID" గానే ఉండాలని ఇక్కడ లాక్ చేయబడింది.
+// ==============================================================================
 
+/**
+ * 🔒 1. అప్లికేషన్ ప్రధాన వెర్షన్ (Application Core Version)
+ * 💡 తెలుగు వివరణ: మొత్తం AI Master Studio యొక్క అధికారిక వెర్షన్ పేరు.
+ * ఎప్పటికీ ఎటువంటి నంబర్లు లేకుండా శాశ్వతంగా "HYBRID" గానే స్థిరంగా ఉంటుంది.
+ */
 export const APP_VERSION = "HYBRID";
+
+/**
+ * ⚡ 2. అప్లికేషన్ ఇంజిన్ పేరు (Application Engine Name)
+ * 💡 తెలుగు వివరణ: మన సిస్టమ్ రన్ అయ్యే ఇంజిన్ పేరు. 
+ * ఇది కూడా శాశ్వతంగా "HYBRID ENGINE" గానే పిలవబడుతుంది.
+ */
 export const ENGINE_NAME = "HYBRID ENGINE";
+
+/**
+ * 🏷️ 3. హెడర్ లైవ్ బ్యాడ్జ్ అక్షరం (Header Live Badge Letter)
+ * 💡 తెలుగు వివరణ: హెడర్‌లో టైటిల్ పక్కన కనిపించే 5-రంగుల అల్ట్రా హైబ్రిడ్ "H" బ్యాడ్జ్.
+ * సిస్టమ్ లైవ్ హైబ్రిడ్ హెల్త్‌కు ఈ బ్యాడ్జ్ అనుసంధానించబడి ఉంటుంది.
+ */
 export const DISPLAY_BADGE = "H";
-export const PREVIOUS_VERSION = "HYBRID";
+
+/**
+ * 📦 4. డీఫాల్ట్ ప్రాజెక్ట్ ప్యాకేజ్ వెర్షన్ (Default Project Package Version)
+ * 💡 తెలుగు వివరణ: నార్మల్ స్టూడియోలో కొత్త ప్రాజెక్ట్ లేదా package.json రూపొందినప్పుడు వాడే వెర్షన్.
+ */
+export const DEFAULT_PACKAGE_VERSION = "Hybrid";
+
+/**
+ * 📱 5. ఆండ్రాయిడ్ APK డీకంపైలర్ డీఫాల్ట్ వెర్షన్ (Android Decompiler Default Version)
+ * 💡 తెలుగు వివరణ: డీకంపైల్ చేసే APK ఫైళ్లకు వాడే డీఫాల్ట్ వెర్షన్ పేరు.
+ */
+export const DEFAULT_DECOMPILED_VERSION = "HYBRID";
+
+/**
+ * 📜 6. రిలీజ్ బండిల్ అధికారిక ఇంజిన్ సంతకం (Release Bundle Engine Signature)
+ * 💡 తెలుగు వివరణ: గూగుల్ ప్లే రిలీజ్ జిప్ బండిల్ లోని రీడ్‌మీ ఫైల్‌లో కనిపించే ఇంజిన్ పేరు.
+ */
+export const RELEASE_ENGINE_SIGNATURE = "AI Master Studio HYBRID ENGINE";
+
+/**
+ * 🕒 7. బిల్డ్ టైమ్‌స్టాంప్ (Build Timestamp)
+ * 💡 తెలుగు వివరణ: హైబ్రిడ్ ఇంజిన్ ప్రారంభమైన సమయ సూచిక.
+ */
 export const BUILD_TIMESTAMP = "2026-10-19T11:50:55.988Z";
 
-// 🌐 PWA, Service Worker, Manifest, and All Component Links
+/**
+ * 🌐 8. సర్వీస్ వర్కర్ మరియు క్యాష్ కీలు (PWA & Service Worker Cache Identifiers)
+ * 💡 తెలుగు వివరణ: బ్రౌజర్ మరియు మొబైల్ ఆండ్రాయిడ్ PWA క్యాష్ కోసం వాడే యూనివర్సల్ హైబ్రిడ్ కీలు.
+ */
 export const SW_CACHE_NAME = "aims-service-worker-hybrid-engine";
 export const MAIN_CACHE_KEY = "aims_hybrid_engine";
 export const PWA_BUILDER_STATUS = "ACTIVE_HYBRID_PWA";
@@ -16,13 +65,19 @@ export const SRC_COMPONENTS_LINK = "src/components/AdminPanel/MasterBackupSectio
 export const SW_JS_LINK = "public/sw.js";
 export const MANIFEST_LINK = "public/manifest.json";
 
-// ⚡ Hybrid Live Engine & 5-Color Reload Connection
+/**
+ * ⚡ 9. లైవ్ ఇంజిన్ రీలోడ్ & 5-రంగుల అనుసంధానం (Live Engine 5-Color Reload Connection)
+ * 💡 తెలుగు వివరణ: హెడర్ లోని 5-రంగుల లైవ్ ఇంజిన్ నిరంతరం యాక్టివ్ గా ఉండేలా చేసే ఫ్లాగ్.
+ */
 export const HYBRID_BADGE_ENGINE_RELOAD_CONNECTED = true;
 export const HYBRID_COLORS_COUNT = 5;
 export const HYBRID_MODE_ACTIVE = true;
 export const HYBRID_SYNC_STRATEGY = "NETWORK_FIRST_LIVE_RELOAD";
 
-// 📁 COMPLETE SCAN & MAPPING: ALL APP FILES SET TO "HYBRID"
+/**
+ * 📁 10. ప్రాజెక్ట్ ఫైళ్ల సంపూర్ణ హైబ్రిడ్ మ్యాపింగ్ (Complete Project Files Hybrid Mapping)
+ * 💡 తెలుగు వివరణ: ప్రాజెక్ట్‌లోని అన్ని కోర్ ఫైళ్లను వెర్షన్ నంబర్లు లేకుండా శాశ్వతంగా "HYBRID" గా మ్యాప్ చేశాము.
+ */
 export const FILE_VERSIONS: Record<string, string> = {
   "metadata.json": "HYBRID",
   "package.json": "HYBRID",
@@ -41,6 +96,8 @@ export const FILE_VERSIONS: Record<string, string> = {
   "src/components/AdminPanel/MasterBackupSection.tsx": "HYBRID",
   "src/components/AdminPanel/PwaExportSection.tsx": "HYBRID",
   "src/components/UrlToAppBuilder/PackageForStoresCard.tsx": "HYBRID",
+  "src/components/BuildSuite.tsx": "HYBRID",
+  "src/studio_config.json": "HYBRID",
   "server/services/pwaAndroidPackager.ts": "HYBRID",
   "server.ts": "HYBRID",
   "vite.config.ts": "HYBRID"
@@ -50,15 +107,18 @@ export default {
   APP_VERSION,
   ENGINE_NAME,
   DISPLAY_BADGE,
+  DEFAULT_PACKAGE_VERSION,
+  DEFAULT_DECOMPILED_VERSION,
+  RELEASE_ENGINE_SIGNATURE,
   SW_CACHE_NAME,
   MAIN_CACHE_KEY,
   PWA_BUILDER_STATUS,
   SRC_COMPONENTS_LINK,
   SW_JS_LINK,
   MANIFEST_LINK,
-  FILE_VERSIONS,
   HYBRID_BADGE_ENGINE_RELOAD_CONNECTED,
   HYBRID_COLORS_COUNT,
   HYBRID_MODE_ACTIVE,
-  HYBRID_SYNC_STRATEGY
+  HYBRID_SYNC_STRATEGY,
+  FILE_VERSIONS,
 };

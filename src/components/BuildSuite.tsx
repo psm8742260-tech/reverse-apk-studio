@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import JSZip from 'jszip';
+import { ENGINE_NAME, APP_VERSION } from '../version';
 
 interface BuildSuiteProps {
   isOpen: boolean;
@@ -476,7 +477,7 @@ android {
                 <Cpu className="w-12 h-12 text-indigo-600 relative z-10" />
               </div>
               <div>
-                <h3 className="text-xl font-black text-slate-900">AI Generator Engine v4.0</h3>
+                <h3 className="text-xl font-black text-slate-900">{ENGINE_NAME} ({APP_VERSION})</h3>
                 <p className="text-slate-400 text-sm mt-2 max-w-md mx-auto">
                   Our neural assembly engine analyzes your code logic and generates optimized native abstractions.
                 </p>
@@ -484,7 +485,7 @@ android {
               <div className="grid grid-cols-2 gap-4 w-full max-w-lg">
                 <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-left">
                   <div className="text-[10px] font-black text-slate-400 uppercase mb-1">Neural Model</div>
-                  <div className="text-xs font-bold text-slate-800">Brahmastram-Large-v4</div>
+                  <div className="text-xs font-bold text-slate-800">Brahmastram-Large-HYBRID</div>
                 </div>
                 <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-left">
                   <div className="text-[10px] font-black text-slate-400 uppercase mb-1">Assembly Strategy</div>

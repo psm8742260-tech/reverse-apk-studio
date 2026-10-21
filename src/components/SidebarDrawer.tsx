@@ -23,7 +23,7 @@ import {
   Rocket
 } from 'lucide-react';
 import { ActiveModal, StudioTab, FeatureFlags } from '../types';
-import { isAdminUser } from '../config/adminAccess';
+import { isAdminUser, canShowSelfFixerButton } from '../config/adminAccess';
 import { useFirebase } from './FirebaseProvider';
 import { safeStorage } from '../utils/safeStorage';
 
@@ -75,7 +75,7 @@ export const SidebarDrawer: React.FC<SidebarDrawerProps> = ({
   const { user, login, logout, projects } = useFirebase();
 
   const userPhone = safeStorage.getItem('user_phone');
-  const isAuthorizedAdmin = isAdminUser(userEmail, userPhone, isAdminUnlocked);
+  const isAuthorizedAdmin = canShowSelfFixerButton(userEmail, userPhone, isAdminUnlocked);
 
   const handleSelfFixerClick = () => {
     if (!flags?.enableSelfFixer) {

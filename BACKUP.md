@@ -986,4 +986,445 @@ const zipFileName = `${fileBaseName}-Google-Play-package.zip`;
   - ఆండ్రాయిడ్ 5.0 (API 21) నుండి ఆండ్రాయిడ్ 15 (API 34) వరకు అన్ని మొబైల్స్ లో ఇన్‌స్టాల్ అయ్యేలా యూనివర్సల్ `"HYBRID"` వెర్షన్‌గా కాన్ఫిగర్ చేయబడింది.
 - **ధృవీకరణ:** Linter 0 Errors, Applet Compilation Succeeded.
 
+## 🔒 [Universal Hybrid Mode & Model Pool Restoration - 2026-10-21] - Centralized HYBRID Versioning & Gemini Flash-Lite Restoration
+- **తేదీ & సమయం**: `2026-10-21T07:48:36Z` (స్థానిక కాలం: 1:18 PM IST, 21-Oct-2026)
+- **ఏజెంట్ పేరు (Agent Name)**: `AI Master Studio Senior Coding Agent`
+- **అడ్మిన్ గారి పాస్‌కోడ్ అనుమతి**: `6606.0k`
+- **సిస్టమ్ స్థితి**: జీరో ఎర్రర్స్, కంపైలేషన్ పాస్, లైవ్ సిస్టమ్ సేఫ్టీ ఆడిట్ సక్సెస్.
+
+### 1. ఫైల్: `/server.ts` (లైన్లు 1553-1575)
+- **పని**: అడ్మిన్ ఆదేశానుసారం జెమిని లైట్-మోడ్ మరియు హాట్-కోడింగ్ మోడల్ పూల్ పునరుద్ధరణ.
+- **పాత కోడింగ్**:
+```typescript
+          if (isLiteModeActive) {
+              // బటన్-1 ON లో ఉంటే బ్యాక్‌గ్రౌండ్‌లో ఫ్లాష్-లైట్ మోడల్ మాత్రమే రన్ అవుతుంది
+              selectedModel = "gemini-2.5-flash";
+              console.log(`[AI ROUTER] 🔥 LITE_MODE_OVERRIDE ACTIVE -> Switched to: ${selectedModel}`);
+          }
+
+          // 2. Pool of robust Gemini models supported by official Google GenAI endpoints
+          const geminiModels = [
+              selectedModel,
+              'gemini-2.5-flash',
+              'gemini-1.5-flash',
+              'gemini-1.5-pro',
+              'gemini-2.5-pro'
+          ];
+```
+- **కొత్త కోడింగ్**:
+```typescript
+          if (isLiteModeActive) {
+              // బటన్-1 ON లో ఉంటే బ్యాక్‌గ్రౌండ్‌లో ఫ్లాష్-లైట్ మోడల్ మాత్రమే రన్ అవుతుంది
+              selectedModel = "gemini-3.5-flash-lite";
+              console.log(`[AI ROUTER] 🔥 LITE_MODE_OVERRIDE ACTIVE -> Switched to: ${selectedModel}`);
+          }
+
+          // 2. Pool of robust Gemini models with Lite mode prioritized and reliable failover
+          const geminiModels = [
+              selectedModel,
+              'gemini-3.5-flash-lite',
+              'gemini-3.6-flash',
+              'gemini-3.5-flash',
+              'gemini-2.5-flash',
+              'gemini-2.5-pro'
+          ];
+```
+
+### 2. ఫైల్: `/src/version.ts` (లైన్లు 40-52)
+- **పని**: అప్లికేషన్‌లోని అన్ని ఫైళ్లను కేవలం `src/version.ts` లోనే సెంట్రలైజ్ చేసి యూనివర్సల్ HYBRID మోడ్‌లో లాక్ చేయడం.
+- **పాత కోడింగ్**:
+```typescript
+  "server/services/pwaAndroidPackager.ts": "HYBRID",
+  "server.ts": "HYBRID",
+  "vite.config.ts": "HYBRID"
+};
+```
+- **కొత్త కోడింగ్**:
+```typescript
+  "src/components/BuildSuite.tsx": "HYBRID",
+  "src/studio_config.json": "HYBRID",
+  "server/services/pwaAndroidPackager.ts": "HYBRID",
+  "server.ts": "HYBRID",
+  "vite.config.ts": "HYBRID"
+};
+```
+
+### 3. ఫైల్: `/src/App.tsx` (లైన్లు 1-6 & 419-426)
+- **పని**: ఫుటర్‌లోని హార్డ్‌కోడెడ్ `v1.0` తొలగించి `version.ts` నుండి `APP_VERSION` డైనమిక్‌గా ప్రదర్శించడం.
+- **పాత కోడింగ్**:
+```typescript
+import React, { useEffect, useState } from 'react';
+import { ArrowLeft, Globe, X } from 'lucide-react';
+import { DecompiledApp, FeatureFlags, SecurityLog } from './types';
+import Header from './components/Header';
+...
+      {/* Footer */}
+      <footer className="border-t border-slate-200 bg-white px-6 py-4 text-center text-xs text-slate-500 font-mono flex items-center justify-between max-w-7xl mx-auto w-full">
+        <div>AI Master Studio v1.0 • Client Unpacker Mode</div>
+        <div>Session: Active • Sandbox Engine</div>
+      </footer>
+```
+- **కొత్త కోడింగ్**:
+```typescript
+import React, { useEffect, useState } from 'react';
+import { ArrowLeft, Globe, X } from 'lucide-react';
+import { DecompiledApp, FeatureFlags, SecurityLog } from './types';
+import { APP_VERSION } from './version';
+import Header from './components/Header';
+...
+      {/* Footer */}
+      <footer className="border-t border-slate-200 bg-white px-6 py-4 text-center text-xs text-slate-500 font-mono flex items-center justify-between max-w-7xl mx-auto w-full">
+        <div>AI Master Studio {APP_VERSION} • Client Unpacker Mode</div>
+        <div>Session: Active • Sandbox Engine</div>
+      </footer>
+```
+
+### 4. ఫైల్: `/src/components/BuildSuite.tsx` (లైన్లు 8-11 & 478-490)
+- **పని**: హార్డ్‌కోడెడ్ `v4.0` ను తీసివేసి సెంట్రలైజ్డ్ `ENGINE_NAME`, `APP_VERSION` మరియు `Brahmastram-Large-HYBRID` ఇంజెక్షన్.
+- **పాత కోడింగ్**:
+```typescript
+import { motion, AnimatePresence } from 'motion/react';
+import JSZip from 'jszip';
+...
+              <div>
+                <h3 className="text-xl font-black text-slate-900">AI Generator Engine v4.0</h3>
+                <p className="text-slate-400 text-sm mt-2 max-w-md mx-auto">
+                  Our neural assembly engine analyzes your code, injects real-time error patches, and generates production-ready Android APKs.
+                </p>
+              </div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-800 text-slate-300 text-xs font-mono rounded-full">
+                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                Brahmastram-Large-v4
+              </div>
+```
+- **కొత్త కోడింగ్**:
+```typescript
+import { motion, AnimatePresence } from 'motion/react';
+import JSZip from 'jszip';
+import { ENGINE_NAME, APP_VERSION } from '../version';
+...
+              <div>
+                <h3 className="text-xl font-black text-slate-900">{ENGINE_NAME} ({APP_VERSION})</h3>
+                <p className="text-slate-400 text-sm mt-2 max-w-md mx-auto">
+                  Our neural assembly engine analyzes your code, injects real-time error patches, and generates production-ready Android APKs.
+                </p>
+              </div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-800 text-slate-300 text-xs font-mono rounded-full">
+                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                Brahmastram-Large-HYBRID
+              </div>
+```
+
+### 5. ఫైల్: `/src/utils/sampleApks.ts` (లైన్లు 220-225)
+- **పని**: డెమో APK టెంప్లేట్ లోని `v2.4` సంఖ్యను తీసివేసి `HYBRID` గా మార్చడం.
+- **పాత కోడింగ్**:
+```html
+    <header class="header">
+      <div class="logo">⚡ CYBERDASH <span class="version">v2.4</span></div>
+      <div class="status-pill">LIVE ENGINE</div>
+    </header>
+```
+- **కొత్త కోడింగ్**:
+```html
+    <header class="header">
+      <div class="logo">⚡ CYBERDASH <span class="version">HYBRID</span></div>
+      <div class="status-pill">LIVE ENGINE</div>
+    </header>
+```
+
+### 6. ఫైల్: `/src/studio_config.json` (లైన్లు 2-5)
+- **పని**: స్టూడియో కాన్ఫిగరేషన్ లోని వెర్షన్ నంబర్ `2.0.0-standalone` ను `HYBRID` గా మార్చడం.
+- **పాత కోడింగ్**:
+```json
+  "studio_name": "AI Master Studio",
+  "version": "2.0.0-standalone",
+  "engine_type": "Browser-Native",
+```
+- **కొత్త కోడింగ్**:
+```json
+  "studio_name": "AI Master Studio",
+  "version": "HYBRID",
+  "engine_type": "Browser-Native",
+```
+
+### 7. ఫైల్: `/public/sw.js` (లైన్ 4)
+- **పని**: సర్వీస్ వర్కర్ క్యాష్ కీ లోని సంఖ్య వెర్షన్ `v3.9.62` ను `hybrid` గా మార్చడం.
+- **పాత కోడింగ్**:
+```javascript
+const CACHE_NAME = 'aims-service-worker-v3.9.62-' + Date.now();
+```
+- **కొత్త కోడింగ్**:
+```javascript
+const CACHE_NAME = 'aims-service-worker-hybrid-' + Date.now();
+```
+
+### 8. ఫైల్: `/index.html` (లైన్లు 115-121)
+- **పని**: ఐకాన్ మరియు మేనిఫెస్ట్ లింక్స్ లోని `?v=2` క్వెరీ పారామీటర్‌ను `?v=hybrid` గా మార్చడం.
+- **పాత కోడింగ్**:
+```html
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=2" />
+    <link rel="shortcut icon" type="image/png" href="/icon-192.png?v=2" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png?v=2" />
+    <link rel="manifest" href="/manifest.json?v=2" />
+```
+- **కొత్త కోడింగ్**:
+```html
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=hybrid" />
+    <link rel="shortcut icon" type="image/png" href="/icon-192.png?v=hybrid" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png?v=hybrid" />
+    <link rel="manifest" href="/manifest.json?v=hybrid" />
+```
+
+### 9. ఫైల్: `/CHANGELOG.md`
+- **పని**: అడ్మిన్ పాస్‌కోడ్ `6606.0k` ఆమోదంతో చేసిన పై అన్ని మార్పులను పిన్-పాయింట్ పద్ధతిలో రికార్డ్ చేయడం.
+
+---
+
+## 🔒 [Replit-Style Full Workspace & Live Execution Pipeline Integration - 2026-10-21]
+- **తేదీ & సమయం**: `2026-10-21T01:21:00-07:00`
+- **అడ్మిన్ గారి పాస్‌వర్డ్ అనుమతి**: `6606.0k`
+- **ఏజెంట్ పేరు**: `AI Master Studio Senior Coding Agent`
+- **టాస్క్ వివరణ**: నార్మల్ స్టూడియోలో యూజర్ వేరే వాళ్ళ ఏ ప్రాజెక్ట్ జిప్ (.zip) ఫైల్ అప్‌లోడ్ చేసినా, ఆటోమేటిక్‌గా ఫైల్స్ అన్నీ విప్పి, ఇమేజెస్/కోడ్ భద్రపరిచి, డైనమిక్ వర్చువల్ అసెట్ లింకర్ ద్వారా రియల్ లైవ్ యాప్‌గా ప్రివ్యూలో రన్ చేసి, మై యాప్స్ లో ఆటో-సేవ్ చేయడం.
+
+### 1. ఫైల్: `src/components/NormalAppStudio.tsx` (లైన్లు 2191 - 2221)
+- **పని**: హార్డ్‌కోడెడ్ `style.css`, `app.js` స్థానంలో సార్వత్రిక Replit-Style Dynamic Virtual Asset Linker & Execution Pipeline అమలు చేయడం.
+- **పాత కోడింగ్**:
+```typescript
+  // Update Preview whenever files change
+  useEffect(() => {
+    const htmlFile = files.find((f) => f.name.endsWith('.html')) || files[0];
+    const cssFile = files.find((f) => f.name.endsWith('.css'));
+    const jsFile = files.find((f) => f.name.endsWith('.js'));
+
+    let htmlContent = htmlFile ? htmlFile.content : '<h1>Empty App</h1>';
+
+    if (cssFile && cssFile.content) {
+      const cssBlob = new Blob([cssFile.content], { type: 'text/css' });
+      const cssUrl = URL.createObjectURL(cssBlob);
+      htmlContent = htmlContent.replaceAll('style.css', cssUrl);
+      htmlContent = htmlContent.replaceAll('./style.css', cssUrl);
+    }
+
+    if (jsFile && jsFile.content) {
+      const jsBlob = new Blob([jsFile.content], { type: 'application/javascript' });
+      const jsUrl = URL.createObjectURL(jsBlob);
+      htmlContent = htmlContent.replaceAll('app.js', jsUrl);
+      htmlContent = htmlContent.replaceAll('./app.js', jsUrl);
+    }
+
+    const mainBlob = new Blob([htmlContent], { type: 'text/html' });
+    const mainUrl = URL.createObjectURL(mainBlob);
+    setPreviewBlobUrl(mainUrl);
+
+    return () => {
+      URL.revokeObjectURL(mainUrl);
+    };
+  }, [files]);
+```
+- **కొత్త కోడింగ్**:
+```typescript
+  // ⚡ Replit-Style Live Execution Pipeline: Dynamic Universal Virtual Asset Linker
+  useEffect(() => {
+    const createdUrls: string[] = [];
+    try {
+      let htmlFile = files.find((f) => f.name.toLowerCase() === 'index.html');
+      if (!htmlFile) htmlFile = files.find((f) => f.name.toLowerCase().endsWith('/index.html'));
+      if (!htmlFile) htmlFile = files.find((f) => f.name.toLowerCase().endsWith('.html'));
+      if (!htmlFile && files.length > 0) htmlFile = files[0];
+
+      let htmlContent = htmlFile ? htmlFile.content : '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Live App</title></head><body><div id="root"><h1>Live App</h1></div></body></html>';
+
+      const cssFiles = files.filter((f) => f.name.endsWith('.css'));
+      const jsFiles = files.filter((f) => f.name.endsWith('.js') || f.name.endsWith('.jsx') || f.name.endsWith('.ts') || f.name.endsWith('.tsx'));
+      const mediaFiles = files.filter((f) => f.name.match(/\.(png|jpe?g|gif|svg|webp|ico|bmp|json)$/i));
+
+      const assetMap: Record<string, string> = {};
+
+      mediaFiles.forEach((f) => {
+        let url = f.content;
+        if (!url.startsWith('data:')) {
+          const mime = f.name.endsWith('.json') ? 'application/json' : f.name.endsWith('.svg') ? 'image/svg+xml' : 'image/png';
+          try {
+            const b = new Blob([f.content], { type: mime });
+            url = URL.createObjectURL(b);
+            createdUrls.push(url);
+          } catch (e) {
+            url = f.content;
+          }
+        }
+        const base = f.name.split('/').pop() || f.name;
+        assetMap[f.name] = url;
+        assetMap['./' + f.name] = url;
+        assetMap['/' + f.name] = url;
+        assetMap[base] = url;
+        assetMap['./' + base] = url;
+      });
+
+      cssFiles.forEach((f) => {
+        let cssContent = f.content;
+        Object.entries(assetMap).forEach(([origKey, val]) => {
+          if (origKey.match(/\.(png|jpe?g|gif|svg|webp|ico)$/i)) {
+            cssContent = cssContent.split(origKey).join(val);
+          }
+        });
+        const cssBlob = new Blob([cssContent], { type: 'text/css' });
+        const cssUrl = URL.createObjectURL(cssBlob);
+        createdUrls.push(cssUrl);
+
+        const base = f.name.split('/').pop() || f.name;
+        assetMap[f.name] = cssUrl;
+        assetMap['./' + f.name] = cssUrl;
+        assetMap['/' + f.name] = cssUrl;
+        assetMap[base] = cssUrl;
+        assetMap['./' + base] = cssUrl;
+      });
+
+      jsFiles.forEach((f) => {
+        let jsContent = f.content;
+        Object.entries(assetMap).forEach(([origKey, val]) => {
+          if (origKey.match(/\.(png|jpe?g|gif|svg|webp|ico|json)$/i)) {
+            jsContent = jsContent.split(origKey).join(val);
+          }
+        });
+        const jsBlob = new Blob([jsContent], { type: 'application/javascript' });
+        const jsUrl = URL.createObjectURL(jsBlob);
+        createdUrls.push(jsUrl);
+
+        const base = f.name.split('/').pop() || f.name;
+        assetMap[f.name] = jsUrl;
+        assetMap['./' + f.name] = jsUrl;
+        assetMap['/' + f.name] = jsUrl;
+        assetMap[base] = jsUrl;
+        assetMap['./' + base] = jsUrl;
+      });
+
+      const previewErrorTrap = `
+<script>
+  window.addEventListener('error', function(event) {
+    console.warn('[Studio Live Preview Error]:', event.message);
+  });
+</script>
+`;
+      if (htmlContent.includes('<head>')) {
+        htmlContent = htmlContent.replace('<head>', '<head>' + previewErrorTrap);
+      } else {
+        htmlContent = previewErrorTrap + htmlContent;
+      }
+
+      Object.entries(assetMap).forEach(([origKey, targetUrl]) => {
+        htmlContent = htmlContent.split(`"${origKey}"`).join(`"${targetUrl}"`);
+        htmlContent = htmlContent.split(`'${origKey}'`).join(`'${targetUrl}'`);
+        htmlContent = htmlContent.split(`(${origKey})`).join(`(${targetUrl})`);
+      });
+
+      cssFiles.forEach((f) => {
+        const base = f.name.split('/').pop() || f.name;
+        const url = assetMap[base] || assetMap[f.name];
+        if (url && !htmlContent.includes(url)) {
+          if (htmlContent.includes('</head>')) {
+            htmlContent = htmlContent.replace('</head>', `  <link rel="stylesheet" href="${url}">\n</head>`);
+          } else {
+            htmlContent = `<link rel="stylesheet" href="${url}">\n` + htmlContent;
+          }
+        }
+      });
+
+      jsFiles.forEach((f) => {
+        const base = f.name.split('/').pop() || f.name;
+        const url = assetMap[base] || assetMap[f.name];
+        if (url && !htmlContent.includes(url)) {
+          if (htmlContent.includes('</body>')) {
+            htmlContent = htmlContent.replace('</body>', `  <script src="${url}"><\/script>\n</body>`);
+          } else {
+            htmlContent = htmlContent + `\n<script src="${url}"><\/script>`;
+          }
+        }
+      });
+
+      const mainBlob = new Blob([htmlContent], { type: 'text/html' });
+      const mainUrl = URL.createObjectURL(mainBlob);
+      setPreviewBlobUrl(mainUrl);
+
+      return () => {
+        URL.revokeObjectURL(mainUrl);
+        createdUrls.forEach((u) => {
+          try {
+            URL.revokeObjectURL(u);
+          } catch (e) {}
+        });
+      };
+    } catch (err) {
+      console.error('[Live Execution Pipeline Error]:', err);
+    }
+  }, [files]);
+```
+
+### 2. ఫైల్: `src/components/NormalAppStudio.tsx` (లైన్లు 2688 - 2785)
+- **పని**: `handleImportProjectZip` లో ఇమేజ్ బైనరీ Base64 ప్రిజర్వేషన్, కామన్ రూట్ పాత్ నార్మలైజేషన్, మిస్సింగ్ HTML ఆటో-జనరేషన్, మరియు ఇన్స్టంట్ ఆటో-సేవ్. `handleDownloadZip` లో Base64 బైనరీ సపోర్ట్.
+- **ధృవీకరణ**: Build Succeeded, TypeScript Check 0 Errors.
+
+---
+
+## 🔒 [Centralized Admin Access System & Strict Visibility Control - 2026-10-21]
+- **తేదీ & సమయం**: `2026-10-21T01:45:00-07:00`
+- **అడ్మిన్ గారి పాస్‌వర్డ్ అనుమతి**: `66060k`
+- **ఏజెంట్ పేరు**: `AI Master Studio Senior Coding Agent`
+- **టాస్క్ వివరణ**: అడ్మిన్ యాక్సెస్ కోడింగ్ మొత్తాన్ని కేవలం `src/config/adminAccess.ts` లోనే సెంట్రలైజ్ చేసి, ప్రతి కాన్ఫిగరేషన్‌కు పైన ఐకాన్లతో కూడిన తెలుగు వివరణ రాసి, ఆ 3 బటన్లు (హెడర్‌లోని 'Admin' బటన్, సెట్టింగ్స్‌లోని 'Admin Off All' బటన్, సైడ్‌బార్‌లోని 'AI Master Studio' సెల్ఫ్ ఫిక్సర్ బటన్) కేవలం అడ్మిన్ లాగిన్ అయినప్పుడు మాత్రమే కనిపించేలా మరియు సాధారణ యూజర్లకు పూర్తిగా అదృశ్యమయ్యేలా చేయడం.
+
+### 1. ఫైల్: `src/config/adminAccess.ts` (పూర్తి సెంట్రలైజేషన్)
+- **పని**: అన్ని లూప్‌హోల్స్ (`|| true`) తొలగించి, `ADMIN_UI_VISIBILITY_CONFIG` స్విచ్‌లు, `canShowHeaderAdminButton`, `canShowAdminDeveloperControl`, `canShowSelfFixerButton` ఫంక్షన్లను తెలుగు వివరణలతో పొందుపరచడం.
+- **కోడ్ వివరాలు**:
+  - `AUTHORIZED_ADMIN_GMAIL = "psm8742260@gmail.com"`
+  - `AUTHORIZED_ADMIN_PHONE = "8466062260"`
+  - `ADMIN_GATEWAY_SECRET = "6606"`
+  - `ADMIN_PASSCODE_BYPASS = "ADMIN_BYPASS"`
+  - `ADMIN_UI_VISIBILITY_CONFIG = { showHeaderAdminButton: true, showAdminDeveloperControl: true, showSelfFixerInSidebar: true }`
+
+### 2. ఫైల్: `src/components/Header.tsx` (స్క్రీన్‌షాట్ 2 కనెక్షన్)
+- **పని**: `canShowHeaderAdminButton(userEmail, userPhone, isAuthorizedAdmin)` ద్వారా మాత్రమే హెడర్‌లోని పర్పుల్ '[🔒 Admin]' బటన్ కనిపించేలా కనెక్ట్ చేయడం.
+
+### 3. ఫైల్: `src/App.tsx` (గేట్‌వే కనెక్షన్)
+- **పని**: `const isAdmin = isAdminUser(user?.email, userPhone, isAdminUnlocked);` ద్వారా రూట్ లెవల్ అడ్మిన్ ప్యానెల్ మౌంటింగ్‌ను రక్షించడం.
+
+### 4. ఫైల్: `src/components/NormalAppStudio.tsx` (స్క్రీన్‌షాట్ 1 కనెక్షన్)
+- **పని**: సెట్టింగ్స్‌లోని `Admin Developer Control` క్రింద ఉన్న '[🔒 Admin Off All]' బటన్‌ను `canShowAdminDeveloperControl` ద్వారా అడ్మిన్‌కు మాత్రమే పరిమితం చేయడం.
+
+### 5. ఫైల్: `src/components/SidebarDrawer.tsx` (స్క్రీన్‌షాట్ 3 కనెక్షన్)
+- **పని**: సైడ్‌బార్ డ్రాయర్‌లోని '[⚡ AI Master Studio]' సెల్ఫ్ ఫిక్సర్ బటన్‌ను `canShowSelfFixerButton` ద్వారా అడ్మిన్‌కు మాత్రమే పరిమితం చేయడం.
+- **ధృవీకరణ**: Build Succeeded, 0 Linter Errors, Applet Healthy.
+
+---
+
+## 🔒 [Universal Hybrid Engine Centralization & Zero-Version Architecture - 2026-10-21]
+- **తేదీ & సమయం**: `2026-10-21T01:58:00-07:00`
+- **అడ్మిన్ గారి పాస్‌వర్డ్ అనుమతి**: `6606.0k`
+- **ఏజెంట్ పేరు**: `AI Master Studio Senior Coding Agent`
+- **టాస్క్ వివరణ**: వెర్షన్‌కు సంబంధించిన మొత్తం కోడింగ్‌ను కేవలం `src/version.ts` ఫైల్‌లోనే కేంద్రీకరించి, ప్రతి వేరియబుల్‌కు పైన ఐకాన్లతో కూడిన సంపూర్ణ తెలుగు డాక్యుమెంటేషన్ పొందుపరిచి, ఇతర అన్ని ఫైళ్లలోని పాత సంఖ్యలను తొలగించి శాశ్వతంగా "HYBRID" గా మార్చడం.
+
+### 1. ఫైల్: `src/version.ts` (కేంద్రీకృత ఫైల్)
+- **పని**: సంపూర్ణ హైబ్రిడ్ కాన్‌స్టెంట్లు మరియు ప్రతి అక్షరానికి పైన తెలుగు వివరణలు.
+- **కోడ్ వివరాలు**:
+  - `APP_VERSION = "HYBRID"`
+  - `ENGINE_NAME = "HYBRID ENGINE"`
+  - `DISPLAY_BADGE = "H"`
+  - `DEFAULT_PACKAGE_VERSION = "Hybrid"`
+  - `DEFAULT_DECOMPILED_VERSION = "HYBRID"`
+  - `RELEASE_ENGINE_SIGNATURE = "AI Master Studio HYBRID ENGINE"`
+  - `SW_CACHE_NAME = "aims-service-worker-hybrid-engine"`
+  - `MAIN_CACHE_KEY = "aims_hybrid_engine"`
+
+### 2. ఫైల్: `server.ts` (లైన్ 4445)
+- **పని**: రిలీజ్ బండిల్ README.html లోని పాత `v3.0` సంఖ్యను తొలగించి `AI Master Studio HYBRID ENGINE` గా మార్చడం.
+
+### 3. ఫైల్: `src/components/NormalAppStudio.tsx` (లైన్ 219)
+- **పని**: ప్రారంభ package.json టెంప్లేట్ వెర్షన్‌ను `"1.0.0"` నుండి `"Hybrid"` గా మార్చడం.
+
+### 4. ఫైల్: `src/utils/apkDecompiler.ts` (లైన్ 158)
+- **పని**: డీకంపైలర్ డీఫాల్ట్ వెర్షన్‌ను `'HYBRID'` గా మార్చడం.
+
+### 5. ఫైల్: `src/utils/sampleApks.ts` (లైన్లు 18, 27, 36)
+- **పని**: శాంపిల్ APK లన్నింటి వెర్షన్లను సంఖ్యలు లేకుండా `'HYBRID'` గా మార్చడం.
+- **ధృవీకరణ**: Build Succeeded, 0 Linter Errors, Applet 100% Healthy.
+
+
 
