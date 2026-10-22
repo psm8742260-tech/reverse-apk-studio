@@ -8,6 +8,8 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import JSZip from 'jszip';
 import { ENGINE_NAME, APP_VERSION } from '../version';
+// 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) నుండి ZIP బిల్డర్ ఫంక్షన్‌ని ఇంపోర్ట్ చేసాము.
+import { buildZipToApkStream } from '../aplApi';
 
 interface BuildSuiteProps {
   isOpen: boolean;
@@ -150,11 +152,8 @@ android {
 
       addLog('Connecting to Cloud Build Engine (/api/app/build-zip-to-apk)...');
 
-      // 3. Dispatch real backend request
-      const response = await fetch('/api/app/build-zip-to-apk', {
-        method: 'POST',
-        body: formData,
-      });
+      // 3. 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) ద్వారా రియల్ బ్యాకెండ్ రిక్వెస్ట్ పంపుతున్నాము.
+      const response = await buildZipToApkStream(formData);
 
       if (!response.body) {
         throw new Error('Server returned an empty or invalid stream response.');

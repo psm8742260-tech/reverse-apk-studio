@@ -1,22 +1,21 @@
+// 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) నుండి ఎక్స్‌పోజింగ్ షేర్ ఫంక్షన్‌ని ఇంపోర్ట్ చేసాము.
+import { saveExposingShare } from '../aplApi';
+
 // Function to upload/save asset and generate ultra-short URL via Server Proxy
 export async function createShortUrl(file: File, dataUri: string): Promise<string> {
   const shortId = Math.random().toString(36).substring(2, 8); // 6-char short code
   
   try {
-    // 1. Try saving to Server Proxy API
-    const response = await fetch('/api/exposing/share', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        id: shortId,
-        name: file.name,
-        type: file.type,
-        size: file.size,
-        data: dataUri
-      })
+    // 1. 💡 తెలుగు వివరణ: aplApi ద్వారా షేర్ డేటాను సర్వర్‌లో భద్రపరుస్తున్నాము.
+    const ok = await saveExposingShare({
+      id: shortId,
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      data: dataUri
     });
 
-    if (response.ok) {
+    if (ok) {
       const origin = window.location.origin;
       return `${origin}/?v=${shortId}`;
     }

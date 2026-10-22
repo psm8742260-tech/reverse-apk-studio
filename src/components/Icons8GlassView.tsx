@@ -4,6 +4,8 @@ import {
   ArrowLeft, Copy, CheckCircle2, Sliders, X, Search, Code, Download, 
   Sparkles, FileCode, RefreshCw, Send, Upload
 } from 'lucide-react';
+// 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) నుండి మార్కెట్ మరియు అడ్మిన్ సెట్టింగ్స్ ఫంక్షన్లను ఇంపోర్ట్ చేసాము.
+import { getAdminSetting, saveAdminSetting, fetchMarketCategories, fetchMarketGlassIcons, uploadMarketIcon } from '../aplApi';
 
 export interface GlassIcon {
   id: string;
@@ -81,12 +83,10 @@ export function Icons8GlassView({ isOpen, onClose, onSendToEditor }: Icons8Glass
     if (!isOpen) return;
     const fetchLiteMode = async () => {
       try {
-        const res = await fetch('/api/admin/settings/LITE_MODE_OVERRIDE');
-        if (res.ok) {
-          const data = await res.json();
-          if (typeof data.value === 'boolean') {
-            setIsLiteModeActiveUI(data.value);
-          }
+        // 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) ద్వారా లైట్ మోడ్ సెట్టింగ్‌ని పొందుతున్నాము.
+        const data = await getAdminSetting('LITE_MODE_OVERRIDE');
+        if (data && typeof data.value === 'boolean') {
+          setIsLiteModeActiveUI(data.value);
         }
       } catch (err) {}
     };
@@ -100,12 +100,10 @@ export function Icons8GlassView({ isOpen, onClose, onSendToEditor }: Icons8Glass
     if (!isOpen) return;
     const fetchCategories = async () => {
       try {
-        const res = await fetch('/api/market/categories');
-        if (res.ok) {
-          const data = await res.json();
-          if (data.categories && data.categories.length > 0) {
-            setCategories(data.categories);
-          }
+        // 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) ద్వారా మార్కెట్ కేటగిరీలను లోడ్ చేస్తున్నాము.
+        const data = await fetchMarketCategories();
+        if (data.categories && data.categories.length > 0) {
+          setCategories(data.categories);
         }
       } catch (err) {
         console.error('Failed to fetch categories:', err);
@@ -121,21 +119,12 @@ export function Icons8GlassView({ isOpen, onClose, onSendToEditor }: Icons8Glass
     const fetchIcons = async () => {
       setIsLoading(true);
       try {
-        const queryParams = new URLSearchParams();
-        queryParams.append('category', activeCategory);
-        if (searchQuery) queryParams.append('search', searchQuery);
-
-        const res = await fetch(`/api/market/glass-icons?${queryParams.toString()}`);
-        if (res.ok) {
-          const data = await res.json();
-          // Fallback to fetch default icons if the new category is not yet in the DB so user can test the UI
-          if (data.icons && data.icons.length > 0) {
-            setIcons(data.icons);
-          } else {
-             const fallback = await fetch(`/api/market/glass-icons`);
-             const fData = await fallback.json();
-             setIcons(fData.icons || []);
-          }
+        // 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) ద్వారా గ్లాస్ ఐకాన్లను క్వెరీ చేస్తున్నాము.
+        const data = await fetchMarketGlassIcons(activeCategory, searchQuery);
+        if (data.icons && data.icons.length > 0) {
+          setIcons(data.icons);
+        } else {
+          setIcons([]);
         }
       } catch (err) {
         console.error('Failed to fetch market glass icons:', err);
@@ -218,27 +207,21 @@ export function Icons8GlassView({ isOpen, onClose, onSendToEditor }: Icons8Glass
     setUploadError('');
 
     try {
-      const res = await fetch('/api/market/upload-icon', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: uploadName.trim(),
-          category: activeCategory,
-          svgContent: uploadSvg.trim(),
-        }),
+      // 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) ద్వారా మార్కెట్‌లోకి ఐకాన్ అప్‌లోడ్ చేస్తున్నాము.
+      const data = await uploadMarketIcon({
+        name: uploadName.trim(),
+        category: activeCategory,
+        svgContent: uploadSvg.trim(),
       });
 
-      if (res.ok) {
+      if (data && (data.success || data.ok)) {
         setRefetchTrigger(prev => prev + 1);
         setUploadName('');
         setUploadSvg('');
         setIsUploadOpen(false);
         triggerCopyToast('Asset Uploaded', 'ఐకాన్ సర్వర్‌లోకి విజయవంతంగా అప్‌లోడ్ చేయబడింది!');
       } else {
-        const errData = await res.json();
-        setUploadError(errData.error || 'అప్‌లోడ్ విఫలమైంది.');
+        setUploadError(data?.error || 'అప్‌లోడ్ విఫలమైంది.');
       }
     } catch (err: any) {
       setUploadError('సర్వర్ నెట్‌వర్క్ ఎర్రర్: ' + err.message);
@@ -337,11 +320,8 @@ export function Icons8GlassView({ isOpen, onClose, onSendToEditor }: Icons8Glass
                             const newState = !isLiteModeActiveUI;
                             setIsLiteModeActiveUI(newState);
                             try {
-                              await fetch('/api/admin/settings', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ key: 'LITE_MODE_OVERRIDE', value: newState })
-                              });
+                              // 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) ద్వారా LITE_MODE_OVERRIDE సెట్టింగ్‌ని సేవ్ చేస్తున్నాము.
+                              await saveAdminSetting('LITE_MODE_OVERRIDE', newState);
                             } catch(e) {}
                           }}
                           className={`px-4 py-2 rounded-xl text-xs font-black transition-all shadow-md flex items-center gap-2 ${

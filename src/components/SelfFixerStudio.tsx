@@ -101,9 +101,9 @@ const SudarshanaChakraIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-// 💡 అడ్మిన్ గారు! మన కేంద్రీకృత ఫైల్ నుండి సెల్ఫ్ రిపేర్ ఏజెంట్ల వివరాలను ఇక్కడ ఇంపోర్ట్ చేసాము.
-// దీనివల్ల మనం ఒకే చోట మార్పులు చేస్తే యాప్ అంతటా మారుతుంది.
 import { SELF_FIXER_STUDIO_AGENTS } from '../config/agentsConfig';
+// 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) నుండి హెల్త్, ఫైల్ సిస్టమ్ మరియు ఏఐ జనరేషన్ ఫంక్షన్లను ఇంపోర్ట్ చేసాము.
+import { checkAiHealth, getFsTree, readFsFile, writeFsFile, generateAiContent } from '../aplApi';
 
 const AI_MODELS = SELF_FIXER_STUDIO_AGENTS.map(agent => {
   let icon: any = Bot;
@@ -281,10 +281,9 @@ export const SelfFixerStudio: React.FC<SelfFixerStudioProps> = ({
   const [previewDeviceMode, setPreviewDeviceMode] = useState<'mobile' | 'responsive'>('mobile');
   const [aiStatus, setAiStatus] = useState<{ deepseek: boolean, gemini: boolean }>({ deepseek: false, gemini: false });
 
-  // 🏛️ అడ్మిన్ గారు, AI కనెక్షన్ స్టేటస్‌ని చెక్ చేయడానికి ఈ ఫంక్షన్ వాడుతున్నాను.
+  // 🏛️ 💡 తెలుగు వివరణ: కేంద్రీకృత aplApi ద్వారా AI కనెక్షన్ స్టేటస్‌ని చెక్ చేస్తున్నాము.
   useEffect(() => {
-    fetch('/api/health/ai')
-      .then(res => res.json())
+    checkAiHealth()
       .then(data => setAiStatus(data))
       .catch(() => {});
   }, []);
@@ -305,26 +304,24 @@ export const SelfFixerStudio: React.FC<SelfFixerStudioProps> = ({
   const [availableFiles, setAvailableFiles] = useState<string[]>([]);
   const [savedSnapshot, setSavedSnapshot] = useState<Record<string, string> | null>(null);
 
-  // Fetch complete project file tree when studio opens
+  // 💡 తెలుగు వివరణ: aplApi ద్వారా స్టూడియో ఓపెన్ అయినప్పుడు పూర్తి ప్రాజెక్ట్ ఫైల్ ట్రీ మరియు App.tsx కంటెంట్‌ని ఫెచ్ చేస్తున్నాము.
   React.useEffect(() => {
     if (isOpen) {
-      fetch('/api/fs/tree')
-        .then(res => res.json())
-        .then(data => {
-          if (data.files && Array.isArray(data.files) && data.files.length > 0) {
-            setAvailableFiles(data.files);
+      getFsTree()
+        .then(files => {
+          if (Array.isArray(files) && files.length > 0) {
+            setAvailableFiles(files);
           }
         })
         .catch(err => console.warn('[Tree Scan] Error scanning studio files:', err));
 
       // 🚀 అడ్మిన్ గారు! ఫైల్స్ ఎల్లప్పుడూ రియల్-టైమ్‌లో లోడ్ అవ్వడానికి, 'src/App.tsx' ఫైల్ కంటెంట్‌ని సర్వర్ నుండి డైరెక్ట్‌గా ఫెచ్ చేస్తున్నాను.
-      fetch('/api/fs/read?path=src%2FApp.tsx')
-        .then(res => res.json())
-        .then(data => {
-          if (data && data.content) {
+      readFsFile('src/App.tsx')
+        .then(content => {
+          if (content) {
             setFileContents(prev => ({
               ...prev,
-              'src/App.tsx': data.content
+              'src/App.tsx': content
             }));
           }
         })
@@ -355,17 +352,16 @@ export const SelfFixerStudio: React.FC<SelfFixerStudioProps> = ({
     return list;
   }, [availableFiles, fileContents]);
 
-  // Handle switching file from dropdown with auto-read
+  // 💡 తెలుగు వివరణ: aplApi ద్వారా డ్రాప్‌డౌన్ నుండి ఎంచుకున్న ఫైల్ కంటెంట్‌ని ఆటో-రీడ్ చేస్తున్నాము.
   const handleSelectFile = async (filePath: string) => {
     setSelectedFile(filePath);
     if (!fileContents[filePath]) {
       try {
-        const res = await fetch(`/api/fs/read?path=${encodeURIComponent(filePath)}`);
-        const data = await res.json();
-        if (data.content !== undefined) {
+        const content = await readFsFile(filePath);
+        if (content !== null && content !== undefined) {
           setFileContents(prev => ({
             ...prev,
-            [filePath]: data.content
+            [filePath]: content
           }));
         }
       } catch (e) {
@@ -568,13 +564,9 @@ export const SelfFixerStudio: React.FC<SelfFixerStudioProps> = ({
     }
     setIsPendingApply(false);
     try {
-      const res = await fetch('/api/files/write', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filePath: selectedFile, content: codeToSave })
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
+      // 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) ద్వారా కోడ్‌ను డిస్క్ ఫైల్‌లోకి రాస్తున్నాము.
+      const success = await writeFsFile(selectedFile, codeToSave);
+      if (success) {
         notify(`🚀 '${selectedFile}' లో కోడ్ అప్లై అయింది! బోర్డ్ క్లియర్ అయింది.`);
       } else {
         notify(`🚀 కోడ్ చేంజెస్ అప్లై అయ్యాయి! బోర్డ్ క్లియర్ అయింది.`);
@@ -671,26 +663,17 @@ MASTER SAFETY RULE:
         return baseInstruction;
       })();
 
-      const response = await fetch('/api/ai/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          studioMode: 'REPAIR',
-          userId: userEmail || 'admin@aimasterstudio.com',
-          prompt: userText,
-          agent: selectedModel.name,
-          model: 'gemini-3.6-flash',
-          deepseekApiKey: localStorage.getItem('reverse_apk_private_api_key') || '',
-          fileContext: { name: selectedFile, content: fileContents[selectedFile] },
-          systemInstructionCustom: systemPrompt,
-        }),
+      // 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) ద్వారా ఏఐ కోడ్ జనరేషన్ ప్రాంప్ట్‌ను పంపుతున్నాము.
+      const data = await generateAiContent({
+        studioMode: 'REPAIR',
+        userId: userEmail || 'admin@aimasterstudio.com',
+        prompt: userText,
+        agent: selectedModel.name,
+        model: 'gemini-3.6-flash',
+        deepseekApiKey: localStorage.getItem('reverse_apk_private_api_key') || '',
+        fileContext: { name: selectedFile, content: fileContents[selectedFile] },
+        systemInstructionCustom: systemPrompt,
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        // throw new Error /* DEACTIVATED BY INVISIBLE AGENT DEEP SHEATH */(errorData.error || 'AI Bridge offline');
-      }
-      const data = await response.json();
 
       // Save AI Message instantly in local state
       setChatMessages(prev => [...prev, { sender: selectedModel.name, text: data.text, type: 'ai' }]);
@@ -725,15 +708,10 @@ MASTER SAFETY RULE:
         setIsPendingApply(true);
         
         if (hasApproval) {
-          // Automatically apply live to disk & verify only if approved by Admin passcode
+          // 💡 తెలుగు వివరణ: అడ్మిన్ పాస్‌వర్డ్ ఆమోదం ఉన్నప్పుడు aplApi ద్వారా కోడ్‌ను డిస్క్‌లోకి రాస్తున్నాము.
           try {
-            const res = await fetch('/api/fs/write', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ path: selectedFile, content: lastCodeBlock })
-            });
-            const writeData = await res.json();
-            if (res.ok && writeData.success) {
+            const success = await writeFsFile(selectedFile, lastCodeBlock);
+            if (success) {
               setIsPendingApply(false);
               notify(`✨ '${selectedModel.name}' స్వయంగా కోడ్ రాసి, '${selectedFile}' లో అప్లై చేసి వెరిఫై చేసింది!`);
               // Switch back to chat tab so the editor file view is hidden after work is done
@@ -789,23 +767,22 @@ MASTER SAFETY RULE:
 
     try {
       notify('📂 AI Master Studio కోడింగ్ లోడ్ అవుతోంది...');
-      const res = await fetch(`/api/fs/read?path=${encodeURIComponent(targetPath)}`);
-      const data = await res.json();
-      if (data.content) {
+      // 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) ద్వారా ఫైల్ కంటెంట్‌ని లోడ్ చేస్తున్నాము.
+      const content = await readFsFile(targetPath);
+      if (content) {
         setFileContents(prev => ({
           ...prev,
-          [targetPath]: data.content
+          [targetPath]: content
         }));
         setSelectedFile(targetPath);
         setActiveTab('editor');
         notify(`💻 '${targetPath}' కోడింగ్ లోడ్ అయింది!`);
       } else {
-        const fallbackRes = await fetch('/api/fs/read?path=src/App.tsx');
-        const fallbackData = await fallbackRes.json();
-        if (fallbackData.content) {
+        const fallbackContent = await readFsFile('src/App.tsx');
+        if (fallbackContent) {
           setFileContents(prev => ({
             ...prev,
-            'src/App.tsx': fallbackData.content
+            'src/App.tsx': fallbackContent
           }));
           setSelectedFile('src/App.tsx');
           setActiveTab('editor');
@@ -874,13 +851,13 @@ MASTER SAFETY RULE:
     setIsInjecting(true);
     notify(`🚀 Pushing ${moduleItem.name} source code...`);
     try {
-      const res = await fetch(`/api/fs/read?path=${moduleItem.path}`);
-      const data = await res.json();
+      // 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) ద్వారా మాడ్యూల్ కోడ్‌ను రీడ్ చేస్తున్నాము.
+      const content = await readFsFile(moduleItem.path);
       
-      if (data.content) {
+      if (content) {
         setFileContents(prev => ({
           ...prev,
-          [moduleItem.path]: data.content
+          [moduleItem.path]: content
         }));
         setSelectedFile(moduleItem.path);
         setActiveTab('editor');

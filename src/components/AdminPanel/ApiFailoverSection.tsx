@@ -4,6 +4,8 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { ShieldAlert, Save, RefreshCw, Activity, Cpu, Lock, Terminal, Check } from 'lucide-react';
 
 import { API_CONTROLS } from '../../lib/PaymentFile';
+// 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) నుండి హెల్త్ మరియు కీ సింక్ ఫంక్షన్లను ఇంపోర్ట్ చేస్తున్నాము.
+import { checkAiHealth as getAiHealthStatus, syncAdminKeys } from '../../aplApi';
 
 export const ApiFailoverSection: React.FC = () => {
   const [config, setConfig] = useState<any>(null);
@@ -17,11 +19,14 @@ export const ApiFailoverSection: React.FC = () => {
     checkAiHealth();
   }, []);
 
-  const checkAiHealth = () => {
-    fetch('/api/health/ai')
-      .then(res => res.json())
-      .then(data => setAiStatus(data))
-      .catch(() => {});
+  // 💡 తెలుగు వివరణ: aplApi ద్వారా ఏఐ ఇంజిన్ లైవ్ హెల్త్ చెక్ చేసి స్టేట్ అప్‌డేట్ చేస్తున్నాము.
+  const checkAiHealth = async () => {
+    try {
+      const data = await getAiHealthStatus();
+      setAiStatus(data);
+    } catch {
+      setAiStatus({ deepseek: false, gemini: false });
+    }
   };
 
   const getProviderIcon = (provider: string, active: boolean) => {
@@ -45,12 +50,8 @@ export const ApiFailoverSection: React.FC = () => {
         setConfig(loadedConfig);
         setSaveStatus('saved');
         
-        // Auto-sync to backend on successful load by admin
-        fetch('/api/admin/sync-keys', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(loadedConfig)
-        }).catch(console.error);
+        // 💡 తెలుగు వివరణ: aplApi ద్వారా అడ్మిన్ కీలను బ్యాకెండ్ సర్వర్‌కు ఆటో-సింక్ చేస్తున్నాము.
+        syncAdminKeys(loadedConfig).catch(console.error);
         
       } else {
         // Initialize if not exists
@@ -82,13 +83,9 @@ export const ApiFailoverSection: React.FC = () => {
       const docRef = doc(db, 'admin_config', 'api_keys');
       await setDoc(docRef, config);
       
-      // Sync to backend cache to bypass Firestore SDK permission issues
+      // 💡 తెలుగు వివరణ: aplApi ద్వారా అడ్మిన్ కీలను బ్యాకెండ్ సర్వర్‌కు సురక్షితంగా సింక్ చేస్తున్నాము.
       try {
-        await fetch('/api/admin/sync-keys', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(config)
-        });
+        await syncAdminKeys(config);
       } catch (syncErr) {
         console.warn('Backend sync failed, but saved to DB', syncErr);
       }

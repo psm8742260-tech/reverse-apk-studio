@@ -2,6 +2,8 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { auth, db } from '../firebase';
 import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, User } from 'firebase/auth';
 import { safeStorage } from '../utils/safeStorage';
+// 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) నుండి సర్వర్ లైవ్ హెల్త్ చెక్ ఫంక్షన్‌ని ఇంపోర్ట్ చేసాము.
+import { checkServerHealth } from '../aplApi';
 
 interface FirebaseContextType {
   user: User | null;
@@ -60,9 +62,9 @@ export function FirebaseProvider({ children }: { children: React.ReactNode }) {
   const handleLogin = async () => {
     try {
       setLoading(true);
-      // 1. సర్వర్ కనెక్షన్ చెక్ చేయడం
+      // 1. 💡 తెలుగు వివరణ: aplApi ద్వారా సర్వర్ లైవ్ కనెక్షన్ చెక్ చేస్తున్నాము.
       try {
-        await fetch('/api/health').catch(() => {});
+        await checkServerHealth();
       } catch {}
 
       // 2. గూగుల్ అథెంటికేషన్ లేదా సర్వర్ క్లౌడ్ అడ్మిన్ కనెక్షన్

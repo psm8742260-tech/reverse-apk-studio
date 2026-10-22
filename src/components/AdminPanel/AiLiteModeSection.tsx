@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Zap, ShieldCheck, Cpu, RefreshCw, CheckCircle2, Sparkles, SlidersHorizontal } from 'lucide-react';
 
+// 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) నుండి అడ్మిన్ సెట్టింగ్స్ మరియు మోడల్ రిజల్యూషన్ ఫంక్షన్లను ఇంపోర్ట్ చేసాము.
+import { getAdminSetting, saveAdminSetting, resolveAiModel } from '../../aplApi';
+
 interface Props {
   onBack?: () => void;
 }
@@ -13,14 +16,13 @@ export const AiLiteModeSection: React.FC<Props> = ({ onBack }) => {
   const [isTesting, setIsTesting] = useState<boolean>(false);
   const [statusMsg, setStatusMsg] = useState<string>('');
 
-  // 🏛️ సర్వర్ నుండి ప్రస్తుత LITE_MODE_OVERRIDE సెట్టింగ్‌ని లోడ్ చేయడం
+  // 🏛️ 💡 తెలుగు వివరణ: aplApi ద్వారా సర్వర్ నుండి ప్రస్తుత LITE_MODE_OVERRIDE సెట్టింగ్‌ని లోడ్ చేయడం
   useEffect(() => {
     let mounted = true;
-    fetch('/api/admin/settings/LITE_MODE_OVERRIDE')
-      .then(res => res.json())
+    getAdminSetting('LITE_MODE_OVERRIDE')
       .then(data => {
         if (mounted) {
-          setIsLiteMode(data.value ?? true);
+          setIsLiteMode(data?.value ?? true);
           setIsLoading(false);
         }
       })
@@ -31,16 +33,13 @@ export const AiLiteModeSection: React.FC<Props> = ({ onBack }) => {
     return () => { mounted = false; };
   }, []);
 
+  // 💡 తెలుగు వివరణ: aplApi ద్వారా LITE_MODE_OVERRIDE సెట్టింగ్‌ని సర్వర్‌లో సేవ్ చేయడం
   const handleToggleMode = async (targetState: boolean) => {
     setIsSaving(true);
     setStatusMsg('');
     try {
-      const res = await fetch('/api/admin/settings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ key: 'LITE_MODE_OVERRIDE', value: targetState })
-      });
-      if (res.ok) {
+      const success = await saveAdminSetting('LITE_MODE_OVERRIDE', targetState);
+      if (success) {
         setIsLiteMode(targetState);
         setStatusMsg(targetState 
           ? '✅ బటన్-1 యాక్టివేట్ అయ్యింది: బ్యాక్‌గ్రౌండ్‌లో ఫ్లాష్-లైట్ మోడల్ మాత్రమే రన్ అవుతుంది!' 
@@ -55,15 +54,11 @@ export const AiLiteModeSection: React.FC<Props> = ({ onBack }) => {
     }
   };
 
+  // 💡 తెలుగు వివరణ: aplApi ద్వారా మోడల్ రిజల్యూషన్‌ను టెస్ట్ చేయడం
   const handleTestResolveModel = async () => {
     setIsTesting(true);
     try {
-      const res = await fetch('/api/ai/resolve-model', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userSelectedModel: 'gemini-2.5-pro' })
-      });
-      const data = await res.json();
+      const data = await resolveAiModel('gemini-2.5-pro');
       setTestResponse(data);
     } catch (err: any) {
       setTestResponse({ error: err.message });

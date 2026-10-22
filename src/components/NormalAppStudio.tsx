@@ -152,6 +152,8 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
 import { NORMAL_STUDIO_AGENTS } from '../config/agentsConfig';
 import { isAdminMobileUser, canShowAdminDeveloperControl } from '../config/adminAccess';
 import { getUserAccessRules } from '../config/userAccess';
+// 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) నుండి అన్ని API కనెక్షన్ల కోసం aplApi ని ఇంపోర్ట్ చేసాము.
+import aplApi from '../aplApi';
 export const AVAILABLE_STUDIO_MODELS = NORMAL_STUDIO_AGENTS;
 
 interface ChatMessage {
@@ -2515,40 +2517,33 @@ export const NormalAppStudio: React.FC<Props> = ({
       );
       const trainingRulesToInject = currentMatchedModel?.trainingRules || '';
 
-      const res = await fetch('/api/ai/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          studioMode: 'NORMAL',
-          prompt: currentQuery,
-          agent: selectedAgent,
-          model: selectedAgent.toLowerCase(),
-          deepseekApiKey: privateApiKey,
-          geminiApiKey: privateApiKey,
-          customApiKey: privateApiKey,
-          fileContext: activeFile
-            ? {
-                name: activeFile.name,
-                content: activeFile.content,
-              }
-            : undefined,
-          // 💡 తెలుగు వివరణ: అడ్మిన్ గారు! ఏజెంట్ ట్రైనింగ్ నిబంధనలను సక్రమంగా అనుసంధానించడానికి, కరెంట్ ఏజెంట్ యొక్క ట్రైనింగ్ మరియు అడ్మిన్ నిబంధనలను విడివిడిగా జత చేసాము.
-          systemInstructionCustom: (() => {
-            let baseInstruction = systemInstruction || '';
-            // 1. TRAINING (కోడింగ్ ఎలా చేయాలి - ఎల్లప్పుడూ ఆన్‌లో ఉంటుంది)
-            if (trainingRulesToInject) {
-              baseInstruction += `\n\n=== 🧠 AGENT TRAINING (HOW TO BUILD APP) ===\n${trainingRulesToInject}`;
+      // 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) ద్వారా ఏఐ జనరేషన్ కాల్ చేస్తున్నాము.
+      const data = await aplApi.generateAiContent({
+        studioMode: 'NORMAL',
+        prompt: currentQuery,
+        agent: selectedAgent,
+        model: selectedAgent.toLowerCase(),
+        deepseekApiKey: privateApiKey,
+        fileContext: activeFile
+          ? {
+              name: activeFile.name,
+              content: activeFile.content,
             }
-            // 2. RULES (పొరపాట్లు చేయకుండా నియంత్రణ - టోగుల్ ఆన్ అయినప్పుడు మాత్రమే)
-            if (flags?.enableAgentRegulations) {
-              baseInstruction += `\n\n=== 🏛️ AI MASTER STUDIO - ZERO ERROR MANDATORY RULES ===\n1. ADDRESS THE USER AS "అడ్మిన్ గారు" (Admin Garu) AT ALL TIMES.\n2. COMMUNICATE EXCLUSIVELY IN TELUGU (తెలుగు).\n3. EVERY RESPONSE MUST END WITH A "🛡️ SYSTEM OVERSIGHT CHECK REPORT" AND A "🔄 RESTART CODE".\n4. NEVER OUTPUT BROKEN CODE, UNCLOSED BRACKETS, OR INCOMPLETE PLACEHOLDERS. FULL WORKING CODE ONLY.`;
-            }
-            return baseInstruction;
-          })(),
-        }),
+          : undefined,
+        // 💡 తెలుగు వివరణ: అడ్మిన్ గారు! ఏజెంట్ ట్రైనింగ్ నిబంధనలను సక్రమంగా అనుసంధానించడానికి, కరెంట్ ఏజెంట్ యొక్క ట్రైనింగ్ మరియు అడ్మిన్ నిబంధనలను విడివిడిగా జత చేసాము.
+        systemInstructionCustom: (() => {
+          let baseInstruction = systemInstruction || '';
+          // 1. TRAINING (కోడింగ్ ఎలా చేయాలి - ఎల్లప్పుడూ ఆన్‌లో ఉంటుంది)
+          if (trainingRulesToInject) {
+            baseInstruction += `\n\n=== 🧠 AGENT TRAINING (HOW TO BUILD APP) ===\n${trainingRulesToInject}`;
+          }
+          // 2. RULES (పొరపాట్లు చేయకుండా నియంత్రణ - టోగుల్ ఆన్ అయినప్పుడు మాత్రమే)
+          if (flags?.enableAgentRegulations) {
+            baseInstruction += `\n\n=== 🏛️ AI MASTER STUDIO - ZERO ERROR MANDATORY RULES ===\n1. ADDRESS THE USER AS "అడ్మిన్ గారు" (Admin Garu) AT ALL TIMES.\n2. COMMUNICATE EXCLUSIVELY IN TELUGU (తెలుగు).\n3. EVERY RESPONSE MUST END WITH A "🛡️ SYSTEM OVERSIGHT CHECK REPORT" AND A "🔄 RESTART CODE".\n4. NEVER OUTPUT BROKEN CODE, UNCLOSED BRACKETS, OR INCOMPLETE PLACEHOLDERS. FULL WORKING CODE ONLY.`;
+          }
+          return baseInstruction;
+        })(),
       });
-
-      const data = await res.json();
 
       const matchedModelObj = AVAILABLE_STUDIO_MODELS.find(
         (m) => m.id === selectedAgent.toLowerCase() || m.name.toLowerCase() === selectedAgent.toLowerCase()

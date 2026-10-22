@@ -7,6 +7,8 @@ import {
   Infinity, Calendar, ShieldCheck, ArrowLeft, Rocket
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
+// 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) నుండి ఎక్స్‌పోజింగ్ షేర్ ఫంక్షన్‌ని ఇంపోర్ట్ చేసాము.
+import { saveExposingShare } from '../aplApi';
 
 interface ExposingQRProps {
   isOpen: boolean;
@@ -106,11 +108,11 @@ export const ExposingQR: React.FC<ExposingQRProps> = ({ isOpen, onClose, onShift
       };
       
       try {
-        await fetch('/api/exposing/share', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
+        // 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) ద్వారా షేర్ పేలోడ్‌ను భద్రపరుస్తున్నాము.
+        const ok = await saveExposingShare(payload);
+        if (!ok) {
+          sessionStorage.setItem(`share_${shortId}`, JSON.stringify(payload));
+        }
       } catch (srvErr) {
         console.warn('Error saving to server, using fallback session storage:', srvErr);
         sessionStorage.setItem(`share_${shortId}`, JSON.stringify(payload));

@@ -19,6 +19,8 @@ import {
   FileJson,
   Rocket
 } from 'lucide-react';
+// 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) నుండి మేనిఫెస్ట్ ఐకాన్ అప్‌డేట్ ఫంక్షన్‌ని ఇంపోర్ట్ చేసాము.
+import { updateManifestIcon } from '../aplApi';
 
 interface CloudConvertStudioProps {
   isOpen: boolean;
@@ -155,12 +157,9 @@ export const CloudConvertStudio: React.FC<CloudConvertStudioProps> = ({ isOpen, 
   const handleApplyToManifest = async () => {
     const targetUrl = directUrl || convertedDataUrl || 'https://i.ibb.co/xqwqwrDn/Screenshot-20260808-101732.png';
     try {
-      const res = await fetch('/api/update-manifest-icon', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ iconUrl: targetUrl }),
-      });
-      if (res.ok) {
+      // 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) ద్వారా మేనిఫెస్ట్ ఐకాన్ అప్‌డేట్ చేస్తున్నాము.
+      const ok = await updateManifestIcon(targetUrl);
+      if (ok) {
         setApplyToast('🚀 App icon applied directly to manifest.json & metadata.json!');
       } else {
         setApplyToast('✅ App icon set in session memory successfully!');

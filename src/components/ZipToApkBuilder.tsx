@@ -1,6 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { X, Upload, Terminal, CheckCircle2, AlertCircle, ShieldAlert, Cpu, Download, Sparkles, FolderArchive, Play, RefreshCw } from 'lucide-react';
 import { HybridBadgeH } from './HybridBadgeH';
+// 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) నుండి ZIP బిల్డర్ ఫంక్షన్‌ని ఇంపోర్ట్ చేసాము.
+import { buildZipToApkStream } from '../aplApi';
 
 interface ZipToApkBuilderProps {
   isOpen: boolean;
@@ -92,10 +94,8 @@ export function ZipToApkBuilder({ isOpen, onClose, onShift }: ZipToApkBuilderPro
       formData.append('buildType', buildType);
       formData.append('keystoreMode', 'STUDIO');
 
-      const response = await fetch('/api/app/build-zip-to-apk', {
-        method: 'POST',
-        body: formData
-      });
+      // 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) ద్వారా ZIP to APK స్ట్రీమింగ్ బిల్డ్ రిక్వెస్ట్ పంపుతున్నాము.
+      const response = await buildZipToApkStream(formData);
 
       if (!response.ok) {
         throw new Error(`బిల్డ్ రిక్వెస్ట్ విఫలమైంది (${response.status})`);

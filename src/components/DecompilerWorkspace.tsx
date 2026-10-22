@@ -4,6 +4,8 @@ import { decompileApk, downloadSourceZip } from '../utils/apkDecompiler';
 import { SAMPLE_APK_TEMPLATES, createSampleApkBlob } from '../utils/sampleApks';
 import { PaymentModal } from './PaymentModal';
 import { FLUENT_EMOJIS } from '../utils/fluentEmojis';
+// 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) నుండి వాల్ట్ సేవ్ ఫంక్షన్‌ని ఇంపోర్ట్ చేసాము.
+import { saveToVault } from '../aplApi';
 import {
   Upload,
   Folder,
@@ -1032,14 +1034,10 @@ export const DecompilerWorkspace: React.FC<Props> = ({
                                 contentData: selectedFile.content || '',
                                 targetFilePath: selectedFile.path
                               };
-                              const res = await fetch('/api/vault/save', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ userId: userId || 'anonymous', shiftData })
-                              });
-                              const data = await res.json();
-                              if (data.success) alert(data.message);
-                              else alert('Failed to save: ' + data.message);
+                              // 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) ద్వారా వాల్ట్ లోకి డేటాను భద్రపరుస్తున్నాము.
+                              const ok = await saveToVault({ userId: userId || 'anonymous', shiftData });
+                              if (ok) alert('Saved to vault successfully!');
+                              else alert('Failed to save to vault.');
                             } catch (err) {
                               alert('Save failed: ' + err);
                             }

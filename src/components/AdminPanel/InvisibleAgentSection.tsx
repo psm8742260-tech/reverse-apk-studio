@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { FeatureFlags, DecompiledApp } from '../../types';
 import { Bot, ArrowLeft, Shield, Play, Pause, Activity, CheckCircle2, AlertCircle, Terminal, Send, Sparkles } from 'lucide-react';
+// 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) నుండి టెర్మినల్ కమాండ్ ఫంక్షన్‌ని ఇంపోర్ట్ చేసాము.
+import { executePhrsTerminalCommand } from '../../aplApi';
 
 interface InvisibleAgentSectionProps {
   flags: FeatureFlags;
@@ -95,12 +97,8 @@ export function InvisibleAgentSection({
     }
 
     try {
-      const res = await fetch('/api/phrs/terminal', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ command: cmd })
-      });
-      const data = await res.json();
+      // 💡 తెలుగు వివరణ: కేంద్రీకృత aplApi ద్వారా PHRS క్రౌడ్ సర్వర్ టెర్మినల్ కమాండ్‌ను ఎగ్జిక్యూట్ చేస్తున్నాము.
+      const data = await executePhrsTerminalCommand(cmd);
       if (data.reply === 'CLEAR_SIGNAL') {
         setTerminalMessages([
           { id: Date.now().toString(), sender: 'server', text: '🧹 టెర్మినల్ క్లియర్ చేయబడింది. PHRS క్రౌడ్ సర్వర్ బ్రిడ్జి సిద్ధంగా ఉంది.', time: new Date().toLocaleTimeString() }

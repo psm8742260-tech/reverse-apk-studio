@@ -3,6 +3,8 @@ import { db } from '../firebase';
 import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { Globe, ArrowLeft, ExternalLink, RefreshCw, Shield, Sparkles } from 'lucide-react';
 import { safeStorage } from '../utils/safeStorage';
+// 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) నుండి పబ్లిష్ చేయబడిన యాప్ ఫెచ్ ఫంక్షన్‌ని ఇంపోర్ట్ చేసాము.
+import { fetchPublishedApp } from '../aplApi';
 
 interface LiveAppViewerProps {
   appSlug: string;
@@ -98,16 +100,14 @@ export const LiveAppViewer: React.FC<LiveAppViewerProps> = ({ appSlug, serverEng
           ];
           
           for (const s of trySlugs) {
-            const apiRes = await fetch(`/api/published-app/${encodeURIComponent(s)}`);
-            if (apiRes.ok) {
-              const apiData = await apiRes.json();
-              if (apiData && (apiData.html || apiData.content)) {
-                if (isMounted) {
-                  setAppHtml(apiData.html || apiData.content || '');
-                  setAppName(apiData.name || appSlug);
-                  setLoading(false);
-                  return;
-                }
+            // 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) ద్వారా పబ్లిష్ చేయబడిన యాప్ కంటెంట్‌ని ఫెచ్ చేస్తున్నాము.
+            const apiData = await fetchPublishedApp(s);
+            if (apiData && (apiData.html || apiData.content)) {
+              if (isMounted) {
+                setAppHtml(apiData.html || apiData.content || '');
+                setAppName(apiData.name || appSlug);
+                setLoading(false);
+                return;
               }
             }
           }

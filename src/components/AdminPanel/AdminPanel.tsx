@@ -22,6 +22,8 @@ import { UrlToAppBuilder } from '../UrlToAppBuilder';
 import { Icons8GlassView } from '../Icons8GlassView';
 import { LiveVisualBuilderView } from '../LiveVisualBuilderView';
 import { AiLiteModeSection } from './AiLiteModeSection';
+// 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) నుండి checkAiHealth ఫంక్షన్‌ని ఇంపోర్ట్ చేసాము.
+import { checkAiHealth } from '../../aplApi';
 import { 
   ArrowLeft, 
   Lock, 
@@ -60,10 +62,8 @@ const AiConfigBadge: React.FC = () => {
   const [status, setStatus] = useState<any>(null);
 
   useEffect(() => {
-    fetch('/api/health/ai')
-      .then(res => res.json())
-      .then(data => setStatus(data))
-      .catch(() => {});
+    // 💡 తెలుగు వివరణ: aplApi ద్వారా ఏఐ ఇంజిన్ లైవ్ హెల్త్ సమాచారాన్ని పొందుతున్నాము.
+    checkAiHealth().then(data => setStatus(data)).catch(() => {});
   }, []);
 
   // 🏛️ అడ్మిన్ గారు! హెడర్‌లో ఎల్లప్పుడూ "AI Online" అని గ్రీన్ పల్స్‌తో కనిపించే కాంపాక్ట్ బ్యాడ్జ్

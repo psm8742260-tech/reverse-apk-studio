@@ -48,6 +48,8 @@ import {
 import { ActionItem, AnalysisReport } from './UrlToAppBuilder/types';
 import { StoreReadyModal } from './UrlToAppBuilder/StoreReadyModal';
 import { PackageForStoresCard } from './UrlToAppBuilder/PackageForStoresCard';
+// 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) నుండి URL విశ్లేషణ మరియు బిల్డ్ ఫంక్షన్లను ఇంపోర్ట్ చేసాము.
+import { analyzeAppUrl, buildAppFromUrl, sendAppBuildRequest } from '../aplApi';
 import { DiagnosticCard } from './UrlToAppBuilder/DiagnosticCard';
 import { AnalysisSummaryCard } from './UrlToAppBuilder/AnalysisSummaryCard';
 import { ActionItemsHeader, ActionItemsFilters } from './UrlToAppBuilder/ActionItemsHeader';
@@ -145,17 +147,13 @@ export const UrlToAppBuilder: React.FC<UrlToAppBuilderProps> = ({ isOpen, onClos
     setDownloadSuccess(null);
 
     try {
-      const res = await fetch('/api/app/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: targetUrl }),
-      });
+      // 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) ద్వారా వెబ్ URL మరియు PWA విశ్లేషణను నిర్వహిస్తున్నాము.
+      const data = await analyzeAppUrl(targetUrl);
 
-      if (!res.ok) {
+      if (!data) {
         throw new Error('Analysis API error');
       }
 
-      const data = await res.json();
       setReport(data);
       const finalName = data.manifest?.name || data.siteName || deriveNameFromUrl(targetUrl);
       setAppName(finalName);
@@ -262,14 +260,8 @@ export const UrlToAppBuilder: React.FC<UrlToAppBuilderProps> = ({ isOpen, onClos
 
       setBuildProgress(10);
 
-      const res = await fetch('/api/app/build', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
+      // 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) ద్వారా TWA/PWA యాప్ బిల్డ్ రిక్వెస్ట్ పంపుతున్నాము.
+      const res = await sendAppBuildRequest(payload);
 
       setBuildProgress(25);
 

@@ -1,5 +1,40 @@
 # CHANGELOG - Universal Hybrid Engine Centralization & Zero-Version Architecture
 
+## 🔒 [Centralized Studio Colors & Feature Coding Config - 2026-10-22]
+- **అడ్మిన్ గారి పాస్‌వర్డ్ అనుమతి:** `6606.0k`
+- **సృష్టించిన కొత్త ఫైల్ పేరు:** `src/config/studioColors.ts`
+- **ఫీచర్లు & కలర్ కోడింగ్:** ప్రాజెక్ట్‌లోని అన్ని బోర్డులు, ఫీచర్లు, సబ్-ఫీచర్లు, బటన్లు మరియు వాటి పూర్తి కలర్ కోడింగ్ (Backgrounds, Borders, Text, Accents, Gradients) అన్నీ ఈ ఒక్కే ఒక్క 'studioColors.ts' ఫైల్‌లో కేంద్రీకరించబడ్డాయి.
+- **కనెక్షన్ బ్రిడ్జి:** ఈ కలర్స్ ఫైల్ నుండి కేవలం ఒకే ఒక సింగిల్ కనెక్షన్ బ్రిడ్జి ద్వారా మెయిన్ కనెక్షన్ సిస్టమ్‌కు అనుసంధానించబడింది.
+- **తెలుగు డాక్యుమెంటేషన్:** ప్రతి ఫీచర్ మరియు బటన్‌కు స్పష్టమైన తెలుగు వివరణలు మరియు ఇంగ్లీష్-తెలుగు వైరింగ్ మ్యాపింగ్ అమర్చబడింది.
+- **ధృవీకరణ:** Build Succeeded, 0 Errors.
+
+## 🔒 [Centralized Apl API Architecture & Master Controller - 2026-10-22]
+- **అడ్మిన్ గారి పాస్‌వర్డ్ అనుమతి:** `6606.0k`
+- **సెంట్రలైజ్డ్ ఫైల్:** `src/aplApi.ts` (మరియు అనుకూలత కోసం `src/apiService.ts`)
+- **తెలుగు డాక్యుమెంటేషన్:** ప్రతి ఒక్క ఏపీఐ ఫంక్షన్ పైన ఐకాన్లతో కూడిన సంపూర్ణ తెలుగు వివరణ, ఎండ్‌పాయింట్ వివరాలు, పారామీటర్లు, అనుసంధానించబడిన కాంపోనెంట్లు మరియు `try-catch` ఫెయిల్-సేఫ్ రక్షణ కవచాలు అమర్చబడ్డాయి.
+- **అనుసంధానించిన కాంపోనెంట్లు:**
+  1. `src/aplApi.ts`: సర్వర్ లైవ్ హెల్త్, AI ఇంజిన్ హెల్త్, ఫైల్ సిస్టమ్ (రీడ్/రైట్/ట్రీ), AI జనరేషన్, అడ్మిన్ సెట్టింగ్స్, కీ సింక్, ప్రాజెక్ట్ మేనేజ్‌మెంట్, TWA/PWA బిల్డర్, ZIP to APK స్ట్రీమింగ్, PHRS టెర్మినల్ బ్రిడ్జి, మార్కెట్ గ్లాస్ ఐకాన్స్, మరియు ఎక్స్‌పోజింగ్ షేర్ ఏపీఐల ఏకీకృత నియంత్రణ.
+  2. `src/apiService.ts`: యూనివర్సల్ ఇంపోర్ట్ అనుకూలత కోసం రీ-ఎక్స్‌పోర్ట్ అలియాస్.
+  3. `src/components/AdminPanel/ApiFailoverSection.tsx`: `checkAiHealth` మరియు `syncAdminKeys` తో అనుసంధానం.
+  4. `src/components/AdminPanel/AdminPanel.tsx`: `checkAiHealth` తో అనుసంధానం.
+  5. `src/components/AdminPanel/AiLiteModeSection.tsx`: `getAdminSetting`, `saveAdminSetting`, `resolveAiModel` తో అనుసంధానం.
+  6. `src/components/AdminPanel/InvisibleAgentSection.tsx`: `executePhrsTerminalCommand` తో అనుసంధానం.
+  7. `src/components/SelfFixerStudio.tsx`: `checkAiHealth`, `getFsTree`, `readFsFile`, `writeFsFile`, `generateAiContent` తో అనుసంధానం.
+  8. `src/components/ZipToApkBuilder.tsx`: `buildZipToApkStream` తో అనుసంధానం.
+  9. `src/components/BuildSuite.tsx`: `buildZipToApkStream` తో అనుసంధానం.
+  10. `src/components/UrlToAppBuilder.tsx`: `analyzeAppUrl`, `buildAppFromUrl`, `sendAppBuildRequest` తో అనుసంధానం.
+  11. `src/components/FirebaseProvider.tsx`: `checkServerHealth` తో అనుసంధానం.
+  12. `src/components/CloudConvertStudio.tsx`: `updateManifestIcon` తో అనుసంధానం.
+  13. `src/components/DecompilerWorkspace.tsx`: `saveToVault` తో అనుసంధానం.
+  14. `src/utils/urlShortener.ts`: `saveExposingShare` తో అనుసంధానం.
+  15. `src/components/ExposingQR.tsx`: `saveExposingShare` తో అనుసంధానం.
+  16. `src/components/Icons8GlassView.tsx`: `getAdminSetting`, `saveAdminSetting`, `fetchMarketCategories`, `fetchMarketGlassIcons`, `uploadMarketIcon` తో అనుసంధానం.
+  17. `src/components/LiveAppViewer.tsx`: `fetchPublishedApp` తో అనుసంధానం.
+  18. `src/components/NormalAppStudio.tsx`: `aplApi.generateAiContent` తో అనుసంధానం.
+  19. `src/version.ts`: `src/aplApi.ts` మరియు `src/apiService.ts` లను `FILE_VERSIONS` లో "HYBRID" గా నమోదు చేయడం.
+- **ఫలితం:** ప్రాజెక్ట్‌లోని అన్ని నెట్‌వర్క్ మరియు సర్వర్ అనుసంధానాలు కేవలం `src/aplApi.ts` ఫైల్ ద్వారానే నియంత్రించబడుతున్నాయి.
+- **ధృవీకరణ:** Build Succeeded, 0 Errors.
+
 ## 🔒 [Universal Hybrid Engine Centralization - 2026-10-21]
 - **అడ్మిన్ గారి పాస్‌వర్డ్ అనుమతి:** `6606.0k`
 - **సెంట్రలైజ్డ్ ఫైల్:** `src/version.ts` (ప్రతి అక్షరానికి పైన ఐకాన్లతో కూడిన సంపూర్ణ తెలుగు వివరణలతో సెంట్రలైజ్ చేయబడింది)
