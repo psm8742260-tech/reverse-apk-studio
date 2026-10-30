@@ -1,5 +1,11 @@
 # CHANGELOG - Universal Hybrid Engine Centralization & Zero-Version Architecture
 
+## 🚀 [GitHub Actions FTP Deployment Workflow to aims.phrscrowd.online - 2026-10-30]
+- **అడ్మిన్ గారి పాస్‌వర్డ్ అనుమతి:** `6606.0k`
+- **సవరించిన ఫైల్:** `.github/workflows/deploy.yml`
+- **వివరణ:** విపిఎస్ (VPS) సర్వర్‌లో సైట్ లోడింగ్ చక్రం వద్ద ఆగిపోకుండా ఉండేందుకు, `npm run build` తో కంపైల్ అయిన ప్రొడక్షన్ బండిల్ (`./dist/`) ను నేరుగా `/aims.phrscrowd.online/` రూట్ డైరెక్టరీకి FTP ద్వారా ఆటోమేటిక్‌గా అప్‌లోడ్ చేసే GitHub Actions వర్క్‌ఫ్లో విజయవంతంగా అమర్చబడింది.
+- **ధృవీకరణ:** Build Succeeded, 0 Lint Errors.
+
 ## 🔒 [Centralized Studio Colors & Feature Coding Config - 2026-10-22]
 - **అడ్మిన్ గారి పాస్‌వర్డ్ అనుమతి:** `6606.0k`
 - **సృష్టించిన కొత్త ఫైల్ పేరు:** `src/config/studioColors.ts`

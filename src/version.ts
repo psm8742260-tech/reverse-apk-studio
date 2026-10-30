@@ -108,6 +108,13 @@ export const FILE_VERSIONS: Record<string, string> = {
   "vite.config.ts": "HYBRID"
 };
 
+/**
+ * 🛠️ 11. నోడ్ మరియు ఓపెన్ ఎస్.ఎస్.ఎల్ వెర్షన్లు (Node & OpenSSL Hybrid Versions)
+ * 💡 తెలుగు వివరణ: మన సర్వర్ రన్‌టైమ్ వెర్షన్లను కూడా ఎటువంటి నంబర్లు లేకుండా శాశ్వతంగా "HYBRID" గా మార్చాము.
+ */
+export const NODE_VERSION = "HYBRID";
+export const OPENSSL_VERSION = "HYBRID";
+
 export default {
   APP_VERSION,
   ENGINE_NAME,
@@ -115,6 +122,8 @@ export default {
   DEFAULT_PACKAGE_VERSION,
   DEFAULT_DECOMPILED_VERSION,
   RELEASE_ENGINE_SIGNATURE,
+  NODE_VERSION,
+  OPENSSL_VERSION,
   SW_CACHE_NAME,
   MAIN_CACHE_KEY,
   PWA_BUILDER_STATUS,
