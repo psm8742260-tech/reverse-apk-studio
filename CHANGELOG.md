@@ -1,5 +1,16 @@
 # CHANGELOG - Universal Hybrid Engine Centralization & Zero-Version Architecture
 
+## 🚀 [Unified Server Build Packaging & Direct Site Manifest Icon Engine - 2026-11-04]
+- **అడ్మిన్ గారి పాస్‌వర్డ్ అనుమతి:** `6606.0k`
+- **సవరించిన ఫైల్స్:** `src/aplApi.ts`, `scripts/postbuild-copy-server.js`, `package.json`, `index.html`, `public/sw.js`, `src/components/UrlToAppBuilder/AnalysisSummaryCard.tsx`
+- **సమస్య పరిష్కారం:**
+  1. **యూనిఫైడ్ ప్రొడక్షన్ బిల్డ్ కంబైన్డ్ ప్యాకేజ్ (Unified Server Build Packaging):** `scripts/postbuild-copy-server.js` ని సృష్టించి, `package.json` లో `"postbuild"` హుక్ జోడించాము. దీనివల్ల `npm run build` జరిగినప్పుడు ఫ్రంటెండ్‌తో పాటు `server.ts`, `server/` ఫోల్డర్, `package.json`, `metadata.json`, `BACKUP.md`, `firebase-applet-config.json` మరియు `firestore.rules` అన్నీ కలిపి ఒకే ఒక్క ఏకీకృత `./dist/` ప్రొడక్షన్ ప్యాకేజీగా మారతాయి. GitHub Actions వర్క్‌ఫ్లో ద్వారా ఈ పూర్తి ప్యాకేజీ నేరుగా VPS లోని `/aims.phrscrowd.online/` కి డిప్లాయ్ అవుతుంది.
+  2. **డైరెక్ట్ సైట్ మేనిఫెస్ట్ ఐకాన్ ఇంజిన్ (Direct Manifest & Custom Icon Extraction):** `src/aplApi.ts` లో టార్గెట్ వెబ్‌సైట్ యొక్క `/manifest.json` ని నేరుగా చదివే ఇంజిన్ అమర్చాము. PWA అప్లికేషన్ల కోసం (`cwrb.phrscrowd.online`, `coins.phrscrowd.online`, మొదలైనవి) మేనిఫెస్ట్ లో ఉన్న అసలైన బ్రాండ్ లోగోలను (`cwrb-logo.png` / `icon-192.png`) నేరుగా సేకరిస్తుంది.
+  3. **ప్లాట్‌ఫామ్ కామన్ ఐకాన్ ఫిల్టర్ (Google AI Studio Wave Logo Filtering):** గూగుల్ AI స్టూడియో కామన్ డొమైన్ ఐకాన్‌ను (`ai.studio/favicon`) గుర్తించి, దానిని జనరిక్ ఐకాన్‌గా తీసుకోకుండా నిరోధించి, సదరు యాప్‌కు సంబంధించిన అసలైన ఐకాన్‌ను మాత్రమే ప్రదర్శించేలా ఫిల్టరింగ్ అమర్చాము.
+  4. **404 టైటిల్ శానిటైజర్ (404 Error Title Cleanup):** వెబ్‌సైట్ 404 పేజీ టైటిల్ ఇచ్చినప్పుడు, రౌ డొమైన్ నుండి రంగుల ప్రొఫెషనల్ యాప్ నేమ్‌ను స్మార్ట్‌గా తయారుచేసే లాజిక్ సెట్ చేయబడింది.
+  5. **VPS బ్రౌజర్ లోడింగ్ స్పిన్నర్ రికవరీ (Stale Cache Watchdog):** `index.html` మరియు `sw.js` లలో 4-సెకన్ల వాచ్‌డాగ్ మరియు `mode === 'navigate'` నెట్‌వర్క్ ఫస్ట్ విధానం అమర్చి, పాత సర్వీస్ వర్కర్ క్యాష్ లూప్ వల్ల వైట్/లోడింగ్ స్క్రీన్ రాకుండా రక్షణ కల్పించాము.
+- **ధృవీకరణ:** `npm run build` & `compile_applet` 0 ఎర్రర్లతో కంపైల్ అయింది. TypeScript 0 Lint Errors.
+
 ## 🚀 [VPS Universal Icon Fallback & LiteSpeed Routing Fix - 2026-11-03]
 - **అడ్మిన్ గారి పాస్‌వర్డ్ అనుమతి:** `6606.0k` / `6606.ok`
 - **సవరించిన ఫైల్స్:** `src/components/UrlToAppBuilder/AnalysisSummaryCard.tsx`, `src/components/UrlToAppBuilder.tsx`, `public/.htaccess`

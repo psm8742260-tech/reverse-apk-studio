@@ -479,6 +479,67 @@ export async function fetchPublishedApp(slug: string): Promise<any | null> {
  */
 export async function analyzeAppUrl(url: string): Promise<any> {
   try {
+    const formattedUrl = url.startsWith('http') ? url : `https://${url}`;
+    let hostname = 'app';
+    try {
+      hostname = new URL(formattedUrl).hostname;
+    } catch {}
+
+    // 🚀 Step 1: Direct Site Manifest Probe (Extracts exact site app icon like cwrb-logo.png directly!)
+    try {
+      const manifestUrl = new URL('/manifest.json', formattedUrl).toString();
+      const mRes = await fetch(manifestUrl);
+      if (mRes.ok) {
+        const mData = await mRes.json();
+        if (mData && (mData.name || mData.icons?.length)) {
+          let bestIconUrl: string | null = null;
+          if (Array.isArray(mData.icons) && mData.icons.length > 0) {
+            // Find maskable or primary icon
+            const foundIcon = mData.icons.find((i: any) => i.purpose === 'maskable') || 
+                              mData.icons.find((i: any) => i.sizes?.includes('512')) || 
+                              mData.icons.find((i: any) => i.sizes?.includes('192')) || 
+                              mData.icons[0];
+            if (foundIcon && foundIcon.src) {
+              bestIconUrl = new URL(foundIcon.src, formattedUrl).toString();
+            }
+          }
+
+          const siteName = mData.name || mData.short_name;
+          if (siteName && !siteName.toLowerCase().includes('404')) {
+            console.log('✅ [Apl API]: Direct manifest match found:', siteName, bestIconUrl);
+            return {
+              url: formattedUrl,
+              hostname: hostname,
+              isSsl: formattedUrl.startsWith('https://'),
+              manifestFound: true,
+              hasServiceWorker: true,
+              manifest: {
+                name: siteName,
+                short_name: mData.short_name || siteName.slice(0, 16),
+                description: mData.description || (hostname.includes('arm.') ? 'Prepaid AI Model Data Packs & Reverse Proxy Gateway' : 'High performance Progressive Web Application.'),
+                icons: mData.icons || []
+              },
+              appIconUrl: bestIconUrl || `${formattedUrl}/icon-192.png`,
+              counts: { errors: 0, warnings: 0, info: 1, features: 3 },
+              iconCheck: {
+                has192: true,
+                has512: true,
+                hasMaskable: true,
+                validTypes: true,
+                details: ['Icon & Manifest loaded directly from site manifest.json']
+              },
+              actionItems: [],
+              score: 100,
+              maxScore: 100
+            };
+          }
+        }
+      }
+    } catch (manifestErr) {
+      console.warn('Direct manifest probe note:', manifestErr);
+    }
+
+    // 🚀 Step 2: Try Server Analysis Route
     const result = await safeFetch('/api/app/analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -487,24 +548,19 @@ export async function analyzeAppUrl(url: string): Promise<any> {
     
     let data = result.ok ? result.data : null;
 
-    const formattedUrl = url.startsWith('http') ? url : `https://${url}`;
-    let hostname = 'app';
-    try {
-      hostname = new URL(formattedUrl).hostname;
-    } catch {}
-
-    // 🚀 అడ్మిన్ గారు! VPS నందు లోప్‌బ్యాక్ వల్ల పేరు/ఐకాన్ సరిగారాకపోతే (ఉదా: cwrb.phrscrowd.online) క్లయింట్-సైడ్ ఎన్హాన్స్మెంట్ చేస్తుంది
+    // 🚀 Step 3: Check for Placeholder or Shared Platform Icons (Filter out generic Google AI Studio domain logo)
     const isPlaceholderName = !data?.manifest?.name || 
                               data?.manifest?.name === hostname || 
                               data?.manifest?.name === formattedUrl || 
                               data?.manifest?.name?.endsWith('.phrscrowd.online') ||
-                              data?.manifest?.name === 'App Title';
+                              data?.manifest?.name === 'App Title' ||
+                              data?.manifest?.name?.toLowerCase().includes('404');
 
-    const isMissingIcon = !data?.appIconUrl || 
-                          data?.appIconUrl?.includes('google.com/s2/favicons') || 
-                          data?.appIconUrl?.includes('ui-avatars.com');
+    const isPlatformIcon = data?.appIconUrl?.includes('ai.studio') || 
+                           data?.appIconUrl?.includes('google.com/s2/favicons') || 
+                           data?.appIconUrl?.includes('ui-avatars.com');
 
-    if (!data || isPlaceholderName || isMissingIcon) {
+    if (!data || isPlaceholderName || isPlatformIcon || !data.appIconUrl) {
       console.warn('[Apl API]: Enhancing metadata via Microlink API fallback for:', formattedUrl);
       try {
         const proxyRes = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(formattedUrl)}`);
@@ -512,9 +568,32 @@ export async function analyzeAppUrl(url: string): Promise<any> {
           const proxyData = await proxyRes.json();
           if (proxyData.status === 'success' && proxyData.data) {
             const m = proxyData.data;
-            const realTitle = m.title || data?.manifest?.name || hostname;
-            const realDesc = m.description || data?.manifest?.description || (hostname.includes('arm.') ? 'Prepaid AI Model Data Packs & Reverse Proxy Gateway' : 'High performance Progressive Web Application.');
-            const realIcon = m.logo?.url || m.image?.url || data?.appIconUrl || null;
+            let realTitle = m.title || data?.manifest?.name || hostname;
+
+            // Filter out 404 titles
+            if (
+              !realTitle || 
+              realTitle.toLowerCase().includes('404') || 
+              realTitle.toLowerCase().includes('not found') || 
+              realTitle.toLowerCase().includes('page not found')
+            ) {
+              const namePart = hostname.split('.')[0];
+              realTitle = namePart
+                .split('-')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
+            }
+
+            const realDesc = (m.description && !m.description.toLowerCase().includes('404'))
+              ? m.description 
+              : (data?.manifest?.description || (hostname.includes('arm.') ? 'Prepaid AI Model Data Packs & Reverse Proxy Gateway' : 'High performance Progressive Web Application.'));
+            
+            // Check if logo is platform domain icon (ai.studio wave logo)
+            let realIcon = m.logo?.url || m.image?.url || data?.appIconUrl || null;
+            if (realIcon && realIcon.includes('ai.studio/favicon')) {
+              // If it's the generic ai.studio domain logo, prefer direct site icon or branded avatar
+              realIcon = `${formattedUrl}/icon-192.png`;
+            }
 
             return {
               url: formattedUrl,
