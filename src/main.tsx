@@ -47,3 +47,6 @@ createRoot(document.getElementById('root')!).render(
     <App />
   </StrictMode>
 );
+
+// ⚡ Signal successful mount to index.html watchdog
+(window as any).__app_mounted__ = true;

@@ -40,6 +40,16 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // 🚀 Navigation Requests (index.html): Always fetch fresh from network to prevent stale bundle mismatch
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request, { cache: 'no-cache' })
+        .then((response) => response)
+        .catch(() => caches.match(event.request) || caches.match('/index.html'))
+    );
+    return;
+  }
+
   event.respondWith(
     fetch(event.request)
       .then((networkResponse) => {

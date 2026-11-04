@@ -22,7 +22,7 @@ export const AnalysisSummaryCard: React.FC<AnalysisSummaryCardProps> = ({
       <div className="flex items-start gap-4">
         {/* App Square Icon */}
         <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-sm flex items-center justify-center shrink-0 relative group">
-          {/* 🖼️ అడ్మిన్ గారు! వెబ్‌సైట్ లో ఫోటో లేకపోయినా లేదా బ్యాకెండ్ పనిచేయకపోయినా, గూగుల్ ఐకాన్ ఇంజిన్ ద్వారా ఫోటోను ఇక్కడ చూపిస్తున్నాము. */}
+          {/* 🖼️ అడ్మిన్ గారు! యూజర్ ఏ వెబ్‌సైట్ URL ఇచ్చినా సరే, దాని అసలైన ఐకాన్‌ను చూపించే 5-దశల పవర్‌ఫుల్ ఐకాన్ ఇంజిన్ */}
           <img
             src={report.appIconUrl || `https://www.google.com/s2/favicons?domain=${report.hostname || (report.url ? (report.url.startsWith('http') ? new URL(report.url).hostname : report.url) : 'phrscrowd.online')}&sz=128`}
             alt={report.manifest?.name || 'App Icon'}
@@ -30,13 +30,33 @@ export const AnalysisSummaryCard: React.FC<AnalysisSummaryCardProps> = ({
             referrerPolicy="no-referrer"
             onError={(e) => {
               const target = e.currentTarget as HTMLImageElement;
-              // 🚀 అడ్మిన్ గారు! గూగుల్ ఫెవికాన్ ఫెయిల్ అయితే 'IconHorse' అనే మరో పవర్‌ఫుల్ సర్వీస్ ద్వారా ఫోటోను లోడ్ చేస్తున్నాము.
+              const domain = report.hostname || (report.url ? (report.url.startsWith('http') ? new URL(report.url).hostname : report.url) : 'phrscrowd.online');
+              
+              // 🚀 Step 1: నేరుగా వెబ్‌సైట్ సర్వర్ లోని /favicon.ico ట్రై చేస్తుంది
+              if (!target.src.includes('/favicon.ico')) {
+                target.src = `https://${domain}/favicon.ico`;
+                return;
+              }
+
+              // 🚀 Step 2: గూగుల్ ఫెవికాన్ హై-రిజల్యూషన్ ఇంజిన్
+              if (!target.src.includes('google.com/s2/favicons')) {
+                target.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+                return;
+              }
+
+              // 🚀 Step 3: Unavatar మల్టీ-ప్లాట్‌ఫామ్ ఏఐ ఇంజిన్
+              if (!target.src.includes('unavatar.io')) {
+                target.src = `https://unavatar.io/${domain}?fallback=false`;
+                return;
+              }
+
+              // 🚀 Step 4: IconHorse ఐకాన్ రికవరీ సర్వీస్
               if (!target.src.includes('icon.horse')) {
-                const domain = report.hostname || (report.url ? (report.url.startsWith('http') ? new URL(report.url).hostname : report.url) : 'phrscrowd.online');
                 target.src = `https://icon.horse/icon/${domain}`;
                 return;
               }
-              // Final fallback to a themed letter icon
+
+              // Step 5: ఫైనల్ సేఫ్‌గా బ్రాండెడ్ లెటర్ అవతార్ ఐకాన్
               target.onerror = null;
               const fallbackName = report.manifest?.name || report.hostname || 'A';
               target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(fallbackName)}&background=4f46e5&color=fff&size=256`;

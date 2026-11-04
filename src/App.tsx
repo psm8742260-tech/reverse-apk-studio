@@ -3,7 +3,6 @@ import { ArrowLeft, Globe, X } from 'lucide-react';
 import { DecompiledApp, FeatureFlags, SecurityLog } from './types';
 import { APP_VERSION } from './version';
 import Header from './components/Header';
-import Header from './components/Header';
 import { createSampleApkBlob } from './utils/sampleApks';
 import { decompileApk } from './utils/apkDecompiler';
 

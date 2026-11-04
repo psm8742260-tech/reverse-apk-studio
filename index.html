@@ -47,11 +47,16 @@
       })();
     </script>
     <script type="module">
-      import RefreshRuntime from "/@react-refresh"
-      RefreshRuntime.injectIntoGlobalHook(window)
-      window.$RefreshReg$ = () => {}
-      window.$RefreshSig$ = () => (type) => type
-      window.__vite_plugin_react_preamble_installed__ = true
+      try {
+        import("/@react-refresh").then(function(RefreshRuntime) {
+          if (RefreshRuntime && RefreshRuntime.default) {
+            RefreshRuntime.default.injectIntoGlobalHook(window);
+            window.$RefreshReg$ = function() {};
+            window.$RefreshSig$ = function() { return function(type) { return type; }; };
+            window.__vite_plugin_react_preamble_installed__ = true;
+          }
+        }).catch(function() {});
+      } catch (e) {}
     </script>
     <script>
       (function() {
@@ -128,6 +133,33 @@
     </div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
+      // 🛡️ Watchdog: If app is stuck loading for >4 seconds due to old SW cache mismatch on VPS, clear SW & force fresh reload
+      setTimeout(function() {
+        if (!window.__app_mounted__) {
+          console.warn('[AI Master Studio Watchdog] Loading delay detected on VPS server. Evicting stale cache & reloading...');
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(regs) {
+              for (var r of regs) { r.unregister(); }
+              if ('caches' in window) {
+                caches.keys().then(function(keys) {
+                  Promise.all(keys.map(function(k) { return caches.delete(k); })).then(function() {
+                    window.location.reload(true);
+                  });
+                });
+              } else {
+                window.location.reload(true);
+              }
+            });
+          } else if ('caches' in window) {
+            caches.keys().then(function(keys) {
+              Promise.all(keys.map(function(k) { return caches.delete(k); })).then(function() {
+                window.location.reload(true);
+              });
+            });
+          }
+        }
+      }, 4000);
+
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js?mode=hybrid').catch((err) => {

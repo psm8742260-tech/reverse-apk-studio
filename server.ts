@@ -2473,6 +2473,7 @@ app.post('/api/app/analyze', async (req, res) => {
 
     // Check if URL is local app or AI Master Studio default
     const isLocalOrStudio = formattedUrl.includes('ai-master-studio') || 
+                            formattedUrl.includes('phrscrowd.online') ||
                             formattedUrl.includes('localhost') || 
                             formattedUrl.includes('127.0.0.1');
 
@@ -2499,24 +2500,24 @@ app.post('/api/app/analyze', async (req, res) => {
       try {
         const curlUA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
         // Use curl with --compressed and --location to follow redirects and handle compression
-        const { stdout } = await execPromise(`curl -L -s -k -m 10 --compressed -A "${curlUA}" "${formattedUrl}"`);
-        if (stdout && stdout.length > 200) {
+        const { stdout } = await execPromise(`curl -L -s -k -m 12 --compressed -A "${curlUA}" "${formattedUrl}"`);
+        if (stdout && stdout.length > 200 && stdout.length > html.length) {
           html = stdout;
-        } else {
-          // 💡 ఒకవేళ లోకల్ స్కాన్ ఫెయిల్ అయితే, ఎక్స్‌టర్నల్ మెటాడేటా సర్వీస్ (Microlink) ద్వారా డేటా తెస్తున్నాము.
-          console.warn('Local scan failed, trying external metadata proxy...');
-          const proxyRes = await axios.get(`https://api.microlink.io/?url=${encodeURIComponent(formattedUrl)}`, { timeout: 8000 });
+        } else if (!html) {
+          // 💡 ఒకవేళ లోకల్ స్కాన్ ఫెయిల్ అయితే (NAT Loopback issue), ఎక్స్‌టర్నల్ మెటాడేటా ప్రాక్సీలను వాడుతున్నాము.
+          console.warn('Local scan failed or blocked (Loopback), trying external metadata proxy (Microlink)...');
+          
+          const proxyRes = await axios.get(`https://api.microlink.io/?url=${encodeURIComponent(formattedUrl)}&palette=true`, { timeout: 10000 });
           if (proxyRes.data?.status === 'success') {
             const mData = proxyRes.data.data;
             manifestData = {
-              name: mData.title,
-              description: mData.description,
-              icons: mData.logo ? [{ src: mData.logo.url, sizes: '192x192' }] : []
+              name: mData.title || hostname,
+              description: mData.description || (hostname.includes('arm.') ? 'Prepaid AI Model Data Packs & Reverse Proxy Gateway' : ''),
+              icons: mData.logo ? [{ src: mData.logo.url, sizes: '192x192' }] : (mData.image ? [{ src: mData.image.url, sizes: '512x512' }] : [])
             };
-            appIconUrl = mData.image?.url || mData.logo?.url || null;
+            appIconUrl = mData.logo?.url || mData.image?.url || null;
             manifestFound = true;
-            // If we got good proxy data, we can skip manual HTML parsing
-            if (manifestData.name) html = '<!-- PROXY_DATA_USED -->'; 
+            html = '<!-- PROXY_DATA_USED -->'; 
           }
         }
       } catch (err) {
