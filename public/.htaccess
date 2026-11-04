@@ -1,0 +1,22 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  
+  # 🌐 అడ్మిన్ గారు! VPS (LiteSpeed/Apache) లో అన్ని రూట్స్ సరిగ్గా పనిచేయడానికి ఈ రీరైట్ రూల్స్ అవసరం.
+  
+  # Redirect /api calls to server.ts proxy if needed (but server.ts usually handles it on Port 3000)
+  # For LiteSpeed/cPanel, we usually rely on Passenger or a proxy to Port 3000.
+  
+  # Standard SPA Routing:
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} !^/api
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# 🚀 LiteSpeed Optimization
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault "access plus 1 year"
+</IfModule>

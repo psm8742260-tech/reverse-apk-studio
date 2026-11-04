@@ -21,20 +21,23 @@ export const AnalysisSummaryCard: React.FC<AnalysisSummaryCardProps> = ({
     <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
       <div className="flex items-start gap-4">
         {/* App Square Icon */}
-        <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-sm flex items-center justify-center shrink-0 relative">
-          {report.appIconUrl ? (
-            <img
-              src={report.appIconUrl}
-              alt={report.manifest?.name || 'App Icon'}
-              className="w-full h-full object-cover"
-              referrerPolicy="no-referrer"
-              onError={(e) => {
-                (e.currentTarget as HTMLElement).style.display = 'none';
-              }}
-            />
-          ) : (
-            <Globe className="w-10 h-10 text-indigo-500" />
-          )}
+        <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-sm flex items-center justify-center shrink-0 relative group">
+          {/* 🖼️ అడ్మిన్ గారు! వెబ్‌సైట్ లో ఫోటో లేకపోయినా లేదా బ్యాకెండ్ పనిచేయకపోయినా, గూగుల్ ఐకాన్ ఇంజిన్ ద్వారా ఫోటోను ఇక్కడ చూపిస్తున్నాము. */}
+          <img
+            src={report.appIconUrl || `https://www.google.com/s2/favicons?domain=${report.hostname || new URL(report.url).hostname}&sz=256`}
+            alt={report.manifest?.name || 'App Icon'}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            referrerPolicy="no-referrer"
+            onError={(e) => {
+              // Final fallback to a themed letter icon if everything fails
+              const target = e.currentTarget as HTMLImageElement;
+              target.onerror = null;
+              target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(report.manifest?.name || report.hostname || 'A')}&background=4f46e5&color=fff&size=256`;
+            }}
+          />
+          
+          {/* Subtle overlay for better look */}
+          <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
         </div>
 
         {/* App Titles & URL */}

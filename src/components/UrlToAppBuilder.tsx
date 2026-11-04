@@ -1113,14 +1113,20 @@ self.addEventListener('fetch', (e) => {
             <div className="p-6 space-y-6 overflow-y-auto">
               {/* App Info Card (Screenshot 2 Parity) */}
               <div className="flex items-start gap-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
-                <div className="w-16 h-16 bg-white rounded-2xl shadow-sm border border-slate-100 flex items-center justify-center overflow-hidden shrink-0">
-                  {report?.appIconUrl ? (
-                    <img src={report.appIconUrl} alt="App Icon" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                      <span className="text-white font-bold text-xl">{appName.charAt(0)}</span>
-                    </div>
-                  )}
+                <div className="w-16 h-16 bg-white rounded-2xl shadow-sm border border-slate-200 flex items-center justify-center overflow-hidden shrink-0 group relative">
+                  {/* 🖼️ అడ్మిన్ గారు! స్టోర్ ప్రివ్యూ లో కూడా ఫోటో స్పష్టంగా కనిపించేలా యూనివర్సల్ ఫోటో ఇంజిన్ అమర్చాము. */}
+                  <img 
+                    src={report?.appIconUrl || (targetUrl ? `https://www.google.com/s2/favicons?domain=${new URL(targetUrl.startsWith('http') ? targetUrl : 'https://'+targetUrl).hostname}&sz=256` : '')} 
+                    alt="App Icon" 
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                    referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      const target = e.currentTarget as HTMLImageElement;
+                      target.onerror = null;
+                      target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(appName || 'A')}&background=4f46e5&color=fff&size=256`;
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
                 <div className="space-y-1 min-w-0">
                   <h4 className="text-lg font-black text-slate-900 truncate">{appName}</h4>

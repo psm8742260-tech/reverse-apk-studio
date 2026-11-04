@@ -1,5 +1,14 @@
 # CHANGELOG - Universal Hybrid Engine Centralization & Zero-Version Architecture
 
+## 🚀 [VPS Universal Icon Fallback & LiteSpeed Routing Fix - 2026-11-03]
+- **అడ్మిన్ గారి పాస్‌వర్డ్ అనుమతి:** `6606.0k` / `6606.ok`
+- **సవరించిన ఫైల్స్:** `src/components/UrlToAppBuilder/AnalysisSummaryCard.tsx`, `src/components/UrlToAppBuilder.tsx`, `public/.htaccess`
+- **సమస్య పరిష్కారం:**
+  1. **యూనివర్సల్ ఐకాన్ ఫాల్‌బ్యాక్ (Universal Icon Fallback):** VPS సర్వర్‌లో బ్యాకెండ్ API కనెక్షన్ లేకపోయినా లేదా ఏదైనా వెబ్‌సైట్ అనాలిసిస్ ఫెయిల్ అయినా, ఫ్రంట్‌ఎండ్ ద్వారా గూగుల్ ఫెవికాన్ ఇంజిన్ (`Google Favicon Service`) ఉపయోగించి 100% స్పష్టమైన ఫోటో/ఐకాన్ కనిపించేలా చేశాము. దీనివల్ల గూగుల్ స్టూడియోలో లాగే VPS లో కూడా వెబ్‌సైట్ లోగోలు తక్షణమే కనిపిస్తాయి.
+  2. **LiteSpeed / cPanel రూటింగ్ ఫిక్స్:** `public/.htaccess` ఫైల్‌ను రూపొందించి, VPS లోని LiteSpeed సర్వర్‌లో SPA (Single Page Application) రూటింగ్ మరియు API రిక్వెస్ట్‌లు ఎలాంటి ఆటంకం లేకుండా పనిచేసేలా రీరైట్ రూల్స్ అమర్చాము.
+  3. **UI పారిటీ (UI Parity):** మెయిన్ అనాలిసిస్ బోర్డు మరియు స్టోర్ ప్యాకేజింగ్ మోడల్స్ రెండింటిలోనూ ఒకే రకమైన హై-క్వాలిటీ ఐకాన్ రెండరింగ్ ఇంజిన్ అమలు చేయబడింది.
+- **ధృవీకరణ:** `npm run build` విజయవంతమైంది. గిట్‌హబ్ ద్వారా VPS కు పంపబడింది.
+
 ## 🚀 [PHRS Crowd VPS Server Autonomous Mode & Zero-Firebase Loading Fix - 2026-11-03]
 - **అడ్మిన్ గారి పాస్‌వర్డ్ అనుమతి:** `6606.0k`
 - **సవరించిన ఫైల్స్:** `src/App.tsx`, `src/components/FirebaseProvider.tsx`, `server/dev-server-manager.ts`, `src/aplApi.ts`, `src/components/LiveAppViewer.tsx`, `server.ts`
