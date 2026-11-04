@@ -45,9 +45,13 @@ export const LiveAppViewer: React.FC<LiveAppViewerProps> = ({ appSlug, serverEng
           }
         }
 
-        // 2. Try Firestore published apps or projects
+        // 2. Try Firestore published apps or projects (fast timeout so VPS never waits)
         try {
-          let docSnap = await getDoc(doc(db, 'published_apps', appSlug));
+          if (db) {
+            const withTimeout = <T,>(p: Promise<T>): Promise<T> =>
+              Promise.race([p, new Promise<T>((_, reject) => setTimeout(() => reject(new Error('db_timeout')), 1200))]);
+
+            let docSnap = await withTimeout(getDoc(doc(db, 'published_apps', appSlug)));
           
           if (!docSnap.exists()) {
             // Fallback 1: replace underscores with dashes (e.g. brand_store_calculator -> brand-store-calculator)
@@ -86,9 +90,10 @@ export const LiveAppViewer: React.FC<LiveAppViewerProps> = ({ appSlug, serverEng
               return;
             }
           }
-        } catch (dbErr) {
-          console.warn('Firestore published_apps lookup error:', dbErr);
         }
+      } catch (dbErr) {
+        console.warn('Firestore published_apps lookup error:', dbErr);
+      }
 
         // 2.1 Try Server API published app lookup fallback
         try {

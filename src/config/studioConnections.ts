@@ -201,3 +201,21 @@ export const AI_AGENT_TRAINING_CONNECTIONS: StudioConnection[] = [
     teluguDest: 'వాయిస్ రిపేర్ స్పీచ్ మరియు డయాగ్నస్టిక్స్ ఇంజిన్'
   }
 ];
+
+// ==========================================
+// 🛠️ 6. ANDROID BUILD TOOLS & ENVIRONMENT CONNECTIONS (బిల్డ్ టూల్స్ మరియు ఎన్విరాన్మెంట్ వైరింగ్)
+// ==========================================
+export const BUILD_TOOLS_CONNECTIONS: StudioConnection[] = [
+  {
+    id: 'android-build-env-wiring',
+    controlName: 'Android SDK / Java Build Environment connection',
+    triggerAction: 'ANDROID_BUILD_TOOLS_CONFIG',
+    serverRoute: '/src/config/buildToolsConfig.ts',
+    source: 'pwaAndroidPackager.ts & studioConnections.ts',
+    destination: 'Backend Server Android SDK & Gradle Compiler Engine',
+    purpose: 'Centralizes the mapping of all 17 present and missing Android build tools for unified environment management.',
+    teluguDesc: 'మన స్టూడియోలోని 17 రకాల బిల్డ్ టూల్స్ (Java, SDK, Gradle etc.) యొక్క స్థితిగతులను మన కనెక్షన్ సిస్టమ్ కు అనుసంధానించే మాస్టర్ వైరింగ్.',
+    teluguSource: 'బిల్డ్ టూల్స్ కాన్ఫిగరేషన్ ఫైల్ (buildToolsConfig.ts)',
+    teluguDest: 'సర్వర్ లోపల ఉండే ఆండ్రాయిడ్ బిల్డ్ ఇంజిన్ మరియు కంపైలర్ టూల్స్'
+  }
+];

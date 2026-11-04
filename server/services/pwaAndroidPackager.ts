@@ -78,41 +78,51 @@ export async function resolveAppIconBuffer(
     }
   }
 
-  // 1b. Direct site scan: inspect target HTML for <link rel="icon" ...> or /app_icon.png
-  try {
-    const fullTarget = targetUrl.startsWith('http') ? targetUrl : `https://${targetUrl}`;
-    const parsed = new URL(fullTarget);
-    const htmlRes = await axios.get(fullTarget, { timeout: 8000 }).catch(() => null);
-    if (htmlRes && typeof htmlRes.data === 'string') {
-      const match = htmlRes.data.match(/<link[^>]*rel=["'](?:icon|shortcut icon|apple-touch-icon)["'][^>]*href=["']([^"']+)["']/i);
-      if (match && match[1]) {
-        const foundIconUrl = new URL(match[1], parsed.origin).href;
-        log(`Found website icon link in HTML: ${foundIconUrl}`);
-        const iconRes = await axios.get(foundIconUrl, { responseType: 'arraybuffer', timeout: 10000 }).catch(() => null);
-        if (iconRes && iconRes.data && iconRes.data.length > 200) {
-          log('✅ High-resolution website logo resolved from HTML metadata.');
-          return await sharp(Buffer.from(iconRes.data)).resize(512, 512).png().toBuffer();
+    // 1b. Direct site scan: inspect target HTML for <link rel="icon" ...> or /app_icon.png
+    try {
+      const fullTarget = targetUrl.startsWith('http') ? targetUrl : `https://${targetUrl}`;
+      const parsed = new URL(fullTarget);
+      const htmlRes = await axios.get(fullTarget, { timeout: 8000 }).catch(() => null);
+      if (htmlRes && typeof htmlRes.data === 'string') {
+        const linkTags = htmlRes.data.match(/<link[^>]+>/gi) || [];
+        for (const tag of linkTags) {
+          if (/rel=["'](?:icon|shortcut icon|apple-touch-icon)["']/i.test(tag)) {
+            const hrefMatch = tag.match(/href=["']([^"']+)["']/i);
+            if (hrefMatch && hrefMatch[1]) {
+              try {
+                const foundIconUrl = new URL(hrefMatch[1], parsed.origin).href;
+                log(`Found website icon link in HTML: ${foundIconUrl}`);
+                const iconRes = await axios.get(foundIconUrl, { responseType: 'arraybuffer', timeout: 10000 }).catch(() => null);
+                if (iconRes && iconRes.data && iconRes.data.length > 200) {
+                  log('✅ High-resolution website logo resolved from HTML metadata.');
+                  return await sharp(Buffer.from(iconRes.data)).resize(512, 512).png().toBuffer();
+                }
+              } catch {}
+            }
+          }
         }
       }
-    }
 
-    // Try standard candidate URLs on site
-    const commonCandidates = [
-      `${parsed.origin}/app_icon.png`,
-      `${parsed.origin}/apple-touch-icon.png`,
-      `${parsed.origin}/favicon.png`,
-      `${parsed.origin}/favicon.ico`
-    ];
-    for (const cand of commonCandidates) {
-      const candRes = await axios.get(cand, { responseType: 'arraybuffer', timeout: 6000 }).catch(() => null);
-      if (candRes && candRes.data && candRes.data.length > 500) {
-        log(`✅ High-resolution site icon resolved from: ${cand}`);
-        return await sharp(Buffer.from(candRes.data)).resize(512, 512).png().toBuffer();
+      // Try standard candidate URLs on site
+      const commonCandidates = [
+        `${parsed.origin}/app_logo.png`,
+        `${parsed.origin}/app_icon.png`,
+        `${parsed.origin}/apple-touch-icon.png`,
+        `${parsed.origin}/favicon.png`,
+        `${parsed.origin}/logo.png`,
+        `${parsed.origin}/icon.png`,
+        `${parsed.origin}/favicon.ico`
+      ];
+      for (const cand of commonCandidates) {
+        const candRes = await axios.get(cand, { responseType: 'arraybuffer', timeout: 6000 }).catch(() => null);
+        if (candRes && candRes.data && candRes.data.length > 500) {
+          log(`✅ High-resolution site icon resolved from: ${cand}`);
+          return await sharp(Buffer.from(candRes.data)).resize(512, 512).png().toBuffer();
+        }
       }
+    } catch (err: any) {
+      log(`⚠️ Direct site icon resolver notice: ${err.message}`);
     }
-  } catch (err: any) {
-    log(`⚠️ Direct site icon resolver notice: ${err.message}`);
-  }
 
   // 1c. Try Google Public High-Res Favicon Service (sz=128)
   try {
@@ -345,8 +355,8 @@ export function generateBinaryAndroidManifest(packageName: string, appName: stri
     // <application label=... icon=... roundIcon=... theme=... hardwareAccelerated=true>
     makeStartElement('application', [
       { ns: 'http://schemas.android.com/apk/res/android', name: 'label', valueStr: appName, dataType: 0x03, dataValue: strIdx[appName] },
-      { ns: 'http://schemas.android.com/apk/res/android', name: 'icon', valueStr: '@mipmap/ic_launcher', dataType: 0x1c, dataValue: 0x7f020000 },
-      { ns: 'http://schemas.android.com/apk/res/android', name: 'roundIcon', valueStr: '@mipmap/ic_launcher_round', dataType: 0x1c, dataValue: 0x7f020001 },
+      { ns: 'http://schemas.android.com/apk/res/android', name: 'icon', valueStr: '@mipmap/ic_launcher', dataType: 0x01, dataValue: 0x7f020000 },
+      { ns: 'http://schemas.android.com/apk/res/android', name: 'roundIcon', valueStr: '@mipmap/ic_launcher_round', dataType: 0x01, dataValue: 0x7f020001 },
       { ns: 'http://schemas.android.com/apk/res/android', name: 'theme', valueStr: '@android:style/Theme.NoTitleBar.Fullscreen', dataType: 0x01, dataValue: 0x01030007 },
       { ns: 'http://schemas.android.com/apk/res/android', name: 'hardwareAccelerated', dataType: 0x12, dataValue: 0xffffffff }
     ]),

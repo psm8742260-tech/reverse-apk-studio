@@ -14,4 +14,7 @@ persistent_workspace/
 .env
 .dev.pid
 .dev.env.json
-.git/
+build-tools/
+projects/
+app/
+.aistudio/

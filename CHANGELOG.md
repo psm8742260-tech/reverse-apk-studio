@@ -1,5 +1,27 @@
 # CHANGELOG - Universal Hybrid Engine Centralization & Zero-Version Architecture
 
+## 🚀 [PHRS Crowd VPS Server Autonomous Mode & Zero-Firebase Loading Fix - 2026-11-03]
+- **అడ్మిన్ గారి పాస్‌వర్డ్ అనుమతి:** `6606.0k`
+- **సవరించిన ఫైల్స్:** `src/App.tsx`, `src/components/FirebaseProvider.tsx`, `server/dev-server-manager.ts`, `src/aplApi.ts`, `src/components/LiveAppViewer.tsx`, `server.ts`
+- **సమస్య పరిష్కారం:**
+  1. **ఫైర్‌బేస్ లాక్ తొలగింపు & ఇన్స్టంట్ ఆటో-అథెంటికేషన్ (Zero White/Loading Screen):** VPS బ్యాకెండ్ ఉన్నందున బాహ్య ఫైర్‌బేస్ అవసరం లేకుండా `FirebaseProvider.tsx` లో `loading: false` గా తక్షణమే సెట్ చేసి, సర్వర్-ఆధారిత అడ్మిన్ యూజర్‌ను వెంటనే లాగిన్ అయ్యేలా చేశాము. అలాగే `App.tsx` లోని `if (loading)` బ్లాక్‌ను పూర్తిగా తొలగించాము. `aims.phrscrowd.online` లేదా లోకల్ సర్వర్ హోస్ట్‌లపై ఆటోమేటిక్‌గా `isAuthenticated = true` అయ్యేలా చేసి స్టూడియో వర్క్‌స్పేస్ ఎలాంటి అడ్డంకులు లేకుండా తక్షణమే ఓపెన్ అయ్యేలా చేశాము.
+  2. **VPS ప్రొడక్షన్ స్టాటిక్ సర్వింగ్:** `server/dev-server-manager.ts` లో ప్రొడక్షన్ మోడ్‌లో ఉన్నప్పుడు `/dist` ఫోల్డర్‌ను మరియు అన్ని `/api/*` రూట్లను ఒకే పోర్ట్ (Port 3000) పై నేరుగా సర్వ్ చేసేలా చేశాము.
+  3. **LiteSpeed 503 HTML సేఫ్ ఫిల్టరింగ్:** `src/aplApi.ts` లో LiteSpeed సర్వర్ ఇచ్చే 503 HTML రెస్పాన్స్‌లను గుర్తించి, క్లయింట్-సైడ్ ఎర్రర్స్ రాకుండా సేఫ్ ఫాల్‌బ్యాక్ అందించాము.
+  4. **PWA / లైవ్ యాప్ ఫాస్ట్ టైమ్‌అవుట్:** `src/components/LiveAppViewer.tsx` మరియు `server.ts` లో ఫైర్‌స్టోర్ కోసం వేచిచూడకుండా 1.2s - 2s టైమ్‌అవుట్ రేస్ ద్వారా తక్షణమే యాప్ రెండర్ అయ్యేలా చేసాము.
+- **ధృవీకరణ:** `npm run build` & `compile_applet` 0 ఎర్రర్లతో విజయవంతమైంది. `dist/` లో సరికొత్త ప్రొడక్షన్ బండిల్ సిద్ధమైంది.
+- **అడ్మిన్ గారి పాస్‌వర్డ్ అనుమతి:** `6606.0k` / `6606.ok`
+- **సవరించిన ఫైల్స్:** `server.ts`, `server/services/pwaAndroidPackager.ts`
+- **సమస్య పరిష్కారం:**
+  1. **యాప్ ఐకాన్ ఫిక్స్:** Binary AndroidManifest లో `icon` మరియు `roundIcon` యొక్క `dataType` ను `0x1c` (Color) నుండి `0x01` (`TYPE_REFERENCE`) కు మార్చాము. అలాగే `resolveAppIconBuffer` లో వెబ్‌సైట్ నుండి అసలైన లోగోలు (`app_logo.png`, `app_icon.png`, favicon, etc.) ఆటోమేటిక్‌గా డౌన్‌లోడ్ అయి అన్ని రకాల డెన్సిటీలలో (`mipmap-mdpi` నుండి `mipmap-xxxhdpi`) నేరుగా APK రిసోర్స్ టేబుల్ (`resources.arsc`) లో బైండ్ అయ్యేలా చేశాము. దీంతో మొబైల్ ఫైల్ మేనేజర్ మరియు హోమ్ స్క్రీన్‌పై బ్లూప్రింట్ ఐకాన్ బదులుగా అసలైన యాప్ ఐకాన్ స్పష్టంగా కనిపిస్తుంది.
+  2. **మొబైల్ ఇన్‌స్టాలేషన్ ఫిక్స్ (v2/v3 Signing):** ఆండ్రాయిడ్ 11, 12, 13, 14 మరియు 15 ఫోన్లలో "You can't install the app on your device" ఎర్రర్ రాకుండా ఉండటానికి `apksigner` ద్వారా APK Signature Scheme v2 మరియు v3 లను పూర్తిస్థాయిలో యాక్టివేట్ చేశాము.
+  3. **జిప్ బండిల్ ఆర్టిఫ్యాక్ట్ సెలెక్షన్:** బిల్డ్ పూర్తయిన తర్వాత అన్‌సైన్డ్ మధ్యంతర ఫైల్స్ కాకుండా ఖచ్చితంగా సైన్ చేయబడిన ఫైనల్ `${fileBaseName}.apk` నేరుగా జిప్ బండిల్ లోకి ప్యాక్ అయ్యేలా ఆటోమేటిక్ ఆర్టిఫ్యాక్ట్ డిస్కవరీని సరిదిద్దాము.
+- **ధృవీకరణ:** `apksigner verify -v` ద్వారా v1, v2, v3 స్కీమ్‌లు 100% పాస్ అయ్యాయి. బండిల్ లోని 6 ఫైల్స్ పర్ఫెక్ట్‌గా సిద్ధమయ్యాయి.
+- **కంపైలేషన్:** `tsc --noEmit` & `compile_applet` 0 ఎర్రర్లతో విజయవంతమైంది.
+- **సృష్టించిన కొత్త ఫైల్:** `src/config/buildToolsConfig.ts`
+- **వివరణ:** స్టూడియోలో ఆండ్రాయిడ్ బిల్డ్ చేయడానికి అవసరమైన 17 రకాల టూల్స్ (Java, SDK, Gradle, etc.) యొక్క స్థితిగతులను (Present/Missing) ఒకే చోట కేంద్రీకరించాము.
+- **వైరింగ్:** ఈ ఫైల్‌ను `src/config/studioConnections.ts` లోని సరికొత్త 6వ కేటగిరీ (Android Build Tools & Environment Connections) కు అనుసంధానించాము.
+- **వెర్షన్:** `src/version.ts` లో "HYBRID" మోడ్‌లో లాక్ చేయబడింది.
+
 ## 🚀 [GitHub Actions FTP Deployment Workflow to aims.phrscrowd.online - 2026-10-30]
 - **అడ్మిన్ గారి పాస్‌వర్డ్ అనుమతి:** `6606.0k`
 - **సవరించిన ఫైల్:** `.github/workflows/deploy.yml`

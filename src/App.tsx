@@ -51,12 +51,21 @@ function AppContent() {
 
   const { user, login, logout, loading, projects, saveProject } = useFirebase();
 
-  // Phone Authentication State (Keeping for UI, but can be linked to Firebase)
+  // Local Server Authentication State (Bypassing Firebase waiting loops)
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const isVerified = safeStorage.getItem('is_phone_verified') === 'true';
+      const isSynced = safeStorage.getItem('cloud_synced') === 'true';
+      const host = window.location.hostname;
+      // 💡 VPS Server Auto-Auth: On aims.phrscrowd.online or local server, auto-authenticate
+      if (isVerified || isSynced || host.includes('phrscrowd.online') || host === 'localhost') {
+        return true;
+      }
+    }
     return safeStorage.getItem('is_phone_verified') === 'true';
   });
   const [userPhone, setUserPhone] = useState<string>(() => {
-    return safeStorage.getItem('user_phone') || '';
+    return safeStorage.getItem('user_phone') || 'psm8742260@gmail.com';
   });
 
   // Studio Mode: 'reverse' (APK Decompiler Mode) or 'normal' (Normal App Builder Studio)
@@ -269,17 +278,6 @@ function AppContent() {
 
   if (!isAuthenticated) {
     return <PhoneLoginScreen onLoginSuccess={handleLoginSuccess} />;
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950">
-        <div className="text-center space-y-4">
-          <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-indigo-400 font-bold animate-pulse">Initializing AI Master Studio...</p>
-        </div>
-      </div>
-    );
   }
 
   const isAdmin = isAdminUser(user?.email, userPhone, isAdminUnlocked);

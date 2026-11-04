@@ -100,6 +100,8 @@ export const FILE_VERSIONS: Record<string, string> = {
   "src/studio_config.json": "HYBRID",
   // 💡 తెలుగు వివరణ: కేంద్రీకృత కలర్స్ ఫైల్ (studioColors.ts) శాశ్వతంగా హైబ్రిడ్ మోడ్‌లో లాక్ చేయబడింది.
   "src/config/studioColors.ts": "HYBRID",
+  // 💡 తెలుగు వివరణ: బిల్డ్ టూల్స్ కాన్ఫిగరేషన్ ఫైల్ (buildToolsConfig.ts) కూడా శాశ్వతంగా హైబ్రిడ్ మోడ్‌లో లాక్ చేయబడింది.
+  "src/config/buildToolsConfig.ts": "HYBRID",
   // 💡 తెలుగు వివరణ: కేంద్రీకృత ఏపీఐ ఫైల్ (aplApi.ts) కూడా శాశ్వతంగా హైబ్రిడ్ మోడ్‌లోనే అమర్చబడింది.
   "src/aplApi.ts": "HYBRID",
   "src/apiService.ts": "HYBRID",

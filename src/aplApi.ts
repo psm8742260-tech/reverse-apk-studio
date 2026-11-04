@@ -39,11 +39,12 @@ export async function safeFetch<T = any>(
     }
 
     if (!res.ok) {
+      const isHtmlResponse = typeof data === 'string' && (data.includes('<!DOCTYPE') || data.includes('<html'));
       return {
         ok: false,
         status: res.status,
-        data: data || fallbackValue,
-        error: (data && data.error) || (data && data.message) || `HTTP Error ${res.status}`
+        data: isHtmlResponse ? fallbackValue : (data || fallbackValue),
+        error: (!isHtmlResponse && data && typeof data === 'object' && (data.error || data.message)) || `HTTP ${res.status}`
       };
     }
 
