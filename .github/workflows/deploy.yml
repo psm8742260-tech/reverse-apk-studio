@@ -30,9 +30,7 @@ jobs:
         with:
           server: ${{ secrets.FTP_SERVER || '65.108.76.42' }}
           username: ${{ secrets.FTP_USERNAME || 'phrscrow' }}
-          password: ${{ secrets.FTP_PASSWORD }}
+          password: ${{ secrets.PHRSCROW }}
           server-dir: /aims.phrscrowd.online/
           local-dir: ./dist/
           dangerous-clean-slate: false
-          protocol: ftp
-          port: 21
