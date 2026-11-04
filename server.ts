@@ -34,6 +34,9 @@ import JSZip from 'jszip';
 import { setupDevServer } from './server/dev-server-manager.ts';
 import { registerPhrsCloudRoutes } from './server/phrsCloudConnector.ts';
 import { buildRemoteApkFromZip } from './server/services/phrsRemoteWorker.ts';
+import compression from 'compression';
+
+// 🚀 అడ్మిన్ గారు! సర్వర్ నుండి డేటా వేగంగా పంపడానికి 'compression' వాడుతున్నాము.
 
 // 💡 తెలుగు వివరణ: బ్రహ్మాస్త్రం ఏజెంట్ కోడ్ మొత్తాన్ని ఒకే PDF గా మార్చి డౌన్‌లోడ్ చేయడానికి 'pdfkit' ని ఇంపోర్ట్ చేసుకుంటున్నాము.
 
@@ -67,6 +70,7 @@ const __dirname = path.dirname(__filename);
 
 // 💡 Express App Initialization - ఎక్స్‌ప్రెస్ అప్లికేషన్ (సర్వర్) ను ప్రారంభించడానికి ఈ వేరియబుల్ వాడుతున్నాం.
 const app = express();
+app.use(compression());
 // 💡 Server Port Configuration - మన సర్వర్ రన్ అవ్వాల్సిన పోర్ట్ నంబర్ 3000 అని సెట్ చేస్తున్నాం.
 const PORT = 3000;
 
@@ -2476,14 +2480,32 @@ app.post('/api/app/analyze', async (req, res) => {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);
-      const siteRes = await fetch(formattedUrl, {
-        headers: { 'User-Agent': 'Mozilla/5.0 (Android; Mobile; PWAInspector/2.0)' },
-        signal: controller.signal,
-      });
-      clearTimeout(timeoutId);
+      const standardUA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+      
+      let html = '';
+      let siteRes: any = null;
+      
+      try {
+        siteRes = await fetch(formattedUrl, {
+          headers: { 'User-Agent': standardUA },
+          signal: controller.signal,
+        });
+        if (siteRes.ok) html = await siteRes.text();
+      } catch (fetchErr) {
+        console.warn('Node fetch failed, trying curl fallback:', fetchErr);
+      }
+      
+      // 🚀 అడ్మిన్ గారు! ఒకవేళ Node fetch ఫెయిల్ అయితే, VPS లో పవర్‌ఫుల్ 'curl' కమాండ్ ద్వారా వెబ్‌సైట్ స్కాన్ చేస్తున్నాము.
+      if (!html || !siteRes?.ok) {
+        try {
+          const { stdout } = await execPromise(`curl -L -s -m 8 -A "${standardUA}" "${formattedUrl}"`);
+          if (stdout) html = stdout;
+        } catch (curlErr) {
+          console.error('Curl fallback also failed:', curlErr);
+        }
+      }
 
-      if (siteRes.ok) {
-        const html = await siteRes.text();
+      if (html) {
         if (html.includes('serviceWorker.register') || 
             html.includes('navigator.serviceWorker') ||
             html.includes('sw.js')) {

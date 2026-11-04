@@ -1116,12 +1116,18 @@ self.addEventListener('fetch', (e) => {
                 <div className="w-16 h-16 bg-white rounded-2xl shadow-sm border border-slate-200 flex items-center justify-center overflow-hidden shrink-0 group relative">
                   {/* 🖼️ అడ్మిన్ గారు! స్టోర్ ప్రివ్యూ లో కూడా ఫోటో స్పష్టంగా కనిపించేలా యూనివర్సల్ ఫోటో ఇంజిన్ అమర్చాము. */}
                   <img 
-                    src={report?.appIconUrl || (targetUrl ? `https://www.google.com/s2/favicons?domain=${targetUrl.startsWith('http') ? new URL(targetUrl).hostname : targetUrl}&sz=256` : '')} 
+                    src={report?.appIconUrl || (targetUrl ? `https://www.google.com/s2/favicons?domain=${targetUrl.startsWith('http') ? new URL(targetUrl).hostname : targetUrl}&sz=128` : '')} 
                     alt="App Icon" 
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
                     referrerPolicy="no-referrer"
                     onError={(e) => {
                       const target = e.currentTarget as HTMLImageElement;
+                      // 🚀 అడ్మిన్ గారు! గూగుల్ ఫెయిల్ అయితే ఐకాన్ హార్స్ ద్వారా ఫోటోను లోడ్ చేస్తున్నాము.
+                      if (!target.src.includes('icon.horse')) {
+                        const domain = targetUrl.startsWith('http') ? new URL(targetUrl).hostname : targetUrl;
+                        target.src = `https://icon.horse/icon/${domain}`;
+                        return;
+                      }
                       target.onerror = null;
                       target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(appName || 'A')}&background=4f46e5&color=fff&size=256`;
                     }}

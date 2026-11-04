@@ -3,12 +3,15 @@ import { ArrowLeft, Globe, X } from 'lucide-react';
 import { DecompiledApp, FeatureFlags, SecurityLog } from './types';
 import { APP_VERSION } from './version';
 import Header from './components/Header';
-import DecompilerWorkspace from './components/DecompilerWorkspace';
-import NormalAppStudio from './components/NormalAppStudio';
-import AdminPanel from './components/AdminPanel/AdminPanel';
-import PhoneLoginScreen from './components/PhoneLoginScreen';
+import Header from './components/Header';
 import { createSampleApkBlob } from './utils/sampleApks';
 import { decompileApk } from './utils/apkDecompiler';
+
+// 🚀 అడ్మిన్ గారు! యాప్ వేగంగా లోడ్ అవ్వడానికి భారీ కాంపోనెంట్లను 'Lazy Loading' చేస్తున్నాము.
+const DecompilerWorkspace = React.lazy(() => import('./components/DecompilerWorkspace'));
+const NormalAppStudio = React.lazy(() => import('./components/NormalAppStudio'));
+const AdminPanel = React.lazy(() => import('./components/AdminPanel/AdminPanel'));
+const PhoneLoginScreen = React.lazy(() => import('./components/PhoneLoginScreen'));
 import { FirebaseProvider, useFirebase } from './components/FirebaseProvider';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { LanguageCode, LANGUAGE_NAMES, translate } from './utils/translations';
@@ -277,7 +280,11 @@ function AppContent() {
   }
 
   if (!isAuthenticated) {
-    return <PhoneLoginScreen onLoginSuccess={handleLoginSuccess} />;
+    return (
+      <React.Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-sky-400 font-bold animate-pulse">Authenticating...</div>}>
+        <PhoneLoginScreen onLoginSuccess={handleLoginSuccess} />
+      </React.Suspense>
+    );
   }
 
   const isAdmin = isAdminUser(user?.email, userPhone, isAdminUnlocked);
@@ -379,39 +386,41 @@ function AppContent() {
         </div>
 
         <div className="transition-all duration-500 ease-in-out transform">
-          {studioMode === 'reverse' ? (
-            <DecompilerWorkspace
-              currentApp={currentApp}
-              onAppDecompiled={setCurrentApp}
-              isDecompiling={isDecompiling}
-              setIsDecompiling={setIsDecompiling}
-              isProcessing={isProcessing}
-              setIsProcessing={setIsProcessing}
-              processLogs={processLogs}
-              setProcessLogs={setProcessLogs}
-              trialStatus={trialStatus}
-              setTrialStatus={setTrialStatus}
-              trialFiles={trialFiles}
-              setTrialFiles={setTrialFiles}
-              trialSelectedFile={trialSelectedFile}
-              setTrialSelectedFile={setTrialSelectedFile}
-              handleTrialSequence={handleTrialSequence}
-              paymentAction={paymentAction}
-              setPaymentAction={setPaymentAction}
-              unlockedFeatures={unlockedFeatures}
-              setUnlockedFeatures={setUnlockedFeatures}
-              handleProtectedAction={handleProtectedAction}
-              currentLang={currentLang}
-            />
-          ) : (
-            <NormalAppStudio
-              flags={flags}
-              currentLang={currentLang}
-              onLanguageChange={setCurrentLang}
-              selectedModel={selectedModel}
-              setSelectedModel={handleModelChange}
-            />
-          )}
+          <React.Suspense fallback={<div className="h-96 flex items-center justify-center text-slate-400 font-bold animate-pulse">Loading Studio Workspace...</div>}>
+            {studioMode === 'reverse' ? (
+              <DecompilerWorkspace
+                currentApp={currentApp}
+                onAppDecompiled={setCurrentApp}
+                isDecompiling={isDecompiling}
+                setIsDecompiling={setIsDecompiling}
+                isProcessing={isProcessing}
+                setIsProcessing={setIsProcessing}
+                processLogs={processLogs}
+                setProcessLogs={setProcessLogs}
+                trialStatus={trialStatus}
+                setTrialStatus={setTrialStatus}
+                trialFiles={trialFiles}
+                setTrialFiles={setTrialFiles}
+                trialSelectedFile={trialSelectedFile}
+                setTrialSelectedFile={setTrialSelectedFile}
+                handleTrialSequence={handleTrialSequence}
+                paymentAction={paymentAction}
+                setPaymentAction={setPaymentAction}
+                unlockedFeatures={unlockedFeatures}
+                setUnlockedFeatures={setUnlockedFeatures}
+                handleProtectedAction={handleProtectedAction}
+                currentLang={currentLang}
+              />
+            ) : (
+              <NormalAppStudio
+                flags={flags}
+                currentLang={currentLang}
+                onLanguageChange={setCurrentLang}
+                selectedModel={selectedModel}
+                setSelectedModel={handleModelChange}
+              />
+            )}
+          </React.Suspense>
         </div>
       </main>
 
@@ -423,19 +432,21 @@ function AppContent() {
 
       {/* 🔒 3-LAYER SECURITY (Layer 2): Admin Panel mounted ONLY if user is the authorized Admin Gmail or Phone */}
       {isAdmin && (
-        <AdminPanel
-          isOpen={isAdminUnlocked}
-          onClose={() => setIsAdminUnlocked(false)}
-          securityLogs={securityLogs}
-          flags={flags}
-          onUpdateFlags={setFlags}
-          currentApp={currentApp}
-          onUpdateFileContent={handleUpdateFileContent}
-          userEmail={user?.email || undefined}
-          userPhone={userPhone}
-          isAdminUnlocked={isAdminUnlocked}
-          isOwner={false}
-        />
+        <React.Suspense fallback={null}>
+          <AdminPanel
+            isOpen={isAdminUnlocked}
+            onClose={() => setIsAdminUnlocked(false)}
+            securityLogs={securityLogs}
+            flags={flags}
+            onUpdateFlags={setFlags}
+            currentApp={currentApp}
+            onUpdateFileContent={handleUpdateFileContent}
+            userEmail={user?.email || undefined}
+            userPhone={userPhone}
+            isAdminUnlocked={isAdminUnlocked}
+            isOwner={false}
+          />
+        </React.Suspense>
       )}
 
       {/* 🌐 Global Compact Choose Language Modal - 75% Scale & Perfect Connections */}

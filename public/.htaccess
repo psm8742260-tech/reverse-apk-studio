@@ -2,7 +2,7 @@
   RewriteEngine On
   RewriteBase /
   
-  # 🌐 అడ్మిన్ గారు! VPS (LiteSpeed/Apache) లో అన్ని రూట్స్ సరిగ్గా పనిచేయడానికి ఈ రీరైట్ రూల్స్ అవసరం.
+  # 🌐 అడ్మిన్ గారు! యాప్ స్పీడ్ పెంచడానికి ఈ క్రింది పవర్ ఫుల్ రూల్స్ అమర్చాము.
   
   # 🛡️ Force Browser to check for fresh index.html (Zero Caching for index)
   RewriteRule ^index\.html$ - [L]
@@ -12,13 +12,34 @@
   RewriteRule . /index.html [L]
 </IfModule>
 
-# 🚀 LiteSpeed Optimization & No-Cache for SPA Entry
+# 🚀 LiteSpeed Speed Optimization & Gzip Compression
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/plain
+  AddOutputFilterByType DEFLATE text/html
+  AddOutputFilterByType DEFLATE text/xml
+  AddOutputFilterByType DEFLATE text/css
+  AddOutputFilterByType DEFLATE application/xml
+  AddOutputFilterByType DEFLATE application/xhtml+xml
+  AddOutputFilterByType DEFLATE application/rss+xml
+  AddOutputFilterByType DEFLATE application/javascript
+  AddOutputFilterByType DEFLATE application/x-javascript
+  AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# 📦 Browser Caching for Static Assets (1 Month)
 <IfModule mod_expires.c>
   ExpiresActive On
   ExpiresDefault "access plus 1 month"
   ExpiresByType text/html "access plus 0 seconds"
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  ExpiresByType image/x-icon "access plus 1 year"
+  ExpiresByType image/png "access plus 1 month"
+  ExpiresByType image/jpg "access plus 1 month"
+  ExpiresByType image/jpeg "access plus 1 month"
 </IfModule>
 
+# 🛡️ Prevent caching of entry point to ensure instant updates
 <FilesMatch "index\.html">
   <IfModule mod_headers.c>
     Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
@@ -26,3 +47,10 @@
     Header set Expires "Wed, 11 Jan 1984 05:00:00 GMT"
   </IfModule>
 </FilesMatch>
+
+# 🔒 Basic Security Headers
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "SAMEORIGIN"
+  Header set X-XSS-Protection "1; mode=block"
+</IfModule>
