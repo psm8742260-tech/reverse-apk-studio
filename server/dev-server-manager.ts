@@ -7,9 +7,11 @@ import fs from 'fs';
 export async function setupDevServer(app: Express) {
   const isProd = process.env.NODE_ENV === 'production';
   const distPath = path.join(process.cwd(), 'dist');
+  const hasDist = fs.existsSync(distPath);
 
   // 🚀 VPS Production Mode: Serve optimized pre-built static bundle
-  if (isProd && fs.existsSync(distPath)) {
+  // 💡 అడ్మిన్ గారు! NODE_ENV లేకపోయినా, 'dist' ఫోల్డర్ ఉంటే దాన్ని ప్రొడక్షన్ గా భావిస్తున్నాము.
+  if (isProd || hasDist) {
     console.log('🚀 [Production Mode] Serving optimized static frontend from /dist...');
     app.use(express.static(distPath));
     app.get('*', (req, res, next) => {

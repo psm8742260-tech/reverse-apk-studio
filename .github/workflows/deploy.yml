@@ -43,4 +43,5 @@ jobs:
             README.md
             .gitignore
             .env
+            index.html
           dangerous-clean-slate: false
