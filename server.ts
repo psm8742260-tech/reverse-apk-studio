@@ -2495,17 +2495,35 @@ app.post('/api/app/analyze', async (req, res) => {
         console.warn('Node fetch failed, trying curl fallback:', fetchErr);
       }
       
-      // 🚀 అడ్మిన్ గారు! ఒకవేళ Node fetch ఫెయిల్ అయితే, VPS లో పవర్‌ఫుల్ 'curl' కమాండ్ ద్వారా వెబ్‌సైట్ స్కాన్ చేస్తున్నాము.
-      if (!html || !siteRes?.ok) {
-        try {
-          const { stdout } = await execPromise(`curl -L -s -m 8 -A "${standardUA}" "${formattedUrl}"`);
-          if (stdout) html = stdout;
-        } catch (curlErr) {
-          console.error('Curl fallback also failed:', curlErr);
+      // 🚀 అడ్మిన్ గారు! పవర్‌ఫుల్ 'Stealth' స్కాన్ ఇంజిన్ - ఇది VPS బ్లాకింగ్‌ని దాటుకుని డేటాను లాగుతుంది.
+      try {
+        const curlUA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+        // Use curl with --compressed and --location to follow redirects and handle compression
+        const { stdout } = await execPromise(`curl -L -s -k -m 10 --compressed -A "${curlUA}" "${formattedUrl}"`);
+        if (stdout && stdout.length > 200) {
+          html = stdout;
+        } else {
+          // 💡 ఒకవేళ లోకల్ స్కాన్ ఫెయిల్ అయితే, ఎక్స్‌టర్నల్ మెటాడేటా సర్వీస్ (Microlink) ద్వారా డేటా తెస్తున్నాము.
+          console.warn('Local scan failed, trying external metadata proxy...');
+          const proxyRes = await axios.get(`https://api.microlink.io/?url=${encodeURIComponent(formattedUrl)}`, { timeout: 8000 });
+          if (proxyRes.data?.status === 'success') {
+            const mData = proxyRes.data.data;
+            manifestData = {
+              name: mData.title,
+              description: mData.description,
+              icons: mData.logo ? [{ src: mData.logo.url, sizes: '192x192' }] : []
+            };
+            appIconUrl = mData.image?.url || mData.logo?.url || null;
+            manifestFound = true;
+            // If we got good proxy data, we can skip manual HTML parsing
+            if (manifestData.name) html = '<!-- PROXY_DATA_USED -->'; 
+          }
         }
+      } catch (err) {
+        console.error('Stealth scraper error:', err);
       }
 
-      if (html) {
+      if (html && html !== '<!-- PROXY_DATA_USED -->') {
         if (html.includes('serviceWorker.register') || 
             html.includes('navigator.serviceWorker') ||
             html.includes('sw.js')) {
