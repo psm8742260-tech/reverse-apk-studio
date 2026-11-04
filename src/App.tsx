@@ -6,11 +6,33 @@ import Header from './components/Header';
 import { createSampleApkBlob } from './utils/sampleApks';
 import { decompileApk } from './utils/apkDecompiler';
 
-// 🚀 అడ్మిన్ గారు! యాప్ వేగంగా లోడ్ అవ్వడానికి భారీ కాంపోనెంట్లను 'Lazy Loading' చేస్తున్నాము.
-const DecompilerWorkspace = React.lazy(() => import('./components/DecompilerWorkspace'));
-const NormalAppStudio = React.lazy(() => import('./components/NormalAppStudio'));
-const AdminPanel = React.lazy(() => import('./components/AdminPanel/AdminPanel'));
-const PhoneLoginScreen = React.lazy(() => import('./components/PhoneLoginScreen'));
+// 🚀 అడ్మిన్ గారు! యాప్ వేగంగా లోడ్ అవ్వడానికి మరియు చంక్ హాష్ ఎర్రర్లు రాకుండా 'Safe Lazy Loading with Retry' ని ఉపయోగిస్తున్నాము.
+const lazyWithRetry = <T extends React.ComponentType<any>>(
+  componentImport: () => Promise<{ default: T }>
+) =>
+  React.lazy(async () => {
+    const pageHasAlreadyBeenReloaded = JSON.parse(
+      window.sessionStorage.getItem('chunk_reload_retry') || 'false'
+    );
+    try {
+      const component = await componentImport();
+      window.sessionStorage.removeItem('chunk_reload_retry');
+      return component;
+    } catch (error) {
+      if (!pageHasAlreadyBeenReloaded) {
+        window.sessionStorage.setItem('chunk_reload_retry', 'true');
+        window.location.reload();
+        return new Promise<{ default: T }>(() => {});
+      }
+      window.sessionStorage.removeItem('chunk_reload_retry');
+      return await componentImport();
+    }
+  });
+
+const DecompilerWorkspace = lazyWithRetry(() => import('./components/DecompilerWorkspace'));
+const NormalAppStudio = lazyWithRetry(() => import('./components/NormalAppStudio'));
+const AdminPanel = lazyWithRetry(() => import('./components/AdminPanel/AdminPanel'));
+const PhoneLoginScreen = lazyWithRetry(() => import('./components/PhoneLoginScreen'));
 import { FirebaseProvider, useFirebase } from './components/FirebaseProvider';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { LanguageCode, LANGUAGE_NAMES, translate } from './utils/translations';

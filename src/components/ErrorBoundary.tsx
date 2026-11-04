@@ -41,6 +41,15 @@ export class ErrorBoundary extends Component<Props, State> {
   };
 
   public static getDerivedStateFromError(error: Error): State {
+    const msg = (error.message || '').toLowerCase();
+    if (msg.includes('dynamically imported module') || msg.includes('loading chunk')) {
+      // Auto-reload to fetch fresh chunk manifest
+      const reloaded = sessionStorage.getItem('chunk_error_reloaded');
+      if (!reloaded) {
+        sessionStorage.setItem('chunk_error_reloaded', 'true');
+        window.location.reload();
+      }
+    }
     if (isIgnorableError(error.message)) {
       return { hasError: false };
     }
