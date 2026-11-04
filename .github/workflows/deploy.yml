@@ -32,16 +32,5 @@ jobs:
           username: ${{ secrets.FTP_USERNAME || 'phrscrow' }}
           password: ${{ secrets.PHRSCROW }}
           server-dir: /aims.phrscrowd.online/
-          local-dir: ./
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            **/src/**
-            **/.aistudio/**
-            **/public/assets/aistudio/**
-            README.md
-            .gitignore
-            .env
-            index.html
+          local-dir: ./dist/
           dangerous-clean-slate: false

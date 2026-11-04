@@ -77,19 +77,6 @@ const PORT = 3000;
 // 🔒 💡 Unauthorized API Key Set - అడ్మిన్ గారు, తప్పుగా ఉన్న (unauthorized 401) API కీలను గుర్తుపెట్టుకోవడానికి ఈ Set ని ఉపయోగిస్తున్నాం.
 const unauthorizedKeys = new Set<string>();
 
-// 🚀 [Auto-Cleanup] అడ్మిన్ గారు! ప్రొడక్షన్ లో రూట్ లో ఉన్న 'index.html' ని ఆటోమేటిక్ గా క్లీన్ చేస్తున్నాము.
-// దీనివల్ల సర్వర్ నేరుగా పాత ఫైల్ ని కాకుండా మన బిల్డ్ ని చూపిస్తుంది.
-(async () => {
-  try {
-    const rootIndex = path.join(process.cwd(), 'index.html');
-    const isProd = process.env.NODE_ENV === 'production' || await fs.access(path.join(process.cwd(), 'dist')).then(() => true).catch(() => false);
-    if (isProd && await fs.access(rootIndex).then(() => true).catch(() => false)) {
-      console.log('🧹 [Cleanup] Moving root index.html to avoid conflict...');
-      await fs.rename(rootIndex, path.join(process.cwd(), 'index.html.bak'));
-    }
-  } catch (e) {}
-})();
-
 // 💡 Ping Health Check Route - మన సర్వర్ బ్రతికి ఉందో లేదో తెలుసుకోవడానికి పింగ్ (Ping) చేసే సింపుల్ రౌట్.
 app.get('/ping', (req, res) => res.send('ok'));
 // 💡 JSON Health Status API - సర్వర్ హెల్త్ కండిషన్ ని JSON రూపంలో టైమ్ స్టాంప్ తో పంపే ఏపీఐ రౌట్.
