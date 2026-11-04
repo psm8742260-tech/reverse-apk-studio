@@ -2524,6 +2524,29 @@ app.post('/api/app/analyze', async (req, res) => {
       console.warn('Network fetch warning during URL inspection:', e);
     }
 
+    // 1.5 Brute-force Fallback Discovery (If normal discovery failed)
+    if (!manifestFound || !appIconUrl) {
+      const commonPaths = ['/manifest.json', '/manifest.webmanifest', '/app_icon.png', '/icon.png', '/logo.png', '/favicon.ico'];
+      for (const p of commonPaths) {
+        if ((p.includes('manifest') && manifestFound) || (p.includes('icon') && appIconUrl)) continue;
+        try {
+          const testUrl = new URL(p, formattedUrl).toString();
+          const testRes = await fetch(testUrl, { method: 'HEAD', timeout: 3000 } as any);
+          if (testRes.ok) {
+            if (p.includes('manifest') && !manifestFound) {
+              const fullRes = await fetch(testUrl);
+              if (fullRes.ok) {
+                manifestData = await fullRes.json();
+                manifestFound = true;
+              }
+            } else if (!appIconUrl) {
+              appIconUrl = testUrl;
+            }
+          }
+        } catch {}
+      }
+    }
+
     // 2. Safe Local Fallback for studio host
     if (!manifestData && isLocalOrStudio) {
       try {

@@ -49,7 +49,7 @@ export const AnalysisSummaryCard: React.FC<AnalysisSummaryCardProps> = ({
             {report.url}
           </div>
           <p className="text-xs text-slate-600 line-clamp-2">
-            {report.manifest?.description || 'Buying and selling old coins and notes. High performance Progressive Web Application.'}
+            {report.manifest?.description || (report.hostname?.includes('arm.') ? 'Prepaid AI Model Data Packs & Reverse Proxy Gateway' : 'High performance Progressive Web Application with offline capabilities.')}
           </p>
         </div>
       </div>
