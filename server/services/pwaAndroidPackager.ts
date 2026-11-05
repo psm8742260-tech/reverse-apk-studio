@@ -105,6 +105,8 @@ export async function resolveAppIconBuffer(
 
       // Try standard candidate URLs on site
       const commonCandidates = [
+        `${parsed.origin}/icon-512.png`,
+        `${parsed.origin}/icon-192.png`,
         `${parsed.origin}/app_logo.png`,
         `${parsed.origin}/app_icon.png`,
         `${parsed.origin}/apple-touch-icon.png`,
@@ -174,8 +176,8 @@ export function generateBinaryAndroidManifest(packageName: string, appName: stri
     { name: 'exported', resId: 0x01010010 },
     { name: 'versionCode', resId: 0x0101021b },
     { name: 'versionName', resId: 0x0101021c },
-    { name: 'minSdkVersion', resId: 0x01010270 },
-    { name: 'targetSdkVersion', resId: 0x01010271 },
+    { name: 'minSdkVersion', resId: 0x0101020c },
+    { name: 'targetSdkVersion', resId: 0x01010270 },
     { name: 'hardwareAccelerated', resId: 0x010102d3 },
     { name: 'roundIcon', resId: 0x0101052c }
   ];
@@ -656,7 +658,7 @@ export function createRealKeystoreAndCert(targetDir: string, appName: string = '
   if (!fsSync.existsSync(keyPath) || !fsSync.existsSync(certPath) || !fsSync.existsSync(keystorePath)) {
     try {
       execSync(`openssl req -new -newkey rsa:2048 -days 10000 -nodes -x509 \
-        -subj "/CN=${appName.replace(/[^a-zA-Z0-9 ]/g, '') || 'App'}/O=ReverseAPK/C=IN" \
+        -subj "/CN=${appName.replace(/[^a-zA-Z0-9 ]/g, '') || 'App'}/O=${appName.replace(/[^a-zA-Z0-9 ]/g, '') || 'App'} App/C=IN" \
         -keyout "${keyPath}" -out "${certPath}" 2>/dev/null`);
       execSync(`openssl pkcs12 -export -inkey "${keyPath}" -in "${certPath}" \
         -out "${keystorePath}" -password pass:reverseapkstudio -name releaseKey 2>/dev/null`);

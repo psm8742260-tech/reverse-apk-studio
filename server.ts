@@ -2473,7 +2473,7 @@ app.post('/api/app/analyze', async (req, res) => {
 
     // Check if URL is local app or AI Master Studio default
     const isLocalOrStudio = formattedUrl.includes('ai-master-studio') || 
-                            formattedUrl.includes('phrscrowd.online') ||
+                            formattedUrl.includes('aims.phrscrowd.online') ||
                             formattedUrl.includes('localhost') || 
                             formattedUrl.includes('127.0.0.1');
 
@@ -4872,7 +4872,7 @@ app.post('/api/app/build', async (req, res) => {
     log('Generating real cryptographic release signing keystore (PKCS12)...');
     try {
       if (buildEnv.keytool) {
-        await execPromise(`${buildEnv.keytool} -genkeypair -v -keystore ${keystorePath} -alias releaseKey -keyalg RSA -keysize 2048 -validity 10000 -storetype PKCS12 -storepass reverseapkstudio -keypass reverseapkstudio -dname "CN=${cleanName}, OU=Build, O=ReverseAPK, L=Hyderabad, S=Telangana, C=IN"`, {
+        await execPromise(`${buildEnv.keytool} -genkeypair -v -keystore ${keystorePath} -alias releaseKey -keyalg RSA -keysize 2048 -validity 10000 -storetype PKCS12 -storepass reverseapkstudio -keypass reverseapkstudio -dname "CN=${cleanName}, OU=Build, O=${cleanName}, L=Hyderabad, S=Telangana, C=IN"`, {
           env: buildEnv.env
         });
         log('Cryptographic release key generated successfully.');
@@ -4932,7 +4932,7 @@ android {
         minSdk 21
         targetSdk 34
         versionCode 1
-        versionName "1.0"
+        versionName "HYBRID"
     }
 
     signingConfigs {

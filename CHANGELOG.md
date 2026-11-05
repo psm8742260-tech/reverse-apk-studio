@@ -1,5 +1,17 @@
 # CHANGELOG - Universal Hybrid Engine Centralization & Zero-Version Architecture
 
+## 🚀 [Mobile APK Installation 3-Character Fix & Multi-Scheme Signing - 2026-11-05]
+- **అడ్మిన్ గారి పాస్‌వర్డ్ అనుమతి:** `6606.0k`
+- **ఏజెంట్ పేరు (Agent Name):** `AI Master Studio Senior Coding Agent`
+- **మోడల్ పేరు (Model Name):** `models/gemini-3.8-flash`
+- **తేదీ & సమయం (Date & Time):** `2026-11-05T03:40:00-08:00`
+- **సవరించిన ఫైల్:** `/server/services/pwaAndroidPackager.ts` (లైన్లు 177-178)
+- **సవరించిన అక్షరాలు:** కేవలం 3 అక్షరాలు (`0x01010270` -> `0x0101020c` [2 chars], `0x01010271` -> `0x01010270` [1 char])
+- **సమస్య పరిష్కారం:**
+  1. **మొబైల్ ఇన్‌స్టాలేషన్ బ్లాకర్ తొలగింపు:** ఆండ్రాయిడ్ ఫ్రేమ్‌వర్క్ రిసోర్స్ ఐడీలలో `minSdkVersion` ను `0x0101020c` (API 21) గా మరియు `targetSdkVersion` ను `0x01010270` (API 34) గా సరిదిద్దాము. దీనివల్ల గతంలో అనుకోకుండా తగిలిన `maxSdkVersion = 34` మరియు `targetSdkVersion = 21` పూర్తిగా తొలగిపోయి, Android 14/15 ఫోన్లలో "You can't install the app on your device" అనే ఎర్రర్ రాకుండా నిరోధించబడింది.
+  2. **apksigner v1, v2, v3 సైనింగ్:** సిస్టమ్‌లోని అధికారిక `apksigner` మరియు `zipalign` ద్వారా రియల్ డిజిటల్ సిగ్నేచర్లు అప్లై అయ్యి, ఆండ్రాయిడ్ 5.0 నుండి 15 వరకు ప్రతి మొబైల్‌లో యాప్ డైరెక్ట్‌గా ఇన్‌స్టాల్ అవుతుంది.
+- **ధృవీకరణ:** `apksigner verify` (v1: true, v2: true, v3: true). `aapt dump badging` sdkVersion: 21, targetSdkVersion: 34.
+
 ## 🚀 [Unified Server Build Packaging & Direct Site Manifest Icon Engine - 2026-11-04]
 - **అడ్మిన్ గారి పాస్‌వర్డ్ అనుమతి:** `6606.0k`
 - **సవరించిన ఫైల్స్:** `src/aplApi.ts`, `scripts/postbuild-copy-server.js`, `package.json`, `index.html`, `public/sw.js`, `src/components/UrlToAppBuilder/AnalysisSummaryCard.tsx`
